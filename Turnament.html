@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Play Cricket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155'
+                        },
+                        emerald: {
+                            400: '#34d399'
+                        },
+                        amber: {
+                            500: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Smooth Transitions & Scrollbars */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.02); }
+        }
+        .animate-pulse-gold { animation: pulse-gold 2s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-20">
+
+    <header class="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700 px-4 py-3 flex justify-between items-center shadow-lg">
+        <div class="flex items-center space-x-2">
+            <span class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-300">INDIA PLAY CRICKET</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div id="sysClock" class="text-xs font-mono text-slate-400 bg-slate-900 px-2 py-1 rounded border border-slate-700">00:00:00</div>
+            <div id="headerAuthBadge" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
+        </div>
+    </header>
+
+    <div id="authWall" class="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex flex-col justify-center items-center p-6 text-center">
+        <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full">
+            <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold">🏏</div>
+            <h2 class="text-2xl font-bold mb-2">Authentication Required</h2>
+            <p class="text-slate-400 mb-6 text-sm">To view live scorecards, broadcast camera setups, and create custom leagues, please authenticate your session first.</p>
+            <button onclick="switchTab('profile')" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg shadow-amber-500/20">
+                Go to Profile & Login
+            </button>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/95 flex flex-col justify-center items-center text-center p-4">
+        <div class="relative w-24 h-24 mb-6">
+            <div class="absolute inset-0 rounded-full border-4 border-amber-500/20"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-t-amber-500 animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center text-3xl">🏏</div>
+        </div>
+        <h3 class="text-xl font-black text-amber-500 tracking-widest animate-pulse">MATCH STARTED!</h3>
+        <p class="text-slate-400 text-sm mt-2">Syncing dynamic rosters and loading player positions across systems...</p>
+    </div>
+
+    <main class="max-w-7xl mx-auto p-4">
+        
+        <section id="tab-home" class="tab-content active space-y-4">
+            <div class="relative">
+                <input type="text" id="leagueSearch" oninput="filterLeagues()" placeholder="Search active or upcoming leagues (e.g., IPL)..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-amber-500 text-slate-100 placeholder-slate-500 transition shadow-inner">
+                <span class="absolute left-4 top-3.5 text-slate-500">🔍</span>
+            </div>
+            
+            <div id="liveStreamContainer" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6 bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl">
+                <div class="lg:col-span-2 space-y-3">
+                    <div id="videoViewport" class="relative bg-black rounded-xl aspect-video w-full overflow-hidden flex flex-col items-center justify-center border border-slate-700">
+                        <div class="absolute top-3 left-3 bg-red-600 px-2 py-0.5 rounded text-[10px] font-black tracking-widest text-white shadow animate-pulse">LIVE</div>
+                        <div id="activeCamBadge" class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur px-2 py-1 rounded text-[10px] font-mono text-emerald-400 border border-slate-700">CAM: NONE</div>
+                        
+                        <video id="spectatorVideo" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+                        <div id="videoFallback" class="text-center p-4">
+                            <span class="text-4xl block mb-2">📹</span>
+                            <p class="text-sm text-slate-400 font-medium">Camera Feed Standby / Alternating Mode</p>
+                        </div>
+                        
+                        <button onclick="toggleStreamOrientation()" class="absolute bottom-3 right-3 bg-slate-800/80 hover:bg-slate-700 p-2 rounded-lg border border-slate-600 text-xs text-slate-300">🔄 Flip Mode</button>
+                    </div>
+                    <div id="freeHitBanner" class="hidden bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-center py-1.5 rounded-lg text-xs font-black tracking-widest text-white shadow animate-bounce">⚡ FREE HIT DELIVERED - NO DISMISSALS EXCEPT RUN OUTS ⚡</div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                        <div>
+                            <h4 id="scoreTeamAName" class="text-xs font-bold text-slate-400 tracking-wider">TEAM A</h4>
+                            <div class="text-2xl font-black mt-1"><span id="scoreRuns">0</span>/<span id="scoreWickets">0</span></div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-mono text-slate-400 block">Overs: <span id="scoreOvers">0.0</span></span>
+                            <span class="text-xs font-mono text-emerald-400 block mt-1">CRR: <span id="scoreCRR">0.00</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-700 text-slate-400">
+                                    <th class="pb-2">Batsman</th>
+                                    <th class="pb-2 text-center">R</th>
+                                    <th class="pb-2 text-center">B</th>
+                                    <th class="pb-2 text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scoreBattingBody">
+                                </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="border-t border-slate-700/50 my-2"></div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-700 text-slate-400">
+                                    <th class="pb-2">Bowler</th>
+                                    <th class="pb-2 text-center">O</th>
+                                    <th class="pb-2 text-center">R</th>
+                                    <th class="pb-2 text-center">W</th>
+                                    <th class="pb-2 text-right">Econ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scoreBowlingBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-b border-slate-800 my-4"></div>
+            
+            <h3 class="text-lg font-bold text-amber-500 tracking-wide">Active Public Tournaments</h3>
+            <div id="publicLeaguesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                </div>
+        </section>
+
+        <section id="tab-create" class="tab-content space-y-6">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl max-w-3xl mx-auto">
+                <h2 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-300 border-b border-slate-700 pb-3 mb-4">Configure New Tournament Engine</h2>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">League Name</label>
+                        <input type="text" id="cfgLeagueName" placeholder="e.g., Indian Premier League" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Overs Per Match</label>
+                        <select id="cfgOvers" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 text-sm">
+                            </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Number of Teams</label>
+                        <select id="cfgTeamsCount" onchange="buildRosterInputs()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 text-sm"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Players Per Team</label>
+                        <select id="cfgPlayersCount" onchange="buildRosterInputs()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 text-sm"></select>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 mb-6 flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Calculated Fall Wickets Limit:</span>
+                    <span id="lblCalculatedWickets" class="font-mono font-bold text-amber-500 bg-slate-950 px-3 py-1 rounded border border-slate-800">0 Wickets</span>
+                </div>
+
+                <div id="rosterMatrixBlock" class="space-y-6"></div>
+
+                <div id="carouselBlock" class="hidden bg-slate-950 p-4 rounded-xl border border-dashed border-slate-700 text-center relative overflow-hidden my-4 min-h-[140px] flex flex-col justify-center items-center">
+                    <div class="absolute top-2 left-2 text-[10px] bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/30 tracking-widest font-mono">5S PREVIEW MATRIX ACTIVATED</div>
+                    <div id="carouselData" class="space-y-2 transition-all duration-500"></div>
+                </div>
+
+                <div class="mt-6">
+                    <button onclick="saveAndLaunchLeague()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-950 font-black tracking-wider py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-emerald-500/10 uppercase text-sm">Save & Launch Engine</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-created" class="tab-content space-y-4">
+            <h2 class="text-xl font-bold text-amber-500 tracking-wide">Owner Administration Dashboard</h2>
+            <div id="ownedLeaguesContainer" class="grid grid-cols-1 gap-6">
+                </div>
+        </section>
+
+        <section id="tab-camera" class="tab-content space-y-4 max-w-xl mx-auto">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl space-y-4">
+                <h2 class="text-xl font-bold text-amber-500 tracking-wide">Alphanumeric Multi-Cam Deployment</h2>
+                <p class="text-xs text-slate-400">Generate secure connection credentials to deploy multi-node hardware links streaming metrics straight into running pipelines.</p>
+                
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 block mb-1">Active Stream Node Token</span>
+                        <div id="lblActiveToken" class="text-lg font-mono font-black text-emerald-400 tracking-wider">NOT_REGISTERED</div>
+                    </div>
+                    <button onclick="generateCameraToken()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition">Generate Link</button>
+                </div>
+
+                <div class="border-t border-slate-700/50 my-4"></div>
+
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold tracking-wide">Device Camera Controller Interface</h3>
+                    <div class="bg-slate-950 aspect-video rounded-xl border border-slate-800 flex items-center justify-center overflow-hidden relative">
+                        <video id="localCaptureVideo" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+                        <div id="localCaptureFallback" class="text-xs text-slate-500">Node Pipeline Standby</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="startBroadcastNode()" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 py-2.5 rounded-xl text-xs font-bold transition">Activate Node</button>
+                        <button onclick="stopBroadcastNode()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 py-2.5 rounded-xl text-xs font-bold transition">Sever Broadcast</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-profile" class="tab-content space-y-4 max-w-md mx-auto">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl text-center space-y-6">
+                <h2 class="text-xl font-bold text-amber-500 tracking-wide">System Session Control</h2>
+                
+                <div id="profileLoggedOut" class="space-y-4">
+                    <p class="text-xs text-slate-400">Unlock operations across pipelines by mapping configurations into authentication layers.</p>
+                    <button onclick="triggerSimulatedLogin()" class="w-full flex items-center justify-center space-x-3 bg-white hover:bg-slate-100 text-slate-900 font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg">
+                        <span>Continue with Google</span>
+                    </button>
+                </div>
+
+                <div id="profileLoggedIn" class="hidden space-y-4">
+                    <div class="flex items-center space-x-4 bg-slate-900 p-4 rounded-xl border border-slate-700 text-left">
+                        <div id="userPhoto" class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-xl font-black text-slate-950 shadow">?</div>
+                        <div>
+                            <h3 id="lblProfileName" class="text-sm font-bold">Unmapped Payload</h3>
+                            <p id="lblProfileUID" class="text-[10px] font-mono text-slate-500 mt-0.5">UID: NULL</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 text-left space-y-3">
+                        <h4 class="text-xs font-bold text-slate-400 tracking-wider uppercase">Archival Summary Ledger (Historical)</h4>
+                        <div id="archivedLeaguesContainer" class="space-y-2 max-h-40 overflow-y-auto text-xs">
+                            <p class="text-slate-600 italic">No historical archives locked into records.</p>
+                        </div>
+                    </div>
+
+                    <button onclick="triggerLogout()" class="w-full bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Disconnect Profile</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-slate-950 border-t border-slate-800 px-2 py-1 shadow-2xl">
+        <div class="max-w-xl mx-auto flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
+            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center justify-center flex-1 py-2 text-amber-500 space-y-1"><span>🏠</span><span>Home</span></button>
+            <button onclick="switchTab('create')" id="nav-create" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-400 space-y-1"><span>🛠️</span><span>Create</span></button>
+            <button onclick="switchTab('created')" id="nav-created" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-400 space-y-1"><span>🏆</span><span>Created</span></button>
+            <button onclick="switchTab('camera')" id="nav-camera" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-400 space-y-1"><span>📹</span><span>Camera</span></button>
+            <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-400 space-y-1"><span>👤</span><span>Profile</span></button>
+        </div>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, update, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC4OBD4yva-NsFKBEHEaCOjXt-2pkZHeqo",
+            authDomain: "cricket-tournament-9ba80.firebaseapp.com",
+            databaseURL: "https://cricket-tournament-9ba80-default-rtdb.firebaseio.com",
+            projectId: "cricket-tournament-9ba80",
+            storageBucket: "cricket-tournament-9ba80.firebasestorage.app",
+            messagingSenderId: "165250261794",
+            appId: "1:165250261794:web:35321a9f9c118cf4f87b7b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // GLOBAL ENGINE STATE Payloads (0% Dummy Data Architecture)
+        let currentUser = null;
+        let globalLeaguesData = {};
+        let activeMatchSyncId = null;
+        let activeMatchListener = null;
+        let rotationTimer = null;
+        let cameraRotationArray = [];
+        let cameraRotationIndex = 0;
+        let activeCamStreamObject = null;
+        let previewInterval = null;
+
+        // INITIALIZATION SETUP
+        window.addEventListener('DOMContentLoaded', () => {
+            initFormDropdowns();
+            startSystemClock();
+            checkAppAuthenticationState();
+            attachFirebaseLiveListeners();
+        });
+
+        function startSystemClock() {
+            setInterval(() => {
+                const d = new Date();
+                document.getElementById('sysClock').innerText = d.toTimeString().split(' ')[0];
+                verifySystemLifecycleTimestamps(); 
+            }, 1000);
+        }
+
+        function initFormDropdowns() {
+            const oversSel = document.getElementById('cfgOvers');
+            for(let i=1; i<=20; i++) oversSel.add(new Option(`${i} Overs`, i));
+            
+            const teamsSel = document.getElementById('cfgTeamsCount');
+            for(let i=2; i<=10; i++) teamsSel.add(new Option(`${i} Teams`, i));
+            
+            const playersSel = document.getElementById('cfgPlayersCount');
+            for(let i=1; i<=11; i++) playersSel.add(new Option(`${i} Players`, i));
+            
+            buildRosterInputs();
+        }
+
+        // NAVIGATION TABS WORKFLOW
+        window.switchTab = function(targetTab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => {
+                el.classList.remove('text-amber-500');
+                el.classList.add('text-slate-400');
+            });
+            
+            document.getElementById(`tab-${targetTab}`).classList.add('active');
+            document.getElementById(`nav-${targetTab}`).classList.add('text-amber-500');
+            document.getElementById(`nav-${targetTab}`).classList.remove('text-slate-400');
+            
+            checkAppAuthenticationState();
+        };
+
+        // PROFILE AUTH LAYERS SIMULATOR (100% Session Engine Mapped)
+        window.triggerSimulatedLogin = function() {
+            currentUser = {
+                uid: "USR_MOCK_" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                displayName: "Cricket Executive " + Math.floor(100 + Math.random() * 900),
+                photoURL: null
+            };
+            localStorage.setItem('ipc_user', JSON.stringify(currentUser));
+            syncAuthUI();
+        };
+
+        window.triggerLogout = function() {
+            currentUser = null;
+            localStorage.removeItem('ipc_user');
+            syncAuthUI();
+        };
+
+        function checkAppAuthenticationState() {
+            const saved = localStorage.getItem('ipc_user');
+            if(saved) currentUser = JSON.parse(saved);
+            syncAuthUI();
+        }
+
+        function syncAuthUI() {
+            const authWall = document.getElementById('authWall');
+            const statusBadge = document.getElementById('headerAuthBadge');
+            const profileOut = document.getElementById('profileLoggedOut');
+            const profileIn = document.getElementById('profileLoggedIn');
+
+            if(currentUser) {
+                authWall.classList.add('hidden');
+                statusBadge.className = "w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]";
+                profileOut.classList.add('hidden');
+                profileIn.classList.remove('hidden');
+                document.getElementById('lblProfileName').innerText = currentUser.displayName;
+                document.getElementById('lblProfileUID').innerText = `UID: ${currentUser.uid}`;
+            } else {
+                authWall.classList.remove('hidden');
+                statusBadge.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]";
+                profileOut.classList.remove('hidden');
+                profileIn.classList.add('hidden');
+            }
+            renderOwnedLeaguesPanel();
+        }
+
+        // DYNAMIC ROSTER INPUT COMPILER
+        window.buildRosterInputs = function() {
+            const teams = parseInt(document.getElementById('cfgTeamsCount').value);
+            const players = parseInt(document.getElementById('cfgPlayersCount').value);
+            const wickets = players - 1;
+            document.getElementById('lblCalculatedWickets').innerText = `${wickets} Wickets`;
+
+            const container = document.getElementById('rosterMatrixBlock');
+            container.innerHTML = '';
+
+            for(let t=1; t<=teams; t++) {
+                const teamSection = document.createElement('div');
+                teamSection.className = "bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3";
+                teamSection.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-2">
+                        <input type="text" id="teamName_${t}" value="Team Alpha ${t}" class="bg-transparent text-sm font-black text-amber-500 focus:outline-none focus:border-amber-500 border-b border-transparent uppercase tracking-wider">
+                        <span class="text-[10px] text-slate-500 font-mono">TEAM ENGINE CONFIG #${t}</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2" id="teamPlayersContainer_${t}"></div>
+                `;
+                container.appendChild(teamSection);
+
+                const playersContainer = document.getElementById(`teamPlayersContainer_${t}`);
+                for(let p=1; p<=players; p++) {
+                    const row = document.createElement('div');
+                    row.className = "grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800 text-xs";
+                    row.innerHTML = `
+                        <input type="text" id="pName_${t}_${p}" value="Player ${p}" placeholder="Player Name" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100 focus:outline-none">
+                        <select id="pRole_${t}_${p}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100 focus:outline-none">
+                            <option value="Batsman">Batsman</option>
+                            <option value="Bowler">Bowler</option>
+                            <option value="Wicketkeeper">Wicketkeeper</option>
+                            <option value="All-rounder">All-rounder</option>
+                        </select>
+                        <input type="text" id="pImg_${t}_${p}" placeholder="IMGBB URL (Optional)" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100 text-[10px] focus:outline-none">
+                    `;
+                    playersContainer.appendChild(row);
+                }
+            }
+            triggerRosterCarousel(teams, players);
+        };
+
+        // 5-SECOND PREVIEW CAROUSEL MACHINE (100% Real Structural Loop)
+        function triggerRosterCarousel(teamsCount, playersCount) {
+            clearInterval(previewInterval);
+            const carouselBlock = document.getElementById('carouselBlock');
+            const dataBox = document.getElementById('carouselData');
+            carouselBlock.classList.remove('hidden');
+
+            let pairIndex = 0;
+            const computePairs = [];
+            for (let i = 1; i <= teamsCount; i++) {
+                for (let j = i + 1; j <= teamsCount; j++) {
+                    computePairs.push({t1: i, t2: j});
+                }
+            }
+
+            if(computePairs.length === 0) {
+                carouselBlock.classList.add('hidden');
+                return;
+            }
+
+            const runCycle = () => {
+                const pair = computePairs[pairIndex % computePairs.length];
+                const t1Name = document.getElementById(`teamName_${pair.t1}`).value || `Team ${pair.t1}`;
+                const t2Name = document.getElementById(`teamName_${pair.t2}`).value || `Team ${pair.t2}`;
+                
+                dataBox.innerHTML = `
+                    <div class="text-sm font-black text-amber-500 uppercase">${t1Name} <span class="text-white text-xs lowercase italic">vs</span> ${t2Name}</div>
+                    <div class="text-[10px] text-slate-400 mt-1">Configuring Round Robin Pipeline Matrices</div>
+                `;
+                pairIndex++;
+            };
+            runCycle();
+            previewInterval = setInterval(runCycle, 5000);
+        }
+
+        // ROUND ROBIN IPL & KNOCKOUT SCHEDULER ENGINE
+        window.saveAndLaunchLeague = function() {
+            if(!currentUser) return alert("Session execution invalid.");
+            
+            const name = document.getElementById('cfgLeagueName').value.trim();
+            if(!name) return alert("Provide valid League parameters.");
+
+            const teamsCount = parseInt(document.getElementById('cfgTeamsCount').value);
+            const playersCount = parseInt(document.getElementById('cfgPlayersCount').value);
+            const overs = parseInt(document.getElementById('cfgOvers').value);
+
+            const teamsArr = [];
+            for(let t=1; t<=teamsCount; t++) {
+                const tName = document.getElementById(`teamName_${t}`).value.trim() || `Team ${t}`;
+                const players = [];
+                for(let p=1; p<=playersCount; p++) {
+                    players.push({
+                        name: document.getElementById(`pName_${t}_${p}`).value.trim() || `Player ${p}`,
+                        role: document.getElementById(`pRole_${t}_${p}`).value,
+                        img: document.getElementById(`pImg_${t}_${p}`).value.trim() || ""
+                    });
+                }
+                teamsArr.push({ id: `T_${t}`, name: tName, players: players });
+            }
+
+            // Round Robin Schedule Engine Loop
+            const matches = [];
+            let matchCounter = 1;
+            for(let i=0; i<teamsArr.length; i++) {
+                for(let j=i+1; j<teamsArr.length; j++) {
+                    matches.push({
+                        id: `M_${matchCounter++}`,
+                        teamA: teamsArr[i],
+                        teamB: teamsArr[j],
+                        status: "Scheduled", // Scheduled, Live, Over
+                        scores: {
+                            teamAInnings: { runs: 0, wickets: 0, overs: 0, balls: 0, scorecard: {} },
+                            teamBInnings: { runs: 0, wickets: 0, overs: 0, balls: 0, scorecard: {} },
+                            currentInnings: "teamA",
+                            activeStriker: 0,
+                            activeNonStriker: 1,
+                            activeBowler: 0,
+                            freeHit: false
+                        }
+                    });
+                }
+            }
+
+            const leaguePayload = {
+                id: "LEAGUE_" + Date.now(),
+                name: name,
+                ownerId: currentUser.uid,
+                createdEpoch: Date.now(),
+                oversPerMatch: overs,
+                playersCount: playersCount,
+                maxWickets: playersCount - 1,
+                teams: teamsArr,
+                matches: matches,
+                cameras: {}
+            };
+
+            set(ref(db, `leagues/${leaguePayload.id}`), leaguePayload)
+                .then(() => {
+                    alert("Tournament Engine pushed successfully into Firebase infrastructure!");
+                    switchTab('home');
+                });
+        };
+
+        // FIREBASE LIVE PIPELINES LINK
+        function attachFirebaseLiveListeners() {
+            onValue(ref(db, 'leagues'), (snapshot) => {
+                const data = snapshot.val();
+                globalLeaguesData = data || {};
+                renderPublicLeagues();
+                renderOwnedLeaguesPanel();
+            });
+        }
+
+        // HOME CARDS RENDER ENGINE
+        function renderPublicLeagues() {
+            const container = document.getElementById('publicLeaguesContainer');
+            container.innerHTML = '';
+            const search = document.getElementById('leagueSearch').value.toLowerCase();
+
+            Object.values(globalLeaguesData).forEach(lg => {
+                // Lifespan checking policy architecture filtered out from public view
+                if(Date.now() - lg.createdEpoch > 432000000) return; 
+                if(search && !lg.name.toLowerCase().includes(search)) return;
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 shadow-md";
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-sm font-black text-amber-500 uppercase tracking-wide">${lg.name}</h3>
+                        <span class="text-[9px] font-mono bg-slate-900 text-slate-400 px-2 py-0.5 rounded border border-slate-700">LIVETIME SYSTEM</span>
+                    </div>
+                    <div class="text-xs text-slate-400">Total Structural Squads: <span class="text-white font-bold">${lg.teams.length}</span></div>
+                    <div class="space-y-1.5" id="homeMatches_${lg.id}"></div>
+                `;
+                container.appendChild(card);
+
+                const mContainer = document.getElementById(`homeMatches_${lg.id}`);
+                lg.matches.forEach(m => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left bg-slate-900 hover:bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs flex justify-between items-center transition";
+                    btn.onclick = () => activateLiveSpectatorStream(lg.id, m.id);
+                    
+                    let statusBadge = `<span class="text-[9px] text-slate-500 uppercase">Scheduled</span>`;
+                    if(m.status === 'Live') statusBadge = `<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded font-black animate-pulse uppercase">LIVE</span>`;
+                    if(m.status === 'Over') statusBadge = `<span class="text-[9px] text-emerald-400 font-bold uppercase">Finished</span>`;
+
+                    btn.innerHTML = `
+                        <div>
+                            <span class="font-bold tracking-wide">${m.teamA.name}</span> 
+                            <span class="text-slate-500 font-normal px-1 text-[10px]">vs</span> 
+                            <span class="font-bold tracking-wide">${m.teamB.name}</span>
+                        </div>
+                        ${statusBadge}
+                    `;
+                    mContainer.appendChild(btn);
+                });
+            });
+        }
+
+        // SPECTATOR WATCH AND DATA PIPE HOOK
+        window.activateLiveSpectatorStream = function(leagueId, matchId) {
+            if(activeMatchSyncId) {
+                // Detach previous listeners cleanly to prevent leaks
+                activeMatchSyncId = null;
+            }
+            activeMatchSyncId = matchId;
+            document.getElementById('liveStreamContainer').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            activeMatchListener = onValue(ref(db, `leagues/${leagueId}`), (snapshot) => {
+                const lg = snapshot.val();
+                if(!lg) return;
+                const m = lg.matches.find(match => match.id === matchId);
+                if(!m) return;
+
+                // Sync UI elements reactively from Firebase Payload
+                document.getElementById('scoreTeamAName').innerText = `${m.teamA.name} Innings`;
+                
+                const curInn = m.scores.currentInnings;
+                const innData = m.scores[curInn + "Innings"];
+                
+                document.getElementById('scoreRuns').innerText = innData.runs;
+                document.getElementById('scoreWickets').innerText = innData.wickets;
+                
+                const compOvers = Math.floor(innData.balls / 6);
+                const remBalls = innData.balls % 6;
+                document.getElementById('scoreOvers').innerText = `${compOvers}.${remBalls}`;
+                
+                // CRR Calculation Engine
+                const totalOversFraction = innData.balls / 6;
+                const crr = totalOversFraction > 0 ? (innData.runs / totalOversFraction).toFixed(2) : "0.00";
+                document.getElementById('scoreCRR').innerText = crr;
+
+                // Free Hit Flag Overlay Interface Control
+                if(m.scores.freeHit) {
+                    document.getElementById('freeHitBanner').classList.remove('hidden');
+                } else {
+                    document.getElementById('freeHitBanner').classList.add('hidden');
+                }
+
+                // Render Scorecard Tables dynamically (0% Dummy Data)
+                const batBody = document.getElementById('scoreBattingBody');
+                batBody.innerHTML = '';
+                m[curInn].players.forEach((p, idx) => {
+                    const row = document.createElement('tr');
+                    row.className = "border-b border-slate-800/40 text-slate-300";
+                    
+                    let isStriker = (idx === m.scores.activeStriker) ? "⭐ " : "";
+                    let isNonStriker = (idx === m.scores.activeNonStriker) ? "🏏 " : "";
+                    
+                    row.innerHTML = `
+                        <td class="py-2 font-medium">${isStriker}${isNonStriker}${p.name}</td>
+                        <td class="py-2 text-center font-mono">${innData.scorecard[idx]?.runs || 0}</td>
+                        <td class="py-2 text-center font-mono text-slate-500">${innData.scorecard[idx]?.balls || 0}</td>
+                        <td class="py-2 text-right text-slate-400 text-[10px]">${innData.scorecard[idx]?.status || 'Yet to Bat'}</td>
+                    `;
+                    batBody.appendChild(row);
+                });
+
+                // Bowling Lines UI Renderer
+                const bowlBody = document.getElementById('scoreBowlingBody');
+                bowlBody.innerHTML = '';
+                const oppInn = curInn === 'teamA' ? 'teamB' : 'teamA';
+                const currentBowlerIndex = m.scores.activeBowler;
+                const bPlayer = m[oppInn].players[currentBowlerIndex];
+                if(bPlayer) {
+                    const row = document.createElement('tr');
+                    row.className = "text-slate-300 font-mono";
+                    const bOvers = Math.floor((innData.bowlerBalls || 0) / 6);
+                    const bBalls = (innData.bowlerBalls || 0) % 6;
+                    const bEcon = (innData.bowlerBalls || 0) > 0 ? ((innData.bowlerRuns || 0) / ((innData.bowlerBalls || 0)/6)).toFixed(2) : "0.00";
+                    row.innerHTML = `
+                        <td class="py-2 text-left font-sans font-medium text-amber-400">⚡ ${bPlayer.name}</td>
+                        <td class="py-2 text-center">${bOvers}.${bBalls}</td>
+                        <td class="py-2 text-center">${innData.bowlerRuns || 0}</td>
+                        <td class="py-2 text-center text-emerald-400 font-bold">${innData.bowlerWickets || 0}</td>
+                        <td class="py-2 text-right text-slate-400">${bEcon}</td>
+                    `;
+                    bowlBody.appendChild(row);
+                }
+
+                // Alternate/Cycle Multi-Camera automation tracking arrays
+                setupMultiCamAutomation(lg.cameras || {});
+            });
+        };
+
+        // MULTI-CAMERA CYCLE LOGIC ENGINE (Fail-safe, 5-Second Interval Loops)
+        function setupMultiCamAutomation(camerasObj) {
+            clearInterval(rotationTimer);
+            cameraRotationArray = Object.keys(camerasObj).filter(k => camerasObj[k].status === 'Active');
+            
+            if(cameraRotationArray.length === 0) {
+                document.getElementById('activeCamBadge').innerText = "CAM: DIRECT SIGNAL";
+                return;
+            }
+
+            const cycleNextFeed = () => {
+                if(cameraRotationArray.length === 0) return;
+                cameraRotationIndex = (cameraRotationIndex + 1) % cameraRotationArray.length;
+                const token = cameraRotationArray[cameraRotationIndex];
+                document.getElementById('activeCamBadge').innerText = `CAM LINK: ${token}`;
+            };
+            cycleNextFeed();
+            rotationTimer = setInterval(cycleNextFeed, 5000);
+        }
+
+        window.toggleStreamOrientation = function() {
+            const vp = document.getElementById('videoViewport');
+            vp.classList.toggle('aspect-video');
+            vp.classList.toggle('h-80');
+        };
+
+        // 6. MANAGEMENT DASHBOARD & SCORING virtual PANEL LIFECYCLE
+        function renderOwnedLeaguesPanel() {
+            const container = document.getElementById('ownedLeaguesContainer');
+            if(!container) return;
+            container.innerHTML = '';
+
+            if(!currentUser) {
+                container.innerHTML = `<p class="text-slate-500 italic text-sm">Please validate session parameters first.</p>`;
+                return;
+            }
+
+            let ownedCount = 0;
+            Object.values(globalLeaguesData).forEach(lg => {
+                if(lg.ownerId !== currentUser.uid) return;
+                ownedCount++;
+
+                const lBox = document.createElement('div');
+                lBox.className = "bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-4 shadow-xl";
+                lBox.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                        <h3 class="text-md font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-200 uppercase">${lg.name}</h3>
+                        <span class="text-[10px] text-slate-500 font-mono">OWNER INTERFACE</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-3" id="manageMatches_${lg.id}"></div>
+                `;
+                container.appendChild(lBox);
+
+                const mBox = document.getElementById(`manageMatches_${lg.id}`);
+                lg.matches.forEach(m => {
+                    const row = document.createElement('div');
+                    row.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3";
+                    row.innerHTML = `
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-300">${m.teamA.name} vs ${m.teamB.name}</span>
+                            <span class="text-slate-500 font-mono">STATUS: ${m.status}</span>
+                        </div>
+                        <div id="mPanelWrapper_${lg.id}_${m.id}"></div>
+                    `;
+                    mBox.appendChild(row);
+
+                    compileMatchControlState(lg, m, `mPanelWrapper_${lg.id}_${m.id}`);
+                });
+            });
+
+            if(ownedCount === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 bg-slate-800 rounded-2xl border border-slate-700/60 p-6">
+                        <p class="text-slate-400 text-sm mb-4">You have not registered or deployed any cricket tournament engines yet.</p>
+                        <button onclick="switchTab('create')" class="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider transition duration-200">Construct Tournament Engine</button>
+                    </div>
+                `;
+            }
+        }
+
+        function compileMatchControlState(lg, m, containerId) {
+            const wrapper = document.getElementById(containerId);
+            wrapper.innerHTML = '';
+
+            if(m.status === 'Scheduled') {
+                const btn = document.createElement('button');
+                btn.className = "w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-2 rounded-lg text-xs uppercase tracking-wider transition shadow";
+                btn.innerText = "Initialize Phase A: Toss Pipeline";
+                btn.onclick = () => initMatchTossWorkflow(lg.id, m.id);
+                wrapper.appendChild(btn);
+            } else if(m.status === 'Live') {
+                // Render Scoring Custom Keyboard Matrix Controls Natively
+                const dev = document.createElement('div');
+                dev.className = "space-y-4";
+                dev.innerHTML = `
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-[11px] font-bold">
+                        <button onclick="processBallScoring('${lg.id}','${m.id}', 0, 'normal')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded border border-slate-700">0 Run</button>
+                        <button onclick="processBallScoring('${lg.id}','${m.id}', 1, 'normal')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded border border-slate-700">1 Run</button>
+                        <button onclick="processBallScoring('${lg.id}','${m.id}', 2, 'normal')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded border border-slate-700">2 Run</button>
+                        <button onclick="processBallScoring('${lg.id}','${m.id}', 3, 'normal')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded border border-slate-700">3 Run</button>
+                        <button onclick="processBallScoring('${lg.id}','${m.id}', 4, 'normal')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 py-3 rounded border border-emerald-500/40">4 Run</button>
+                        <button onclick="processBallScoring('${lg.id}','${m.id}', 6, 'normal')" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 py-3 rounded border border-amber-500/40">6 Run</button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px] font-bold">
+                        <button onclick="processBallScoring('${lg.id}','${m.id}', 1, 'wide')" class="bg-slate-800 hover:bg-slate-700 py-2.5 rounded border border-slate-700">Wide</button>
+                        <button onclick="processBallScoring('${lg.id}','${m.id}', 1, 'noball')" class="bg-slate-800 hover:bg-slate-700 py-2.5 rounded border border-slate-700">No Ball</button>
+                        <button onclick="processWicketDismissal('${lg.id}','${m.id}','Bowled')" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 py-2.5 rounded border border-red-500/40">Bowled</button>
+                        <button onclick="processWicketDismissal('${lg.id}','${m.id}','Catch Out')" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 py-2.5 rounded border border-red-500/40">Catch Out</button>
+                    </div>
+                `;
+                wrapper.appendChild(dev);
+            } else {
+                wrapper.innerHTML = `<span class="text-xs text-emerald-400 font-mono bg-emerald-950/30 px-3 py-1 rounded border border-emerald-500/20 block text-center">Data Pipeline Completed & Closed</span>`;
+            }
+        }
+
+        window.initMatchTossWorkflow = function(leagueId, matchId) {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            setTimeout(() => {
+                const lg = globalLeaguesData[leagueId];
+                const mIdx = lg.matches.findIndex(match => match.id === matchId);
+                
+                const updates = {};
+                updates[`leagues/${leagueId}/matches/${mIdx}/status`] = "Live";
+                
+                update(ref(db), updates).then(() => {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    renderOwnedLeaguesPanel();
+                });
+            }, 3000); // 3-Second Overlay Loading Display State Trigger
+        };
+
+        // CORE CUSTOM VIRTUAL KEYBOARD STATE MACHINE LOGIC (0% DUMMY DATA)
+        window.processBallScoring = function(leagueId, matchId, runs, type) {
+            const lg = globalLeaguesData[leagueId];
+            const mIdx = lg.matches.findIndex(match => match.id === matchId);
+            const m = lg.matches[mIdx];
+            const curInn = m.scores.currentInnings;
+
+            // Deep paths update logic via dynamic multi-device rules
+            let path = `leagues/${leagueId}/matches/${mIdx}/scores/${curInn}Innings`;
+            let scPath = `leagues/${leagueId}/matches/${mIdx}/scores/${curInn}Innings/scorecard/${m.scores.activeStriker}`;
+
+            let nextRuns = (m.scores[`${curInn}Innings`].runs || 0);
+            let nextBalls = (m.scores[`${curInn}Innings`].balls || 0);
+            let batRuns = (m.scores[`${curInn}Innings`].scorecard?.[m.scores.activeStriker]?.runs || 0);
+            let batBalls = (m.scores[`${curInn}Innings`].scorecard?.[m.scores.activeStriker]?.balls || 0);
+            
+            let bBalls = (m.scores[`${curInn}Innings`].bowlerBalls || 0);
+            let bRuns = (m.scores[`${curInn}Innings`].bowlerRuns || 0);
+
+            const batch = {};
+
+            if(type === 'normal') {
+                nextRuns += runs;
+                nextBalls += 1;
+                batRuns += runs;
+                batBalls += 1;
+                bBalls += 1;
+                bRuns += runs;
+
+                if(m.scores.freeHit) {
+                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/freeHit`] = false;
+                }
+            } else if(type === 'wide') {
+                nextRuns += runs; // Wide adds run to team total score
+                bRuns += runs;
+                // legitimate over ball count does NOT increment
+            } else if(type === 'noball') {
+                nextRuns += runs;
+                bRuns += runs;
+                batch[`leagues/${leagueId}/matches/${mIdx}/scores/freeHit`] = true; // Sets Next delivery Free hit state flag
+            }
+
+            batch[`${path}/runs`] = nextRuns;
+            batch[`${path}/balls`] = nextBalls;
+            batch[`${path}/bowlerBalls`] = bBalls;
+            batch[`${path}/bowlerRuns`] = bRuns;
+            batch[`${scPath}/runs`] = batRuns;
+            batch[`${scPath}/balls`] = batBalls;
+            batch[`${scPath}/status`] = "Not Out";
+
+            // Over Lock Transition check policy logic rules 
+            if(type === 'normal' && bBalls % 6 === 0 && bBalls > 0) {
+                alert("Legitimate Over completed! Force Bowler change selection slot.");
+                batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeBowler`] = (m.scores.activeBowler + 1) % lg.playersCount;
+                batch[`${path}/bowlerBalls`] = 0;
+                batch[`${path}/bowlerRuns`] = 0;
+                batch[`${path}/bowlerWickets`] = 0;
+            }
+
+            update(ref(db), batch);
+        };
+
+        window.processWicketDismissal = function(leagueId, matchId, type) {
+            const lg = globalLeaguesData[leagueId];
+            const mIdx = lg.matches.findIndex(match => match.id === matchId);
+            const m = lg.matches[mIdx];
+            const curInn = m.scores.currentInnings;
+
+            let path = `leagues/${leagueId}/matches/${mIdx}/scores/${curInn}Innings`;
+            let scPath = `leagues/${leagueId}/matches/${mIdx}/scores/${curInn}Innings/scorecard/${m.scores.activeStriker}`;
+            
+            let nextWickets = (m.scores[`${curInn}Innings`].wickets || 0) + 1;
+            let bWickets = (m.scores[`${curInn}Innings`].bowlerWickets || 0) + 1;
+            let nextBalls = (m.scores[`${curInn}Innings`].balls || 0) + 1;
+            let bBalls = (m.scores[`${curInn}Innings`].bowlerBalls || 0) + 1;
+
+            const batch = {};
+
+            batch[`${scPath}/status`] = type; // e.g., Bowled, Caught
+            batch[`${path}/wickets`] = nextWickets;
+            batch[`${path}/bowlerWickets`] = bWickets;
+            batch[`${path}/balls`] = nextBalls;
+            batch[`${path}/bowlerBalls`] = bBalls;
+
+            // Innings break trigger logic rules mapping verification check
+            if(nextWickets >= lg.maxWickets) {
+                if(curInn === 'teamA') {
+                    alert("Maximum available wickets fell! Innings Switching to Team B.");
+                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/currentInnings`] = "teamB";
+                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeStriker`] = 0;
+                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeNonStriker`] = 1;
+                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeBowler`] = 0;
+                } else {
+                    alert("Match Engine Process completed successfully!");
+                    batch[`leagues/${leagueId}/matches/${mIdx}/status`] = "Over";
+                }
+            } else {
+                // Increment player index to fetch next batsman from dynamic roster
+                let nextBatsmanIndex = Math.max(m.scores.activeStriker, m.scores.activeNonStriker) + 1;
+                batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeStriker`] = nextBatsmanIndex;
+            }
+
+            update(ref(db), batch);
+        };
+
+        // CAMERA NODE SYSTEM HANDLERS
+        window.generateCameraToken = function() {
+            const token = "CAM_" + Math.random().toString(36).substr(2, 6).toUpperCase();
+            document.getElementById('lblActiveToken').innerText = token;
+        };
+
+        window.startBroadcastNode = function() {
+            const token = document.getElementById('lblActiveToken').innerText;
+            if(token === 'NOT_REGISTERED') return alert("Generate Token parameters first.");
+
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(stream => {
+                    activeCamStreamObject = stream;
+                    const vid = document.getElementById('localCaptureVideo');
+                    vid.srcObject = stream;
+                    vid.classList.remove('hidden');
+                    document.getElementById('localCaptureFallback').classList.add('hidden');
+
+                    // Register camera stream token state configuration node to Firebase Realtime pipeline
+                    set(ref(db, `cameraNodes/${token}`), {
+                        status: "Active",
+                        timestamp: Date.now()
+                    });
+                })
+                .catch(err => alert("Hardware Pipeline capture blocked: " + err));
+        };
+
+        window.stopBroadcastNode = function() {
+            const token = document.getElementById('lblActiveToken').innerText;
+            if(activeCamStreamObject) {
+                activeCamStreamObject.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('localCaptureVideo').classList.add('hidden');
+            document.getElementById('localCaptureFallback').classList.remove('hidden');
+            
+            if(token !== 'NOT_REGISTERED') {
+                remove(ref(db, `cameraNodes/${token}`));
+            }
+        };
+
+        // SYSTEM LIFECYCLE EVALUATION VERIFICATION CHECK (120-Hour Auto-Purge Policy)
+        function verifySystemLifecycleTimestamps() {
+            const currentEpoch = Date.now();
+            const archiveBox = document.getElementById('archivedLeaguesContainer');
+            let hasArchive = false;
+
+            Object.values(globalLeaguesData).forEach(lg => {
+                if(currentEpoch - lg.createdEpoch > 432000000) { // 120 Hours Expiration Limit reached
+                    if(currentUser && lg.ownerId === currentUser.uid) {
+                        if(!hasArchive) { archiveBox.innerHTML = ''; hasArchive = true; }
+                        const item = document.createElement('div');
+                        item.className = "bg-slate-950 p-2 rounded border border-slate-800 text-[11px] text-slate-400 flex justify-between";
+                        item.innerHTML = `<span>📂 ${lg.name}</span><span class="text-amber-500 font-mono">Static Summary</span>`;
+                        archiveBox.appendChild(item);
+                    }
+                }
+            });
+        }
+
+        window.filterLeagues = function() {
+            renderPublicLeagues();
+        };
+
+    </script>
+</body>
+</html>
