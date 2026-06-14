@@ -2,280 +2,305 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>India Play Cricket</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            900: '#0f172a',
-                            800: '#1e293b',
-                            700: '#334155'
-                        },
-                        emerald: {
-                            400: '#34d399'
-                        },
-                        amber: {
-                            500: '#f59e0b'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        /* Custom Smooth Transitions & Scrollbars */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        @keyframes pulse-gold {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.02); }
+        :root {
+            --primary: #1a237e;
+            --secondary: #e53935;
+            --accent: #ffb300;
+            --bg: #f4f6f8;
+            --surface: #ffffff;
+            --text: #333333;
+            --text-light: #777777;
+            --border: #dddddd;
+            --success: #4caf50;
         }
-        .animate-pulse-gold { animation: pulse-gold 2s infinite ease-in-out; }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; padding-top: 60px; overflow-x: hidden; }
+        
+        /* Layouts */
+        .header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 20px; font-weight: bold; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: var(--surface); display: flex; justify-content: space-around; align-items: center; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--text-light); cursor: pointer; flex: 1; padding: 5px; }
+        .nav-item.active { color: var(--primary); font-weight: bold; border-top: 3px solid var(--primary); }
+        .nav-icon { font-size: 20px; margin-bottom: 4px; }
+        
+        .container { padding: 15px; max-width: 800px; margin: 0 auto; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* UI Elements */
+        .card { background: var(--surface); border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 500; text-align: center; display: inline-block; width: 100%; }
+        .btn:disabled { background: #cccccc; cursor: not-allowed; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-danger { background: var(--secondary); }
+        .btn-success { background: var(--success); }
+        input, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+        
+        /* Locked State */
+        .locked-overlay { position: fixed; top: 60px; left: 0; width: 100%; height: calc(100% - 125px); background: rgba(255,255,255,0.95); z-index: 900; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+        .locked-overlay.active { display: flex; }
+        
+        /* Video Area */
+        .video-container { width: 100%; background: #000; aspect-ratio: 16/9; max-height: 400px; position: relative; border-radius: 8px; overflow: hidden; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; }
+        .video-feed { width: 100%; height: 100%; object-fit: contain; }
+        .overlay-toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 20px; font-size: 24px; font-weight: bold; color: var(--accent); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        
+        /* Live Scoreboard */
+        .scoreboard { background: var(--primary); color: white; border-radius: 8px; padding: 12px; font-size: 14px; }
+        .score-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 18px; font-weight: bold; }
+        .striker-active { color: var(--accent); }
+        .score-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .timeline { font-size: 11px; color: #bbbbbb; margin-top: 8px; }
+        
+        /* Keypad */
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
+        .key-btn { padding: 12px; font-weight: bold; background: #e0e0e0; color: #333; border: none; border-radius: 5px; cursor: pointer; }
+        .key-btn.action { background: var(--secondary); color: white; }
+        .key-btn.extra { background: var(--accent); color: #333; }
+        
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--surface); padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { text-align: center; padding: 8px 4px; border-bottom: 1px solid var(--border); }
+        th { background: #f0f0f0; font-weight: bold; }
+        .bracket { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .match-box { border: 1px solid var(--primary); padding: 8px; border-radius: 4px; background: #e8eaf6; font-size: 12px; text-align: center; }
+        
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .badge { background: var(--secondary); color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; }
+        .badge.live { background: var(--success); }
+        
+        .toggle-tabs { display: flex; margin-bottom: 15px; border-radius: 5px; overflow: hidden; border: 1px solid var(--primary); }
+        .toggle-tab { flex: 1; text-align: center; padding: 8px; font-size: 14px; cursor: pointer; background: var(--surface); color: var(--primary); }
+        .toggle-tab.active { background: var(--primary); color: white; }
+        
+        /* Utility */
+        .hidden { display: none !important; }
+        .mt-2 { margin-top: 10px; } .mb-2 { margin-bottom: 10px; }
+        .text-center { text-align: center; }
+        
+        #team-forms-container { border-left: 2px solid var(--primary); padding-left: 10px; margin-top: 10px; }
+        .team-form-block { background: #f9f9f9; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-20">
+<body>
 
-    <header class="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700 px-4 py-3 flex justify-between items-center shadow-lg">
-        <div class="flex items-center space-x-2">
-            <span class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-300">INDIA PLAY CRICKET</span>
-        </div>
-        <div class="flex items-center space-x-4">
-            <div id="sysClock" class="text-xs font-mono text-slate-400 bg-slate-900 px-2 py-1 rounded border border-slate-700">00:00:00</div>
-            <div id="headerAuthBadge" class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></div>
-        </div>
-    </header>
+    <div class="header">India Play Cricket</div>
 
-    <div id="authWall" class="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex flex-col justify-center items-center p-6 text-center">
-        <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl max-w-md w-full">
-            <div class="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold">🏏</div>
-            <h2 class="text-2xl font-bold mb-2">Authentication Required</h2>
-            <p class="text-slate-400 mb-6 text-sm">To view live scorecards, broadcast camera setups, and create custom leagues, please authenticate your session first.</p>
-            <button onclick="switchTab('profile')" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg shadow-amber-500/20">
-                Go to Profile & Login
-            </button>
-        </div>
+    <!-- LOCKED OVERLAY -->
+    <div id="locked-overlay" class="locked-overlay">
+        <h2>Welcome to IPC</h2>
+        <p class="text-center mt-2 mb-2">Please login to access all features, create leagues, view matches, or stream live.</p>
+        <button class="btn" onclick="loginWithGoogle()" style="max-width: 200px;">Continue with Google</button>
     </div>
 
-    <div id="loadingOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/95 flex flex-col justify-center items-center text-center p-4">
-        <div class="relative w-24 h-24 mb-6">
-            <div class="absolute inset-0 rounded-full border-4 border-amber-500/20"></div>
-            <div class="absolute inset-0 rounded-full border-4 border-t-amber-500 animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center text-3xl">🏏</div>
+    <!-- TABS CONTAINER -->
+    <div class="container">
+        <!-- HOME TAB -->
+        <div id="tab-home" class="tab-content active">
+            <input type="text" id="search-input" placeholder="Search Leagues..." oninput="handleSearch()">
+            <div id="leagues-list"></div>
         </div>
-        <h3 class="text-xl font-black text-amber-500 tracking-widest animate-pulse">MATCH STARTED!</h3>
-        <p class="text-slate-400 text-sm mt-2">Syncing dynamic rosters and loading player positions across systems...</p>
-    </div>
 
-    <main class="max-w-7xl mx-auto p-4">
+        <!-- CREATE LEAGUE TAB -->
+        <div id="tab-create" class="tab-content">
+            <h2>Create New League</h2>
+            <div class="card mt-2">
+                <input type="text" id="league-name" placeholder="League Name (Unique)">
+                
+                <div class="flex-between">
+                    <label>Total Teams:</label>
+                    <select id="num-teams" style="width: 50%;" onchange="generateTeamForms()">
+                        <option value="2">2</option><option value="3">3</option><option value="4">4</option>
+                        <option value="5">5</option><option value="6">6</option><option value="7">7</option>
+                        <option value="8">8</option><option value="9">9</option><option value="10">10</option>
+                    </select>
+                </div>
+                
+                <div class="flex-between">
+                    <label>Players per team:</label>
+                    <select id="players-per-team" style="width: 50%;" onchange="generateTeamForms()">
+                        <option value="2">2</option><option value="3">3</option><option value="4">4</option>
+                        <option value="5">5</option><option value="6">6</option><option value="7">7</option>
+                        <option value="8">8</option><option value="9">9</option><option value="10">10</option>
+                        <option value="11" selected>11</option>
+                    </select>
+                </div>
+                
+                <div class="flex-between">
+                    <label>Overs per innings:</label>
+                    <select id="overs-per-innings" style="width: 50%;">
+                        <option value="1">1</option><option value="2">2</option><option value="5">5</option>
+                        <option value="10">10</option><option value="20" selected>20</option>
+                    </select>
+                </div>
+
+                <label class="mt-2">Start Date:</label>
+                <input type="date" id="start-date">
+                
+                <label>End Date:</label>
+                <input type="date" id="end-date">
+                
+                <label>Daily Start Time:</label>
+                <input type="time" id="start-time">
+
+                <div id="team-forms-container"></div>
+
+                <button class="btn mt-2" id="save-league-btn" onclick="saveLeague()">Save & Generate Fixtures</button>
+            </div>
+        </div>
+
+        <!-- YOUR CREATED TAB -->
+        <div id="tab-created" class="tab-content">
+            <h2>Your Created Leagues</h2>
+            <div id="my-leagues-list" class="mt-2"></div>
+        </div>
+
+        <!-- SHARE CAMERA TAB -->
+        <div id="tab-camera" class="tab-content">
+            <h2>Share Camera</h2>
+            <div class="card mt-2">
+                <p>Select a league you created to generate camera codes:</p>
+                <select id="cam-league-select"></select>
+                <div class="flex-between mt-2">
+                    <label>No. of Cameramen:</label>
+                    <select id="cam-count" style="width:50%;">
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                        <option value="4">4</option><option value="5">5</option>
+                    </select>
+                </div>
+                <button class="btn mt-2" onclick="generateCameraCodes()">Generate Codes</button>
+            </div>
+            <div id="generated-codes-list" class="mt-2"></div>
+        </div>
+
+        <!-- PROFILE TAB -->
+        <div id="tab-profile" class="tab-content">
+            <div id="profile-unauth" class="text-center mt-2">
+                <h2>Profile</h2>
+                <button class="btn mt-2" onclick="loginWithGoogle()">Continue with Google</button>
+            </div>
+            <div id="profile-auth" class="hidden">
+                <div class="card text-center">
+                    <img id="user-photo" src="" alt="Profile" style="width: 80px; border-radius: 50%; margin-bottom: 10px;">
+                    <h3 id="user-name"></h3>
+                    <button class="btn btn-outline mt-2" onclick="logout()">Logout</button>
+                </div>
+                
+                <div class="card mt-2">
+                    <h3>Join as Cameraman</h3>
+                    <input type="text" id="join-cam-code" placeholder="Enter 6-digit Code" class="mt-2">
+                    <button class="btn" onclick="joinAsCameraman()">Join</button>
+                    <div id="cam-status" class="mt-2 text-center" style="color: var(--success); font-weight: bold;"></div>
+                </div>
+
+                <div id="profile-leagues-list" class="mt-2"></div>
+            </div>
+        </div>
         
-        <section id="tab-home" class="tab-content active space-y-4">
-            <div class="relative">
-                <input type="text" id="leagueSearch" oninput="filterLeagues()" placeholder="Search active or upcoming leagues (e.g., IPL)..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-amber-500 text-slate-100 placeholder-slate-500 transition shadow-inner">
-                <span class="absolute left-4 top-3.5 text-slate-500">🔍</span>
+        <!-- LEAGUE DETAIL VIEW (Dynamic Overlay) -->
+        <div id="view-league-detail" class="tab-content" style="display:none;">
+            <button class="btn btn-outline mb-2" onclick="closeDetailView()">← Back</button>
+            <h2 id="detail-league-name"></h2>
+            
+            <div class="toggle-tabs mt-2">
+                <div class="toggle-tab active" onclick="switchDetailTab('matches')" id="dtab-matches">Matches</div>
+                <div class="toggle-tab" onclick="switchDetailTab('standings')" id="dtab-standings">Standings</div>
             </div>
             
-            <div id="liveStreamContainer" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6 bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-xl">
-                <div class="lg:col-span-2 space-y-3">
-                    <div id="videoViewport" class="relative bg-black rounded-xl aspect-video w-full overflow-hidden flex flex-col items-center justify-center border border-slate-700">
-                        <div class="absolute top-3 left-3 bg-red-600 px-2 py-0.5 rounded text-[10px] font-black tracking-widest text-white shadow animate-pulse">LIVE</div>
-                        <div id="activeCamBadge" class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur px-2 py-1 rounded text-[10px] font-mono text-emerald-400 border border-slate-700">CAM: NONE</div>
-                        
-                        <video id="spectatorVideo" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
-                        <div id="videoFallback" class="text-center p-4">
-                            <span class="text-4xl block mb-2">📹</span>
-                            <p class="text-sm text-slate-400 font-medium">Camera Feed Standby / Alternating Mode</p>
-                        </div>
-                        
-                        <button onclick="toggleStreamOrientation()" class="absolute bottom-3 right-3 bg-slate-800/80 hover:bg-slate-700 p-2 rounded-lg border border-slate-600 text-xs text-slate-300">🔄 Flip Mode</button>
+            <div id="detail-matches-section">
+                <!-- Live Video / Placeholder -->
+                <div id="viewer-video-wrapper" class="hidden">
+                    <div class="video-container">
+                        <!-- VIDEO_EMBED_PLACEHOLDER - replace with actual stream embed iframe/video tag here -->
+                        <div id="video-stream-placeholder">Waiting for Camera Feed...</div>
+                        <div id="overlay-anim" class="overlay-toast"></div>
                     </div>
-                    <div id="freeHitBanner" class="hidden bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-center py-1.5 rounded-lg text-xs font-black tracking-widest text-white shadow animate-bounce">⚡ FREE HIT DELIVERED - NO DISMISSALS EXCEPT RUN OUTS ⚡</div>
                 </div>
                 
-                <div class="space-y-4">
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                        <div>
-                            <h4 id="scoreTeamAName" class="text-xs font-bold text-slate-400 tracking-wider">TEAM A</h4>
-                            <div class="text-2xl font-black mt-1"><span id="scoreRuns">0</span>/<span id="scoreWickets">0</span></div>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-xs font-mono text-slate-400 block">Overs: <span id="scoreOvers">0.0</span></span>
-                            <span class="text-xs font-mono text-emerald-400 block mt-1">CRR: <span id="scoreCRR">0.00</span></span>
-                        </div>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400">
-                                    <th class="pb-2">Batsman</th>
-                                    <th class="pb-2 text-center">R</th>
-                                    <th class="pb-2 text-center">B</th>
-                                    <th class="pb-2 text-right">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="scoreBattingBody">
-                                </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="border-t border-slate-700/50 my-2"></div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead>
-                                <tr class="border-b border-slate-700 text-slate-400">
-                                    <th class="pb-2">Bowler</th>
-                                    <th class="pb-2 text-center">O</th>
-                                    <th class="pb-2 text-center">R</th>
-                                    <th class="pb-2 text-center">W</th>
-                                    <th class="pb-2 text-right">Econ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="scoreBowlingBody">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
+                <div id="live-match-container"></div>
+                <div id="next-match-container"></div>
+                
+                <h3 class="mt-2">Previous Matches</h3>
+                <div id="prev-matches-container"></div>
             </div>
-
-            <div class="border-b border-slate-800 my-4"></div>
             
-            <h3 class="text-lg font-bold text-amber-500 tracking-wide">Active Public Tournaments</h3>
-            <div id="publicLeaguesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div id="detail-standings-section" class="hidden">
+                <div class="card" style="overflow-x:auto;">
+                    <h3>Points Table</h3>
+                    <table class="mt-2">
+                        <thead><tr><th>Team</th><th>M</th><th>W</th><th>L</th><th>T</th><th>PTS</th><th>NRR</th></tr></thead>
+                        <tbody id="points-table-body"></tbody>
+                    </table>
                 </div>
-        </section>
-
-        <section id="tab-create" class="tab-content space-y-6">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl max-w-3xl mx-auto">
-                <h2 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-300 border-b border-slate-700 pb-3 mb-4">Configure New Tournament Engine</h2>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">League Name</label>
-                        <input type="text" id="cfgLeagueName" placeholder="e.g., Indian Premier League" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Overs Per Match</label>
-                        <select id="cfgOvers" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 text-sm">
-                            </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Number of Teams</label>
-                        <select id="cfgTeamsCount" onchange="buildRosterInputs()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 text-sm"></select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Players Per Team</label>
-                        <select id="cfgPlayersCount" onchange="buildRosterInputs()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 focus:outline-none focus:border-amber-500 text-sm"></select>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 mb-6 flex justify-between items-center text-xs">
-                    <span class="text-slate-400">Calculated Fall Wickets Limit:</span>
-                    <span id="lblCalculatedWickets" class="font-mono font-bold text-amber-500 bg-slate-950 px-3 py-1 rounded border border-slate-800">0 Wickets</span>
-                </div>
-
-                <div id="rosterMatrixBlock" class="space-y-6"></div>
-
-                <div id="carouselBlock" class="hidden bg-slate-950 p-4 rounded-xl border border-dashed border-slate-700 text-center relative overflow-hidden my-4 min-h-[140px] flex flex-col justify-center items-center">
-                    <div class="absolute top-2 left-2 text-[10px] bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/30 tracking-widest font-mono">5S PREVIEW MATRIX ACTIVATED</div>
-                    <div id="carouselData" class="space-y-2 transition-all duration-500"></div>
-                </div>
-
-                <div class="mt-6">
-                    <button onclick="saveAndLaunchLeague()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-950 font-black tracking-wider py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-emerald-500/10 uppercase text-sm">Save & Launch Engine</button>
+                <div class="card mt-2">
+                    <h3>Knockout Bracket</h3>
+                    <div class="bracket" id="knockout-bracket"></div>
                 </div>
             </div>
-        </section>
-
-        <section id="tab-created" class="tab-content space-y-4">
-            <h2 class="text-xl font-bold text-amber-500 tracking-wide">Owner Administration Dashboard</h2>
-            <div id="ownedLeaguesContainer" class="grid grid-cols-1 gap-6">
-                </div>
-        </section>
-
-        <section id="tab-camera" class="tab-content space-y-4 max-w-xl mx-auto">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl space-y-4">
-                <h2 class="text-xl font-bold text-amber-500 tracking-wide">Alphanumeric Multi-Cam Deployment</h2>
-                <p class="text-xs text-slate-400">Generate secure connection credentials to deploy multi-node hardware links streaming metrics straight into running pipelines.</p>
-                
-                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex justify-between items-center">
-                    <div>
-                        <span class="text-xs font-bold text-slate-400 block mb-1">Active Stream Node Token</span>
-                        <div id="lblActiveToken" class="text-lg font-mono font-black text-emerald-400 tracking-wider">NOT_REGISTERED</div>
-                    </div>
-                    <button onclick="generateCameraToken()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition">Generate Link</button>
-                </div>
-
-                <div class="border-t border-slate-700/50 my-4"></div>
-
-                <div class="space-y-3">
-                    <h3 class="text-sm font-bold tracking-wide">Device Camera Controller Interface</h3>
-                    <div class="bg-slate-950 aspect-video rounded-xl border border-slate-800 flex items-center justify-center overflow-hidden relative">
-                        <video id="localCaptureVideo" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
-                        <div id="localCaptureFallback" class="text-xs text-slate-500">Node Pipeline Standby</div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="startBroadcastNode()" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 py-2.5 rounded-xl text-xs font-bold transition">Activate Node</button>
-                        <button onclick="stopBroadcastNode()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 py-2.5 rounded-xl text-xs font-bold transition">Sever Broadcast</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="tab-profile" class="tab-content space-y-4 max-w-md mx-auto">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl text-center space-y-6">
-                <h2 class="text-xl font-bold text-amber-500 tracking-wide">System Session Control</h2>
-                
-                <div id="profileLoggedOut" class="space-y-4">
-                    <p class="text-xs text-slate-400">Unlock operations across pipelines by mapping configurations into authentication layers.</p>
-                    <button onclick="triggerSimulatedLogin()" class="w-full flex items-center justify-center space-x-3 bg-white hover:bg-slate-100 text-slate-900 font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg">
-                        <span>Continue with Google</span>
-                    </button>
-                </div>
-
-                <div id="profileLoggedIn" class="hidden space-y-4">
-                    <div class="flex items-center space-x-4 bg-slate-900 p-4 rounded-xl border border-slate-700 text-left">
-                        <div id="userPhoto" class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-xl font-black text-slate-950 shadow">?</div>
-                        <div>
-                            <h3 id="lblProfileName" class="text-sm font-bold">Unmapped Payload</h3>
-                            <p id="lblProfileUID" class="text-[10px] font-mono text-slate-500 mt-0.5">UID: NULL</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 text-left space-y-3">
-                        <h4 class="text-xs font-bold text-slate-400 tracking-wider uppercase">Archival Summary Ledger (Historical)</h4>
-                        <div id="archivedLeaguesContainer" class="space-y-2 max-h-40 overflow-y-auto text-xs">
-                            <p class="text-slate-600 italic">No historical archives locked into records.</p>
-                        </div>
-                    </div>
-
-                    <button onclick="triggerLogout()" class="w-full bg-slate-700 hover:bg-slate-600 border border-slate-600 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Disconnect Profile</button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-slate-950 border-t border-slate-800 px-2 py-1 shadow-2xl">
-        <div class="max-w-xl mx-auto flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
-            <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center justify-center flex-1 py-2 text-amber-500 space-y-1"><span>🏠</span><span>Home</span></button>
-            <button onclick="switchTab('create')" id="nav-create" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-400 space-y-1"><span>🛠️</span><span>Create</span></button>
-            <button onclick="switchTab('created')" id="nav-created" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-400 space-y-1"><span>🏆</span><span>Created</span></button>
-            <button onclick="switchTab('camera')" id="nav-camera" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-400 space-y-1"><span>📹</span><span>Camera</span></button>
-            <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center justify-center flex-1 py-2 text-slate-400 space-y-1"><span>👤</span><span>Profile</span></button>
         </div>
-    </nav>
 
+        <!-- MANAGE MATCH PANEL (Dynamic Overlay) -->
+        <div id="view-manage-match" class="tab-content" style="display:none;">
+            <button class="btn btn-outline mb-2" onclick="closeManageView()">← End Management</button>
+            
+            <!-- Video for manager -->
+            <div class="video-container">
+                <div id="manager-stream-placeholder">Manager Dashboard</div>
+                <div id="manager-overlay" class="overlay-toast"></div>
+            </div>
+
+            <div id="manage-scoreboard"></div>
+            
+            <!-- Manage Controls dynamically populated -->
+            <div id="manage-controls-area" class="mt-2"></div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('tab-home', this)">
+            <div class="nav-icon">🏠</div><div>Home</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-create', this)">
+            <div class="nav-icon">➕</div><div>Create</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-created', this)">
+            <div class="nav-icon">📁</div><div>Created</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-camera', this)">
+            <div class="nav-icon">📷</div><div>Camera</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('tab-profile', this)">
+            <div class="nav-icon">👤</div><div>Profile</div>
+        </div>
+    </div>
+
+    <!-- Generic Modal -->
+    <div class="modal" id="generic-modal">
+        <div class="modal-content">
+            <h3 id="modal-title" class="mb-2">Title</h3>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, update, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } 
+            from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, where, orderBy, onSnapshot, updateDoc, deleteDoc, writeBatch, arrayUnion } 
+            from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyC4OBD4yva-NsFKBEHEaCOjXt-2pkZHeqo",
@@ -288,697 +313,882 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // GLOBAL ENGINE STATE Payloads (0% Dummy Data Architecture)
-        let currentUser = null;
-        let globalLeaguesData = {};
-        let activeMatchSyncId = null;
-        let activeMatchListener = null;
-        let rotationTimer = null;
-        let cameraRotationArray = [];
-        let cameraRotationIndex = 0;
-        let activeCamStreamObject = null;
-        let previewInterval = null;
+        // State
+        window.currentUser = null;
+        window.allLeagues = [];
+        window.currentLeagueDoc = null;
+        window.currentMatchDoc = null;
+        let activeListeners = [];
 
-        // INITIALIZATION SETUP
-        window.addEventListener('DOMContentLoaded', () => {
-            initFormDropdowns();
-            startSystemClock();
-            checkAppAuthenticationState();
-            attachFirebaseLiveListeners();
+        // Authentication Listeners
+        onAuthStateChanged(auth, async (user) => {
+            window.currentUser = user;
+            if (user) {
+                document.getElementById("locked-overlay").classList.remove("active");
+                document.getElementById("profile-unauth").classList.add("hidden");
+                document.getElementById("profile-auth").classList.remove("hidden");
+                document.getElementById("user-name").innerText = user.displayName;
+                document.getElementById("user-photo").src = user.photoURL;
+                
+                await saveUserToDB(user);
+                loadProfileData();
+                loadMyLeagues();
+            } else {
+                document.getElementById("profile-unauth").classList.remove("hidden");
+                document.getElementById("profile-auth").classList.add("hidden");
+                // If not in profile tab, show lock
+                let activeTab = document.querySelector(".nav-item.active");
+                if(activeTab && activeTab.innerText.trim() !== 'Profile') {
+                    document.getElementById("locked-overlay").classList.add("active");
+                }
+            }
         });
 
-        function startSystemClock() {
-            setInterval(() => {
-                const d = new Date();
-                document.getElementById('sysClock').innerText = d.toTimeString().split(' ')[0];
-                verifySystemLifecycleTimestamps(); 
+        window.loginWithGoogle = () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider).catch(error => alert(error.message));
+        };
+        window.logout = () => signOut(auth);
+
+        async function saveUserToDB(user) {
+            const userRef = doc(db, 'users', user.uid);
+            const snap = await getDoc(userRef);
+            if(!snap.exists()){
+                await setDoc(userRef, { name: user.displayName, email: user.email, photo: user.photoURL, cameramanFor: null });
+            }
+        }
+
+        // Navigation
+        window.switchTab = (tabId, element) => {
+            if(!window.currentUser && tabId !== 'tab-profile') {
+                document.getElementById("locked-overlay").classList.add("active");
+            } else {
+                document.getElementById("locked-overlay").classList.remove("active");
+            }
+
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            if(element) element.classList.add('active');
+
+            clearListeners();
+            if(tabId === 'tab-home') loadAllLeagues();
+            if(tabId === 'tab-create' && !document.getElementById('team-forms-container').innerHTML) generateTeamForms();
+            if(tabId === 'tab-created') loadMyLeagues();
+            if(tabId === 'tab-camera') populateCameraLeagueDropdown();
+        };
+
+        function clearListeners() {
+            activeListeners.forEach(unsub => unsub());
+            activeListeners = [];
+        }
+
+        // Generic Modal
+        window.showModal = (title, html) => {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = html;
+            document.getElementById('generic-modal').classList.add('active');
+        };
+        window.closeModal = () => document.getElementById('generic-modal').classList.remove('active');
+
+        // Helpers
+        function generateId() { return Math.random().toString(36).substr(2, 9); }
+        function generateCode() { return Math.random().toString(36).substr(2, 6).toUpperCase(); }
+
+        // =========================================================================================
+        // 1. CREATE LEAGUE & FIXTURES
+        // =========================================================================================
+        window.generateTeamForms = () => {
+            const numTeams = parseInt(document.getElementById('num-teams').value);
+            const ppT = parseInt(document.getElementById('players-per-team').value);
+            let html = '';
+            for(let i=1; i<=numTeams; i++) {
+                html += `<div class="team-form-block">
+                    <h4>Team ${i} Name</h4>
+                    <input type="text" id="t${i}-name" placeholder="Enter Team Name" required>
+                    <h5>Players</h5>`;
+                for(let p=1; p<=ppT; p++) {
+                    html += `<div class="flex-between" style="gap:5px;">
+                        <input type="text" id="t${i}-p${p}-name" placeholder="P${p} Name" style="width:50%;">
+                        <select id="t${i}-p${p}-role" style="width:25%;">
+                            <option>BAT</option><option>BOWL</option><option>WK</option><option>AR</option>
+                        </select>
+                        <input type="text" id="t${i}-p${p}-img" placeholder="Pic URL (Opt)" style="width:25%;">
+                    </div>`;
+                }
+                html += `</div>`;
+            }
+            document.getElementById('team-forms-container').innerHTML = html;
+        };
+
+        window.saveLeague = async () => {
+            if(!window.currentUser) return alert("Login first!");
+            const btn = document.getElementById('save-league-btn');
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            try {
+                const name = document.getElementById('league-name').value.trim();
+                if(!name) throw new Error("League Name required");
+
+                // Uniqueness check
+                const q = query(collection(db, 'leagues'), where('name', '==', name));
+                const snap = await getDocs(q);
+                if(!snap.empty) throw new Error("League name already exists!");
+
+                const numTeams = parseInt(document.getElementById('num-teams').value);
+                const ppt = parseInt(document.getElementById('players-per-team').value);
+                const overs = parseInt(document.getElementById('overs-per-innings').value);
+                const sDate = document.getElementById('start-date').value;
+                const eDate = document.getElementById('end-date').value;
+                const sTime = document.getElementById('start-time').value;
+
+                if(!sDate || !eDate || !sTime) throw new Error("Schedule details missing");
+
+                let teams = [];
+                for(let i=1; i<=numTeams; i++) {
+                    let tname = document.getElementById(`t${i}-name`).value || `Team ${i}`;
+                    let players = [];
+                    for(let p=1; p<=ppt; p++) {
+                        players.push({
+                            id: generateId(),
+                            name: document.getElementById(`t${i}-p${p}-name`).value || `Player ${p}`,
+                            role: document.getElementById(`t${i}-p${p}-role`).value,
+                            img: document.getElementById(`t${i}-p${p}-img`).value
+                        });
+                    }
+                    teams.push({ id: generateId(), name: tname, players });
+                }
+
+                const leagueId = generateId();
+                const ownerCode = generateCode();
+
+                const leagueData = {
+                    id: leagueId, name, numTeams, playersPerTeam: ppt, overs,
+                    startDate: sDate, endDate: eDate, startTime: sTime,
+                    createdBy: window.currentUser.uid,
+                    status: 'upcoming', ownerCameraCode: ownerCode,
+                    createdAt: Date.now(), teams
+                };
+
+                await setDoc(doc(db, 'leagues', leagueId), leagueData);
+
+                // Auto Generate Fixtures
+                await generateFixtures(leagueId, teams, sDate, eDate, sTime);
+
+                alert("League created successfully!");
+                document.getElementById('league-name').value = '';
+                switchTab('tab-created', document.querySelectorAll('.nav-item')[2]);
+            } catch (e) {
+                alert(e.message);
+            }
+            btn.disabled = false;
+            btn.innerText = "Save & Generate Fixtures";
+        };
+
+        async function generateFixtures(leagueId, teams, sDate, eDate, sTime) {
+            const batch = writeBatch(db);
+            let groupMatches = [];
+            
+            // Double Round Robin for group stage to match IPL style
+            for(let i=0; i<teams.length; i++){
+                for(let j=0; j<teams.length; j++){
+                    if(i !== j) groupMatches.push({ t1: teams[i], t2: teams[j], type: 'group' });
+                }
+            }
+
+            // Distribute matches over date range
+            const startMs = new Date(`${sDate}T${sTime}`).getTime();
+            const endMs = new Date(`${eDate}T23:59:00`).getTime();
+            const totalM = groupMatches.length + 4; // +4 playoffs
+            const stepMs = (endMs - startMs) / (totalM > 1 ? totalM - 1 : 1);
+
+            let allMatches = [...groupMatches];
+            allMatches.push({ type: 'playoff', title: 'Qualifier 1', t1: {name:'TBD'}, t2: {name:'TBD'} });
+            allMatches.push({ type: 'playoff', title: 'Eliminator', t1: {name:'TBD'}, t2: {name:'TBD'} });
+            allMatches.push({ type: 'playoff', title: 'Qualifier 2', t1: {name:'TBD'}, t2: {name:'TBD'} });
+            allMatches.push({ type: 'playoff', title: 'Final', t1: {name:'TBD'}, t2: {name:'TBD'} });
+
+            allMatches.forEach((m, idx) => {
+                const matchId = generateId();
+                const mTime = startMs + (stepMs * idx);
+                const matchDoc = {
+                    id: matchId, type: m.type, title: m.title || `Match ${idx+1}`,
+                    team1: m.t1, team2: m.t2, status: 'upcoming', scheduledTime: mTime,
+                    activeCameramen: [], state: 'not_started'
+                };
+                batch.set(doc(db, `leagues/${leagueId}/matches`, matchId), matchDoc);
+            });
+
+            await batch.commit();
+        }
+
+        // =========================================================================================
+        // 2. HOME & SEARCH
+        // =========================================================================================
+        async function loadAllLeagues() {
+            const q = query(collection(db, 'leagues'), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            window.allLeagues = snap.docs.map(d => d.data());
+            renderLeagues(window.allLeagues);
+            cleanupExpiredLeagues(window.allLeagues);
+        }
+
+        window.handleSearch = () => {
+            const val = document.getElementById('search-input').value.toLowerCase();
+            if(!val) return renderLeagues(window.allLeagues);
+
+            let filtered = window.allLeagues.map(l => {
+                let name = l.name.toLowerCase();
+                let score = 0;
+                let idx = name.indexOf(val);
+                if(idx !== -1) score = val.length + (name.length - idx); // simple relevance calc
+                return { ...l, _score: score };
+            }).filter(l => l._score > 0).sort((a,b) => b._score - a._score);
+            
+            renderLeagues(filtered);
+        };
+
+        function renderLeagues(leagues) {
+            let html = '';
+            if(leagues.length === 0) html = '<p class="text-center mt-2">No leagues found!</p>';
+            leagues.forEach(l => {
+                html += `
+                <div class="card" onclick="openLeagueDetail('${l.id}')" style="cursor:pointer;">
+                    <div class="flex-between">
+                        <h3>${l.name}</h3>
+                        <span class="badge ${l.status==='live'?'live':''}">${l.status.toUpperCase()}</span>
+                    </div>
+                    <p class="mt-2 text-light" style="font-size:12px;">Teams: ${l.numTeams} | Overs: ${l.overs}</p>
+                </div>`;
+            });
+            document.getElementById('leagues-list').innerHTML = html;
+        }
+
+        // =========================================================================================
+        // 3. AUTO-DELETE EXPIRY (120 hrs rule)
+        // =========================================================================================
+        async function cleanupExpiredLeagues(leagues) {
+            const now = Date.now();
+            const hr120 = 120 * 60 * 60 * 1000;
+            for(let l of leagues) {
+                if(l.status === 'completed' && l.completedAt && (now - l.completedAt) > hr120) {
+                    // Delete league and matches
+                    const mSnap = await getDocs(collection(db, `leagues/${l.id}/matches`));
+                    const batch = writeBatch(db);
+                    mSnap.docs.forEach(d => batch.delete(d.ref));
+                    batch.delete(doc(db, 'leagues', l.id));
+                    await batch.commit();
+                }
+            }
+        }
+
+        // =========================================================================================
+        // 4. LEAGUE DETAIL & LIVE SCOREBOARD
+        // =========================================================================================
+        window.openLeagueDetail = async (id) => {
+            clearListeners();
+            document.getElementById('view-league-detail').style.display = 'block';
+            document.getElementById('tab-home').classList.remove('active');
+            switchDetailTab('matches');
+
+            // Listen to league
+            const unsubL = onSnapshot(doc(db, 'leagues', id), (doc) => {
+                window.currentLeagueDoc = doc.data();
+                document.getElementById('detail-league-name').innerText = currentLeagueDoc.name;
+            });
+            activeListeners.push(unsubL);
+
+            // Listen to matches
+            const unsubM = onSnapshot(query(collection(db, `leagues/${id}/matches`), orderBy('scheduledTime', 'asc')), (snap) => {
+                const matches = snap.docs.map(d => d.data());
+                renderMatchesView(matches);
+                renderStandings(matches);
+            });
+            activeListeners.push(unsubM);
+        };
+
+        window.closeDetailView = () => {
+            document.getElementById('view-league-detail').style.display = 'none';
+            document.getElementById('tab-home').classList.add('active');
+            clearListeners();
+            loadAllLeagues();
+        };
+
+        window.switchDetailTab = (tab) => {
+            document.getElementById('dtab-matches').classList.remove('active');
+            document.getElementById('dtab-standings').classList.remove('active');
+            document.getElementById('detail-matches-section').classList.add('hidden');
+            document.getElementById('detail-standings-section').classList.add('hidden');
+            
+            if(tab === 'matches') {
+                document.getElementById('dtab-matches').classList.add('active');
+                document.getElementById('detail-matches-section').classList.remove('hidden');
+            } else {
+                document.getElementById('dtab-standings').classList.add('active');
+                document.getElementById('detail-standings-section').classList.remove('hidden');
+            }
+        };
+
+        function renderMatchesView(matches) {
+            const live = matches.filter(m => m.status === 'live');
+            const upcoming = matches.filter(m => m.status === 'upcoming');
+            const completed = matches.filter(m => m.status === 'completed');
+
+            let liveHtml = '';
+            if(live.length > 0) {
+                const m = live[0];
+                document.getElementById('viewer-video-wrapper').classList.remove('hidden');
+                // VIDEO_EMBED_PLACEHOLDER: Client video sync logic here
+                syncVideoFeed(m);
+                liveHtml = `<div class="card" style="border:2px solid var(--success)">
+                    <div class="flex-between"><h4>Live: ${m.title}</h4><span class="badge live">LIVE</span></div>
+                    <div class="mt-2">${generateScoreboardHTML(m)}</div>
+                </div>`;
+            } else {
+                document.getElementById('viewer-video-wrapper').classList.add('hidden');
+                if(upcoming.length > 0) {
+                    const next = upcoming[0];
+                    liveHtml = `<div class="card"><h4>Next Match: ${next.team1.name} vs ${next.team2.name}</h4><p>${new Date(next.scheduledTime).toLocaleString()}</p></div>`;
+                } else {
+                    liveHtml = `<div class="card">No upcoming matches.</div>`;
+                }
+            }
+            document.getElementById('live-match-container').innerHTML = liveHtml;
+
+            let prevHtml = '';
+            completed.reverse().forEach(m => {
+                prevHtml += `<div class="card">
+                    <h4>${m.title}: ${m.team1.name} vs ${m.team2.name}</h4>
+                    <p class="text-light" style="font-size:11px;">Winner: ${m.winner?.name || 'Tie'}</p>
+                    <div class="mt-2">${generateScoreboardHTML(m)}</div>
+                </div>`;
+            });
+            document.getElementById('prev-matches-container').innerHTML = prevHtml;
+        }
+
+        // =========================================================================================
+        // 5. VIDEO MULTI-CAMERA ROTATION
+        // =========================================================================================
+        let videoSyncInterval = null;
+        function syncVideoFeed(matchDoc) {
+            if(videoSyncInterval) clearInterval(videoSyncInterval);
+            const vp = document.getElementById('video-stream-placeholder');
+            
+            videoSyncInterval = setInterval(() => {
+                if(!matchDoc.activeCameramen || matchDoc.activeCameramen.length === 0) {
+                    vp.innerText = "No Active Camera Feed";
+                    return;
+                }
+                const cams = matchDoc.activeCameramen;
+                // Round-robin every 5 seconds perfectly synced via Date.now()
+                const index = Math.floor(Date.now() / 5000) % cams.length;
+                const activeCamUid = cams[index];
+                vp.innerHTML = `[STREAM PLAYING]<br>Cameraman UID: ${activeCamUid.substr(0,5)}...<br><span style="font-size:10px;">(Replace with WebRTC logic)</span>`;
+                // To implement real stream: subscribe to activeCamUid's stream here
             }, 1000);
         }
 
-        function initFormDropdowns() {
-            const oversSel = document.getElementById('cfgOvers');
-            for(let i=1; i<=20; i++) oversSel.add(new Option(`${i} Overs`, i));
-            
-            const teamsSel = document.getElementById('cfgTeamsCount');
-            for(let i=2; i<=10; i++) teamsSel.add(new Option(`${i} Teams`, i));
-            
-            const playersSel = document.getElementById('cfgPlayersCount');
-            for(let i=1; i<=11; i++) playersSel.add(new Option(`${i} Players`, i));
-            
-            buildRosterInputs();
-        }
-
-        // NAVIGATION TABS WORKFLOW
-        window.switchTab = function(targetTab) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(el => {
-                el.classList.remove('text-amber-500');
-                el.classList.add('text-slate-400');
+        // =========================================================================================
+        // 6. STANDINGS, POINTS TABLE & NRR
+        // =========================================================================================
+        function renderStandings(matches) {
+            const completedGroups = matches.filter(m => m.type === 'group' && m.status === 'completed');
+            let stats = {};
+            currentLeagueDoc.teams.forEach(t => {
+                stats[t.id] = { name: t.name, m:0, w:0, l:0, t:0, pts:0, runsScored:0, oversFaced:0, runsConceded:0, oversBowled:0 };
             });
-            
-            document.getElementById(`tab-${targetTab}`).classList.add('active');
-            document.getElementById(`nav-${targetTab}`).classList.add('text-amber-500');
-            document.getElementById(`nav-${targetTab}`).classList.remove('text-slate-400');
-            
-            checkAppAuthenticationState();
-        };
 
-        // PROFILE AUTH LAYERS SIMULATOR (100% Session Engine Mapped)
-        window.triggerSimulatedLogin = function() {
-            currentUser = {
-                uid: "USR_MOCK_" + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                displayName: "Cricket Executive " + Math.floor(100 + Math.random() * 900),
-                photoURL: null
-            };
-            localStorage.setItem('ipc_user', JSON.stringify(currentUser));
-            syncAuthUI();
-        };
-
-        window.triggerLogout = function() {
-            currentUser = null;
-            localStorage.removeItem('ipc_user');
-            syncAuthUI();
-        };
-
-        function checkAppAuthenticationState() {
-            const saved = localStorage.getItem('ipc_user');
-            if(saved) currentUser = JSON.parse(saved);
-            syncAuthUI();
-        }
-
-        function syncAuthUI() {
-            const authWall = document.getElementById('authWall');
-            const statusBadge = document.getElementById('headerAuthBadge');
-            const profileOut = document.getElementById('profileLoggedOut');
-            const profileIn = document.getElementById('profileLoggedIn');
-
-            if(currentUser) {
-                authWall.classList.add('hidden');
-                statusBadge.className = "w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]";
-                profileOut.classList.add('hidden');
-                profileIn.classList.remove('hidden');
-                document.getElementById('lblProfileName').innerText = currentUser.displayName;
-                document.getElementById('lblProfileUID').innerText = `UID: ${currentUser.uid}`;
-            } else {
-                authWall.classList.remove('hidden');
-                statusBadge.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]";
-                profileOut.classList.remove('hidden');
-                profileIn.classList.add('hidden');
-            }
-            renderOwnedLeaguesPanel();
-        }
-
-        // DYNAMIC ROSTER INPUT COMPILER
-        window.buildRosterInputs = function() {
-            const teams = parseInt(document.getElementById('cfgTeamsCount').value);
-            const players = parseInt(document.getElementById('cfgPlayersCount').value);
-            const wickets = players - 1;
-            document.getElementById('lblCalculatedWickets').innerText = `${wickets} Wickets`;
-
-            const container = document.getElementById('rosterMatrixBlock');
-            container.innerHTML = '';
-
-            for(let t=1; t<=teams; t++) {
-                const teamSection = document.createElement('div');
-                teamSection.className = "bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3";
-                teamSection.innerHTML = `
-                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 mb-2">
-                        <input type="text" id="teamName_${t}" value="Team Alpha ${t}" class="bg-transparent text-sm font-black text-amber-500 focus:outline-none focus:border-amber-500 border-b border-transparent uppercase tracking-wider">
-                        <span class="text-[10px] text-slate-500 font-mono">TEAM ENGINE CONFIG #${t}</span>
-                    </div>
-                    <div class="grid grid-cols-1 gap-2" id="teamPlayersContainer_${t}"></div>
-                `;
-                container.appendChild(teamSection);
-
-                const playersContainer = document.getElementById(`teamPlayersContainer_${t}`);
-                for(let p=1; p<=players; p++) {
-                    const row = document.createElement('div');
-                    row.className = "grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800 text-xs";
-                    row.innerHTML = `
-                        <input type="text" id="pName_${t}_${p}" value="Player ${p}" placeholder="Player Name" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100 focus:outline-none">
-                        <select id="pRole_${t}_${p}" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100 focus:outline-none">
-                            <option value="Batsman">Batsman</option>
-                            <option value="Bowler">Bowler</option>
-                            <option value="Wicketkeeper">Wicketkeeper</option>
-                            <option value="All-rounder">All-rounder</option>
-                        </select>
-                        <input type="text" id="pImg_${t}_${p}" placeholder="IMGBB URL (Optional)" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-slate-100 text-[10px] focus:outline-none">
-                    `;
-                    playersContainer.appendChild(row);
-                }
-            }
-            triggerRosterCarousel(teams, players);
-        };
-
-        // 5-SECOND PREVIEW CAROUSEL MACHINE (100% Real Structural Loop)
-        function triggerRosterCarousel(teamsCount, playersCount) {
-            clearInterval(previewInterval);
-            const carouselBlock = document.getElementById('carouselBlock');
-            const dataBox = document.getElementById('carouselData');
-            carouselBlock.classList.remove('hidden');
-
-            let pairIndex = 0;
-            const computePairs = [];
-            for (let i = 1; i <= teamsCount; i++) {
-                for (let j = i + 1; j <= teamsCount; j++) {
-                    computePairs.push({t1: i, t2: j});
-                }
-            }
-
-            if(computePairs.length === 0) {
-                carouselBlock.classList.add('hidden');
-                return;
-            }
-
-            const runCycle = () => {
-                const pair = computePairs[pairIndex % computePairs.length];
-                const t1Name = document.getElementById(`teamName_${pair.t1}`).value || `Team ${pair.t1}`;
-                const t2Name = document.getElementById(`teamName_${pair.t2}`).value || `Team ${pair.t2}`;
+            completedGroups.forEach(m => {
+                const r1 = m.inn1; const r2 = m.inn2;
+                if(!r1) return;
                 
-                dataBox.innerHTML = `
-                    <div class="text-sm font-black text-amber-500 uppercase">${t1Name} <span class="text-white text-xs lowercase italic">vs</span> ${t2Name}</div>
-                    <div class="text-[10px] text-slate-400 mt-1">Configuring Round Robin Pipeline Matrices</div>
-                `;
-                pairIndex++;
-            };
-            runCycle();
-            previewInterval = setInterval(runCycle, 5000);
+                stats[m.team1.id].m++; stats[m.team2.id].m++;
+                
+                if(m.winner) {
+                    stats[m.winner.id].w++; stats[m.winner.id].pts+=2;
+                    let loserId = (m.team1.id === m.winner.id) ? m.team2.id : m.team1.id;
+                    stats[loserId].l++;
+                } else if(m.tie) {
+                    stats[m.team1.id].t++; stats[m.team1.id].pts+=1;
+                    stats[m.team2.id].t++; stats[m.team2.id].pts+=1;
+                }
+
+                // NRR Math
+                // inn1 team
+                let o1 = r1.overs + (r1.balls/6);
+                if(r1.wickets >= currentLeagueDoc.playersPerTeam - 1) o1 = currentLeagueDoc.overs; // All out rule
+                stats[r1.battingTeam.id].runsScored += r1.total;
+                stats[r1.battingTeam.id].oversFaced += o1;
+                stats[r1.bowlingTeam.id].runsConceded += r1.total;
+                stats[r1.bowlingTeam.id].oversBowled += o1;
+
+                if(r2) {
+                    let o2 = r2.overs + (r2.balls/6);
+                    if(r2.wickets >= currentLeagueDoc.playersPerTeam - 1) o2 = currentLeagueDoc.overs;
+                    stats[r2.battingTeam.id].runsScored += r2.total;
+                    stats[r2.battingTeam.id].oversFaced += o2;
+                    stats[r2.bowlingTeam.id].runsConceded += r2.total;
+                    stats[r2.bowlingTeam.id].oversBowled += o2;
+                }
+            });
+
+            let table = Object.values(stats).map(s => {
+                s.nrr = (s.oversFaced>0 && s.oversBowled>0) ? 
+                    ((s.runsScored/s.oversFaced) - (s.runsConceded/s.oversBowled)) : 0;
+                return s;
+            });
+            table.sort((a,b) => b.pts - a.pts || b.nrr - a.nrr);
+
+            let html = '';
+            table.forEach(t => {
+                html += `<tr><td>${t.name}</td><td>${t.m}</td><td>${t.w}</td><td>${t.l}</td><td>${t.t}</td><td>${t.pts}</td><td>${t.nrr.toFixed(3)}</td></tr>`;
+            });
+            document.getElementById('points-table-body').innerHTML = html;
+
+            // Playoff Logic Update
+            const totalGroupM = currentLeagueDoc.numTeams * (currentLeagueDoc.numTeams - 1);
+            if(completedGroups.length === totalGroupM && table.length >= 4) {
+                // Auto-fill playoffs if not done
+                const pMatches = matches.filter(m => m.type === 'playoff');
+                updatePlayoffTeams(pMatches, table);
+            }
+
+            renderKnockoutBracket(matches.filter(m => m.type === 'playoff'));
         }
 
-        // ROUND ROBIN IPL & KNOCKOUT SCHEDULER ENGINE
-        window.saveAndLaunchLeague = function() {
-            if(!currentUser) return alert("Session execution invalid.");
+        async function updatePlayoffTeams(pMatches, table) {
+            let updatesNeeded = false;
+            let q1 = pMatches.find(m => m.title === 'Qualifier 1');
+            let elim = pMatches.find(m => m.title === 'Eliminator');
             
-            const name = document.getElementById('cfgLeagueName').value.trim();
-            if(!name) return alert("Provide valid League parameters.");
-
-            const teamsCount = parseInt(document.getElementById('cfgTeamsCount').value);
-            const playersCount = parseInt(document.getElementById('cfgPlayersCount').value);
-            const overs = parseInt(document.getElementById('cfgOvers').value);
-
-            const teamsArr = [];
-            for(let t=1; t<=teamsCount; t++) {
-                const tName = document.getElementById(`teamName_${t}`).value.trim() || `Team ${t}`;
-                const players = [];
-                for(let p=1; p<=playersCount; p++) {
-                    players.push({
-                        name: document.getElementById(`pName_${t}_${p}`).value.trim() || `Player ${p}`,
-                        role: document.getElementById(`pRole_${t}_${p}`).value,
-                        img: document.getElementById(`pImg_${t}_${p}`).value.trim() || ""
-                    });
-                }
-                teamsArr.push({ id: `T_${t}`, name: tName, players: players });
+            if(q1 && q1.team1.name === 'TBD') {
+                await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, q1.id), { team1: currentLeagueDoc.teams.find(t=>t.name===table[0].name), team2: currentLeagueDoc.teams.find(t=>t.name===table[1].name) });
             }
-
-            // Round Robin Schedule Engine Loop
-            const matches = [];
-            let matchCounter = 1;
-            for(let i=0; i<teamsArr.length; i++) {
-                for(let j=i+1; j<teamsArr.length; j++) {
-                    matches.push({
-                        id: `M_${matchCounter++}`,
-                        teamA: teamsArr[i],
-                        teamB: teamsArr[j],
-                        status: "Scheduled", // Scheduled, Live, Over
-                        scores: {
-                            teamAInnings: { runs: 0, wickets: 0, overs: 0, balls: 0, scorecard: {} },
-                            teamBInnings: { runs: 0, wickets: 0, overs: 0, balls: 0, scorecard: {} },
-                            currentInnings: "teamA",
-                            activeStriker: 0,
-                            activeNonStriker: 1,
-                            activeBowler: 0,
-                            freeHit: false
-                        }
-                    });
-                }
+            if(elim && elim.team1.name === 'TBD') {
+                await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, elim.id), { team1: currentLeagueDoc.teams.find(t=>t.name===table[2].name), team2: currentLeagueDoc.teams.find(t=>t.name===table[3].name) });
             }
+        }
 
-            const leaguePayload = {
-                id: "LEAGUE_" + Date.now(),
-                name: name,
-                ownerId: currentUser.uid,
-                createdEpoch: Date.now(),
-                oversPerMatch: overs,
-                playersCount: playersCount,
-                maxWickets: playersCount - 1,
-                teams: teamsArr,
-                matches: matches,
-                cameras: {}
+        function renderKnockoutBracket(playoffs) {
+            let html = '';
+            playoffs.forEach(p => {
+                let text = `${p.title}: ${p.team1.name} vs ${p.team2.name}`;
+                if(p.winner) text += ` -> Winner: ${p.winner.name}`;
+                html += `<div class="match-box">${text}</div>`;
+            });
+            document.getElementById('knockout-bracket').innerHTML = html;
+        }
+
+        // =========================================================================================
+        // 7. MANAGE MATCH & SCORING LOGIC
+        // =========================================================================================
+        async function loadMyLeagues() {
+            if(!window.currentUser) return;
+            const q = query(collection(db, 'leagues'), where('createdBy', '==', window.currentUser.uid));
+            const snap = await getDocs(q);
+            let html = '';
+            if(snap.empty) html = '<p class="text-center">No leagues created.</p>';
+            snap.docs.forEach(d => {
+                const l = d.data();
+                html += `<div class="card">
+                    <h4>${l.name}</h4>
+                    <p style="font-size:11px;">Status: ${l.status} | Owner Code: <b>${l.ownerCameraCode}</b></p>
+                    <button class="btn mt-2" onclick="openManagePanel('${l.id}')">Manage</button>
+                </div>`;
+            });
+            document.getElementById('my-leagues-list').innerHTML = html;
+        }
+
+        window.openManagePanel = async (leagueId) => {
+            clearListeners();
+            document.getElementById('view-manage-match').style.display = 'block';
+            document.querySelectorAll('.tab-content').forEach(el => {
+                if(el.id !== 'view-manage-match') el.style.display='none';
+            });
+
+            // Listen to league and matches
+            const unsub = onSnapshot(doc(db, 'leagues', leagueId), lDoc => window.currentLeagueDoc = lDoc.data());
+            activeListeners.push(unsub);
+
+            const q = query(collection(db, `leagues/${leagueId}/matches`), orderBy('scheduledTime', 'asc'));
+            const unsubM = onSnapshot(q, snap => {
+                const matches = snap.docs.map(d => d.data());
+                const active = matches.find(m => m.status !== 'completed');
+                if(!active) {
+                    document.getElementById('manage-controls-area').innerHTML = "<p>All matches completed.</p>";
+                    return;
+                }
+                window.currentMatchDoc = active;
+                renderManageControls(active);
+            });
+            activeListeners.push(unsubM);
+        };
+
+        window.closeManageView = () => {
+            document.getElementById('view-manage-match').style.display = 'none';
+            switchTab('tab-created', document.querySelectorAll('.nav-item')[2]);
+        };
+
+        function renderManageControls(match) {
+            document.getElementById('manage-scoreboard').innerHTML = generateScoreboardHTML(match);
+            const area = document.getElementById('manage-controls-area');
+            
+            if(match.state === 'not_started') {
+                area.innerHTML = `<button class="btn" onclick="startMatch()">Start Match (Toss)</button>`;
+            } else if(match.state === 'toss') {
+                area.innerHTML = `<h3>Toss Time</h3>
+                <button class="btn mt-2" onclick="wonToss('${match.team1.id}')">${match.team1.name} won Toss</button>
+                <button class="btn mt-2" onclick="wonToss('${match.team2.id}')">${match.team2.name} won Toss</button>`;
+            } else if(match.state === 'bat_bowl') {
+                const winnerName = match.tossWinner === match.team1.id ? match.team1.name : match.team2.name;
+                area.innerHTML = `<h3>${winnerName} will?</h3>
+                <button class="btn mt-2" onclick="choseToss('bat')">Bat</button>
+                <button class="btn mt-2" onclick="choseToss('bowl')">Bowl</button>`;
+            } else if(match.state === 'select_openers') {
+                renderSelectOpenersForm(match);
+            } else if(match.state === 'select_bowler') {
+                renderSelectBowlerForm(match);
+            } else if(match.state === 'in_play') {
+                renderKeypad();
+            } else if(match.state === 'innings_break') {
+                area.innerHTML = `<button class="btn" onclick="startInnings2()">Start 2nd Innings</button>`;
+            }
+        }
+
+        window.startMatch = async () => {
+            await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, currentMatchDoc.id), { status: 'live', state: 'toss' });
+            await updateDoc(doc(db, 'leagues', currentLeagueDoc.id), { status: 'live' });
+        };
+        window.wonToss = async (tId) => {
+            await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, currentMatchDoc.id), { state: 'bat_bowl', tossWinner: tId });
+        };
+        window.choseToss = async (dec) => {
+            let batTeam = (dec === 'bat') ? currentMatchDoc.tossWinner : (currentMatchDoc.tossWinner === currentMatchDoc.team1.id ? currentMatchDoc.team2.id : currentMatchDoc.team1.id);
+            let bowlTeam = (batTeam === currentMatchDoc.team1.id) ? currentMatchDoc.team2.id : currentMatchDoc.team1.id;
+            
+            const inn1 = {
+                battingTeam: batTeam === currentMatchDoc.team1.id ? currentMatchDoc.team1 : currentMatchDoc.team2,
+                bowlingTeam: bowlTeam === currentMatchDoc.team1.id ? currentMatchDoc.team1 : currentMatchDoc.team2,
+                total: 0, wickets: 0, overs: 0, balls: 0, extras: { wide:0, noBall:0, byes:0 },
+                batsmanStats: {}, bowlerStats: {}, timeline: []
             };
 
-            set(ref(db, `leagues/${leaguePayload.id}`), leaguePayload)
-                .then(() => {
-                    alert("Tournament Engine pushed successfully into Firebase infrastructure!");
-                    switchTab('home');
-                });
+            await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, currentMatchDoc.id), { 
+                state: 'select_openers', tossDecision: dec, inn1, currentInnings: 1 
+            });
         };
 
-        // FIREBASE LIVE PIPELINES LINK
-        function attachFirebaseLiveListeners() {
-            onValue(ref(db, 'leagues'), (snapshot) => {
-                const data = snapshot.val();
-                globalLeaguesData = data || {};
-                renderPublicLeagues();
-                renderOwnedLeaguesPanel();
+        function renderSelectOpenersForm(match) {
+            const inn = match[`inn${match.currentInnings}`];
+            let opts = inn.battingTeam.players.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            document.getElementById('manage-controls-area').innerHTML = `
+                <h3>Select Openers</h3>
+                <label>Striker:</label><select id="sel-striker">${opts}</select>
+                <label>Non-Striker:</label><select id="sel-nonstriker">${opts}</select>
+                <button class="btn mt-2" onclick="saveOpeners()">Next</button>`;
+        }
+        window.saveOpeners = async () => {
+            const s = document.getElementById('sel-striker').value;
+            const ns = document.getElementById('sel-nonstriker').value;
+            if(s===ns) return alert("Select different players!");
+            await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, currentMatchDoc.id), {
+                currentStriker: s, currentNonStriker: ns, state: 'select_bowler'
             });
+        };
+
+        function renderSelectBowlerForm(match) {
+            const inn = match[`inn${match.currentInnings}`];
+            let opts = inn.bowlingTeam.players.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            document.getElementById('manage-controls-area').innerHTML = `
+                <h3>Select Bowler</h3>
+                <select id="sel-bowler">${opts}</select>
+                <button class="btn mt-2" onclick="saveBowler()">Start Over</button>`;
+        }
+        window.saveBowler = async () => {
+            const b = document.getElementById('sel-bowler').value;
+            await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, currentMatchDoc.id), {
+                currentBowler: b, state: 'in_play'
+            });
+        };
+
+        function renderKeypad() {
+            document.getElementById('manage-controls-area').innerHTML = `
+                <div class="keypad">
+                    <button class="key-btn" onclick="scoreAction(0)">0 Run</button>
+                    <button class="key-btn" onclick="scoreAction(1)">1 Run</button>
+                    <button class="key-btn" onclick="scoreAction(2)">2 Run</button>
+                    <button class="key-btn" onclick="scoreAction(3)">3 Run</button>
+                    <button class="key-btn" onclick="scoreAction(4)">4 Run</button>
+                    <button class="key-btn" onclick="scoreAction(5)">5 Run</button>
+                    <button class="key-btn" onclick="scoreAction(6)">6 Run</button>
+                    <button class="key-btn extra" onclick="customRuns()">Custom</button>
+                    <button class="key-btn extra" onclick="scoreExtra('WD')">Wide</button>
+                    <button class="key-btn extra" onclick="scoreExtra('NB')">No Ball</button>
+                    <button class="key-btn extra" onclick="scoreExtra('LB')">Leg Bye</button>
+                    <button class="key-btn action" onclick="scoreWicket('Bowled')">Bowled</button>
+                    <button class="key-btn action" onclick="scoreWicket('Catch')">Catch</button>
+                    <button class="key-btn action" onclick="scoreWicket('LBW')">LBW</button>
+                    <button class="key-btn action" onclick="scoreWicket('RunOut')">Run Out</button>
+                    <button class="key-btn action" onclick="scoreWicket('Stumped')">Stumped</button>
+                </div>`;
         }
 
-        // HOME CARDS RENDER ENGINE
-        function renderPublicLeagues() {
-            const container = document.getElementById('publicLeaguesContainer');
-            container.innerHTML = '';
-            const search = document.getElementById('leagueSearch').value.toLowerCase();
+        window.customRuns = () => {
+            let r = prompt("Enter runs:");
+            if(r && !isNaN(r)) scoreAction(parseInt(r));
+        };
 
-            Object.values(globalLeaguesData).forEach(lg => {
-                // Lifespan checking policy architecture filtered out from public view
-                if(Date.now() - lg.createdEpoch > 432000000) return; 
-                if(search && !lg.name.toLowerCase().includes(search)) return;
+        // CORE SCORING ENGINE
+        window.scoreAction = async (runs, isExtraType=null) => { processBall(runs, isExtraType, null); }
+        window.scoreExtra = async (type) => { processBall(0, type, null); }
+        window.scoreWicket = async (type) => { processBall(0, null, type); }
 
-                const card = document.createElement('div');
-                card.className = "bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 shadow-md";
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-sm font-black text-amber-500 uppercase tracking-wide">${lg.name}</h3>
-                        <span class="text-[9px] font-mono bg-slate-900 text-slate-400 px-2 py-0.5 rounded border border-slate-700">LIVETIME SYSTEM</span>
-                    </div>
-                    <div class="text-xs text-slate-400">Total Structural Squads: <span class="text-white font-bold">${lg.teams.length}</span></div>
-                    <div class="space-y-1.5" id="homeMatches_${lg.id}"></div>
-                `;
-                container.appendChild(card);
+        async function processBall(runs, extraType, wicketType) {
+            let m = JSON.parse(JSON.stringify(currentMatchDoc)); // deep copy
+            let inn = m[`inn${m.currentInnings}`];
+            let isLegal = !(extraType === 'WD' || extraType === 'NB');
+            
+            // Init stats if missing
+            if(!inn.batsmanStats[m.currentStriker]) inn.batsmanStats[m.currentStriker] = { runs:0, balls:0, f:0, s:0, out:false };
+            if(!inn.batsmanStats[m.currentNonStriker]) inn.batsmanStats[m.currentNonStriker] = { runs:0, balls:0, f:0, s:0, out:false };
+            if(!inn.bowlerStats[m.currentBowler]) inn.bowlerStats[m.currentBowler] = { runs:0, balls:0, w:0 };
 
-                const mContainer = document.getElementById(`homeMatches_${lg.id}`);
-                lg.matches.forEach(m => {
-                    const btn = document.createElement('button');
-                    btn.className = "w-full text-left bg-slate-900 hover:bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs flex justify-between items-center transition";
-                    btn.onclick = () => activateLiveSpectatorStream(lg.id, m.id);
-                    
-                    let statusBadge = `<span class="text-[9px] text-slate-500 uppercase">Scheduled</span>`;
-                    if(m.status === 'Live') statusBadge = `<span class="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded font-black animate-pulse uppercase">LIVE</span>`;
-                    if(m.status === 'Over') statusBadge = `<span class="text-[9px] text-emerald-400 font-bold uppercase">Finished</span>`;
+            let bStat = inn.batsmanStats[m.currentStriker];
+            let boStat = inn.bowlerStats[m.currentBowler];
 
-                    btn.innerHTML = `
-                        <div>
-                            <span class="font-bold tracking-wide">${m.teamA.name}</span> 
-                            <span class="text-slate-500 font-normal px-1 text-[10px]">vs</span> 
-                            <span class="font-bold tracking-wide">${m.teamB.name}</span>
-                        </div>
-                        ${statusBadge}
-                    `;
-                    mContainer.appendChild(btn);
-                });
-            });
-        }
+            let ballStr = runs.toString();
 
-        // SPECTATOR WATCH AND DATA PIPE HOOK
-        window.activateLiveSpectatorStream = function(leagueId, matchId) {
-            if(activeMatchSyncId) {
-                // Detach previous listeners cleanly to prevent leaks
-                activeMatchSyncId = null;
-            }
-            activeMatchSyncId = matchId;
-            document.getElementById('liveStreamContainer').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            activeMatchListener = onValue(ref(db, `leagues/${leagueId}`), (snapshot) => {
-                const lg = snapshot.val();
-                if(!lg) return;
-                const m = lg.matches.find(match => match.id === matchId);
-                if(!m) return;
-
-                // Sync UI elements reactively from Firebase Payload
-                document.getElementById('scoreTeamAName').innerText = `${m.teamA.name} Innings`;
-                
-                const curInn = m.scores.currentInnings;
-                const innData = m.scores[curInn + "Innings"];
-                
-                document.getElementById('scoreRuns').innerText = innData.runs;
-                document.getElementById('scoreWickets').innerText = innData.wickets;
-                
-                const compOvers = Math.floor(innData.balls / 6);
-                const remBalls = innData.balls % 6;
-                document.getElementById('scoreOvers').innerText = `${compOvers}.${remBalls}`;
-                
-                // CRR Calculation Engine
-                const totalOversFraction = innData.balls / 6;
-                const crr = totalOversFraction > 0 ? (innData.runs / totalOversFraction).toFixed(2) : "0.00";
-                document.getElementById('scoreCRR').innerText = crr;
-
-                // Free Hit Flag Overlay Interface Control
-                if(m.scores.freeHit) {
-                    document.getElementById('freeHitBanner').classList.remove('hidden');
+            if(extraType) {
+                if(extraType === 'WD') { inn.extras.wide++; inn.total += 1 + runs; boStat.runs += 1 + runs; ballStr = runs>0 ? `${runs}WD` : 'WD'; }
+                if(extraType === 'NB') { inn.extras.noBall++; inn.total += 1 + runs; boStat.runs += 1 + runs; m.freeHit = true; ballStr = runs>0 ? `${runs}NB` : 'NB'; bStat.runs += runs; bStat.balls++; }
+                if(extraType === 'LB' || extraType === 'B') { inn.extras.byes += runs; inn.total += runs; bStat.balls++; isLegal = true; ballStr = `${runs}${extraType}`; }
+            } else if (wicketType) {
+                if(m.freeHit && (wicketType==='Bowled' || wicketType==='Catch' || wicketType==='LBW' || wicketType==='Stumped')){
+                    // Not out on free hit. Counts as ball.
+                    bStat.balls++; boStat.balls++; isLegal=true; ballStr = '.';
                 } else {
-                    document.getElementById('freeHitBanner').classList.add('hidden');
+                    bStat.balls++; boStat.balls++; isLegal=true;
+                    inn.wickets++; boStat.w++;
+                    if(wicketType !== 'RunOut') bStat.out = true;
+                    ballStr = 'W';
                 }
-
-                // Render Scorecard Tables dynamically (0% Dummy Data)
-                const batBody = document.getElementById('scoreBattingBody');
-                batBody.innerHTML = '';
-                m[curInn].players.forEach((p, idx) => {
-                    const row = document.createElement('tr');
-                    row.className = "border-b border-slate-800/40 text-slate-300";
-                    
-                    let isStriker = (idx === m.scores.activeStriker) ? "⭐ " : "";
-                    let isNonStriker = (idx === m.scores.activeNonStriker) ? "🏏 " : "";
-                    
-                    row.innerHTML = `
-                        <td class="py-2 font-medium">${isStriker}${isNonStriker}${p.name}</td>
-                        <td class="py-2 text-center font-mono">${innData.scorecard[idx]?.runs || 0}</td>
-                        <td class="py-2 text-center font-mono text-slate-500">${innData.scorecard[idx]?.balls || 0}</td>
-                        <td class="py-2 text-right text-slate-400 text-[10px]">${innData.scorecard[idx]?.status || 'Yet to Bat'}</td>
-                    `;
-                    batBody.appendChild(row);
-                });
-
-                // Bowling Lines UI Renderer
-                const bowlBody = document.getElementById('scoreBowlingBody');
-                bowlBody.innerHTML = '';
-                const oppInn = curInn === 'teamA' ? 'teamB' : 'teamA';
-                const currentBowlerIndex = m.scores.activeBowler;
-                const bPlayer = m[oppInn].players[currentBowlerIndex];
-                if(bPlayer) {
-                    const row = document.createElement('tr');
-                    row.className = "text-slate-300 font-mono";
-                    const bOvers = Math.floor((innData.bowlerBalls || 0) / 6);
-                    const bBalls = (innData.bowlerBalls || 0) % 6;
-                    const bEcon = (innData.bowlerBalls || 0) > 0 ? ((innData.bowlerRuns || 0) / ((innData.bowlerBalls || 0)/6)).toFixed(2) : "0.00";
-                    row.innerHTML = `
-                        <td class="py-2 text-left font-sans font-medium text-amber-400">⚡ ${bPlayer.name}</td>
-                        <td class="py-2 text-center">${bOvers}.${bBalls}</td>
-                        <td class="py-2 text-center">${innData.bowlerRuns || 0}</td>
-                        <td class="py-2 text-center text-emerald-400 font-bold">${innData.bowlerWickets || 0}</td>
-                        <td class="py-2 text-right text-slate-400">${bEcon}</td>
-                    `;
-                    bowlBody.appendChild(row);
-                }
-
-                // Alternate/Cycle Multi-Camera automation tracking arrays
-                setupMultiCamAutomation(lg.cameras || {});
-            });
-        };
-
-        // MULTI-CAMERA CYCLE LOGIC ENGINE (Fail-safe, 5-Second Interval Loops)
-        function setupMultiCamAutomation(camerasObj) {
-            clearInterval(rotationTimer);
-            cameraRotationArray = Object.keys(camerasObj).filter(k => camerasObj[k].status === 'Active');
-            
-            if(cameraRotationArray.length === 0) {
-                document.getElementById('activeCamBadge').innerText = "CAM: DIRECT SIGNAL";
-                return;
-            }
-
-            const cycleNextFeed = () => {
-                if(cameraRotationArray.length === 0) return;
-                cameraRotationIndex = (cameraRotationIndex + 1) % cameraRotationArray.length;
-                const token = cameraRotationArray[cameraRotationIndex];
-                document.getElementById('activeCamBadge').innerText = `CAM LINK: ${token}`;
-            };
-            cycleNextFeed();
-            rotationTimer = setInterval(cycleNextFeed, 5000);
-        }
-
-        window.toggleStreamOrientation = function() {
-            const vp = document.getElementById('videoViewport');
-            vp.classList.toggle('aspect-video');
-            vp.classList.toggle('h-80');
-        };
-
-        // 6. MANAGEMENT DASHBOARD & SCORING virtual PANEL LIFECYCLE
-        function renderOwnedLeaguesPanel() {
-            const container = document.getElementById('ownedLeaguesContainer');
-            if(!container) return;
-            container.innerHTML = '';
-
-            if(!currentUser) {
-                container.innerHTML = `<p class="text-slate-500 italic text-sm">Please validate session parameters first.</p>`;
-                return;
-            }
-
-            let ownedCount = 0;
-            Object.values(globalLeaguesData).forEach(lg => {
-                if(lg.ownerId !== currentUser.uid) return;
-                ownedCount++;
-
-                const lBox = document.createElement('div');
-                lBox.className = "bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-4 shadow-xl";
-                lBox.innerHTML = `
-                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                        <h3 class="text-md font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-200 uppercase">${lg.name}</h3>
-                        <span class="text-[10px] text-slate-500 font-mono">OWNER INTERFACE</span>
-                    </div>
-                    <div class="grid grid-cols-1 gap-3" id="manageMatches_${lg.id}"></div>
-                `;
-                container.appendChild(lBox);
-
-                const mBox = document.getElementById(`manageMatches_${lg.id}`);
-                lg.matches.forEach(m => {
-                    const row = document.createElement('div');
-                    row.className = "bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3";
-                    row.innerHTML = `
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-slate-300">${m.teamA.name} vs ${m.teamB.name}</span>
-                            <span class="text-slate-500 font-mono">STATUS: ${m.status}</span>
-                        </div>
-                        <div id="mPanelWrapper_${lg.id}_${m.id}"></div>
-                    `;
-                    mBox.appendChild(row);
-
-                    compileMatchControlState(lg, m, `mPanelWrapper_${lg.id}_${m.id}`);
-                });
-            });
-
-            if(ownedCount === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 bg-slate-800 rounded-2xl border border-slate-700/60 p-6">
-                        <p class="text-slate-400 text-sm mb-4">You have not registered or deployed any cricket tournament engines yet.</p>
-                        <button onclick="switchTab('create')" class="bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider transition duration-200">Construct Tournament Engine</button>
-                    </div>
-                `;
-            }
-        }
-
-        function compileMatchControlState(lg, m, containerId) {
-            const wrapper = document.getElementById(containerId);
-            wrapper.innerHTML = '';
-
-            if(m.status === 'Scheduled') {
-                const btn = document.createElement('button');
-                btn.className = "w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-2 rounded-lg text-xs uppercase tracking-wider transition shadow";
-                btn.innerText = "Initialize Phase A: Toss Pipeline";
-                btn.onclick = () => initMatchTossWorkflow(lg.id, m.id);
-                wrapper.appendChild(btn);
-            } else if(m.status === 'Live') {
-                // Render Scoring Custom Keyboard Matrix Controls Natively
-                const dev = document.createElement('div');
-                dev.className = "space-y-4";
-                dev.innerHTML = `
-                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-1.5 text-[11px] font-bold">
-                        <button onclick="processBallScoring('${lg.id}','${m.id}', 0, 'normal')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded border border-slate-700">0 Run</button>
-                        <button onclick="processBallScoring('${lg.id}','${m.id}', 1, 'normal')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded border border-slate-700">1 Run</button>
-                        <button onclick="processBallScoring('${lg.id}','${m.id}', 2, 'normal')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded border border-slate-700">2 Run</button>
-                        <button onclick="processBallScoring('${lg.id}','${m.id}', 3, 'normal')" class="bg-slate-800 hover:bg-slate-700 py-3 rounded border border-slate-700">3 Run</button>
-                        <button onclick="processBallScoring('${lg.id}','${m.id}', 4, 'normal')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 py-3 rounded border border-emerald-500/40">4 Run</button>
-                        <button onclick="processBallScoring('${lg.id}','${m.id}', 6, 'normal')" class="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 py-3 rounded border border-amber-500/40">6 Run</button>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[11px] font-bold">
-                        <button onclick="processBallScoring('${lg.id}','${m.id}', 1, 'wide')" class="bg-slate-800 hover:bg-slate-700 py-2.5 rounded border border-slate-700">Wide</button>
-                        <button onclick="processBallScoring('${lg.id}','${m.id}', 1, 'noball')" class="bg-slate-800 hover:bg-slate-700 py-2.5 rounded border border-slate-700">No Ball</button>
-                        <button onclick="processWicketDismissal('${lg.id}','${m.id}','Bowled')" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 py-2.5 rounded border border-red-500/40">Bowled</button>
-                        <button onclick="processWicketDismissal('${lg.id}','${m.id}','Catch Out')" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 py-2.5 rounded border border-red-500/40">Catch Out</button>
-                    </div>
-                `;
-                wrapper.appendChild(dev);
             } else {
-                wrapper.innerHTML = `<span class="text-xs text-emerald-400 font-mono bg-emerald-950/30 px-3 py-1 rounded border border-emerald-500/20 block text-center">Data Pipeline Completed & Closed</span>`;
-            }
-        }
-
-        window.initMatchTossWorkflow = function(leagueId, matchId) {
-            document.getElementById('loadingOverlay').classList.remove('hidden');
-            
-            setTimeout(() => {
-                const lg = globalLeaguesData[leagueId];
-                const mIdx = lg.matches.findIndex(match => match.id === matchId);
-                
-                const updates = {};
-                updates[`leagues/${leagueId}/matches/${mIdx}/status`] = "Live";
-                
-                update(ref(db), updates).then(() => {
-                    document.getElementById('loadingOverlay').classList.add('hidden');
-                    renderOwnedLeaguesPanel();
-                });
-            }, 3000); // 3-Second Overlay Loading Display State Trigger
-        };
-
-        // CORE CUSTOM VIRTUAL KEYBOARD STATE MACHINE LOGIC (0% DUMMY DATA)
-        window.processBallScoring = function(leagueId, matchId, runs, type) {
-            const lg = globalLeaguesData[leagueId];
-            const mIdx = lg.matches.findIndex(match => match.id === matchId);
-            const m = lg.matches[mIdx];
-            const curInn = m.scores.currentInnings;
-
-            // Deep paths update logic via dynamic multi-device rules
-            let path = `leagues/${leagueId}/matches/${mIdx}/scores/${curInn}Innings`;
-            let scPath = `leagues/${leagueId}/matches/${mIdx}/scores/${curInn}Innings/scorecard/${m.scores.activeStriker}`;
-
-            let nextRuns = (m.scores[`${curInn}Innings`].runs || 0);
-            let nextBalls = (m.scores[`${curInn}Innings`].balls || 0);
-            let batRuns = (m.scores[`${curInn}Innings`].scorecard?.[m.scores.activeStriker]?.runs || 0);
-            let batBalls = (m.scores[`${curInn}Innings`].scorecard?.[m.scores.activeStriker]?.balls || 0);
-            
-            let bBalls = (m.scores[`${curInn}Innings`].bowlerBalls || 0);
-            let bRuns = (m.scores[`${curInn}Innings`].bowlerRuns || 0);
-
-            const batch = {};
-
-            if(type === 'normal') {
-                nextRuns += runs;
-                nextBalls += 1;
-                batRuns += runs;
-                batBalls += 1;
-                bBalls += 1;
-                bRuns += runs;
-
-                if(m.scores.freeHit) {
-                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/freeHit`] = false;
-                }
-            } else if(type === 'wide') {
-                nextRuns += runs; // Wide adds run to team total score
-                bRuns += runs;
-                // legitimate over ball count does NOT increment
-            } else if(type === 'noball') {
-                nextRuns += runs;
-                bRuns += runs;
-                batch[`leagues/${leagueId}/matches/${mIdx}/scores/freeHit`] = true; // Sets Next delivery Free hit state flag
+                // Normal Runs
+                bStat.runs += runs; bStat.balls++; boStat.balls++; inn.total += runs; boStat.runs += runs;
+                if(runs === 4) bStat.f++; if(runs === 6) bStat.s++;
             }
 
-            batch[`${path}/runs`] = nextRuns;
-            batch[`${path}/balls`] = nextBalls;
-            batch[`${path}/bowlerBalls`] = bBalls;
-            batch[`${path}/bowlerRuns`] = bRuns;
-            batch[`${scPath}/runs`] = batRuns;
-            batch[`${scPath}/balls`] = batBalls;
-            batch[`${scPath}/status`] = "Not Out";
+            if(isLegal) inn.balls++;
+            inn.overs = Math.floor(inn.balls / 6);
+            if(extraType !== 'NB') m.freeHit = false;
 
-            // Over Lock Transition check policy logic rules 
-            if(type === 'normal' && bBalls % 6 === 0 && bBalls > 0) {
-                alert("Legitimate Over completed! Force Bowler change selection slot.");
-                batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeBowler`] = (m.scores.activeBowler + 1) % lg.playersCount;
-                batch[`${path}/bowlerBalls`] = 0;
-                batch[`${path}/bowlerRuns`] = 0;
-                batch[`${path}/bowlerWickets`] = 0;
-            }
-
-            update(ref(db), batch);
-        };
-
-        window.processWicketDismissal = function(leagueId, matchId, type) {
-            const lg = globalLeaguesData[leagueId];
-            const mIdx = lg.matches.findIndex(match => match.id === matchId);
-            const m = lg.matches[mIdx];
-            const curInn = m.scores.currentInnings;
-
-            let path = `leagues/${leagueId}/matches/${mIdx}/scores/${curInn}Innings`;
-            let scPath = `leagues/${leagueId}/matches/${mIdx}/scores/${curInn}Innings/scorecard/${m.scores.activeStriker}`;
+            inn.timeline.push(ballStr);
+            if(inn.timeline.length > 6) inn.timeline.shift();
             
-            let nextWickets = (m.scores[`${curInn}Innings`].wickets || 0) + 1;
-            let bWickets = (m.scores[`${curInn}Innings`].bowlerWickets || 0) + 1;
-            let nextBalls = (m.scores[`${curInn}Innings`].balls || 0) + 1;
-            let bBalls = (m.scores[`${curInn}Innings`].bowlerBalls || 0) + 1;
+            showToast(wicketType ? "WICKET!" : (runs===4?"FOUR!":runs===6?"SIX!":""));
 
-            const batch = {};
+            // Strike Rotation
+            let swap = false;
+            if(!wicketType && !extraType && runs % 2 !== 0) swap = true;
+            if(extraType && (extraType==='LB' || extraType==='B' || extraType==='NB') && runs % 2 !== 0) swap = true;
 
-            batch[`${scPath}/status`] = type; // e.g., Bowled, Caught
-            batch[`${path}/wickets`] = nextWickets;
-            batch[`${path}/bowlerWickets`] = bWickets;
-            batch[`${path}/balls`] = nextBalls;
-            batch[`${path}/bowlerBalls`] = bBalls;
+            // Check Innings End
+            const target = m.currentInnings === 2 ? m.inn1.total + 1 : 9999;
+            const allOut = inn.wickets >= (currentLeagueDoc.playersPerTeam - 1);
+            const oversDone = inn.balls >= (currentLeagueDoc.overs * 6);
+            const targetReached = m.currentInnings === 2 && inn.total >= target;
 
-            // Innings break trigger logic rules mapping verification check
-            if(nextWickets >= lg.maxWickets) {
-                if(curInn === 'teamA') {
-                    alert("Maximum available wickets fell! Innings Switching to Team B.");
-                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/currentInnings`] = "teamB";
-                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeStriker`] = 0;
-                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeNonStriker`] = 1;
-                    batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeBowler`] = 0;
+            if(targetReached || allOut || oversDone) {
+                // End Innings
+                if(m.currentInnings === 1) {
+                    m.state = 'innings_break';
+                    const inn2 = { battingTeam: inn.bowlingTeam, bowlingTeam: inn.battingTeam, total:0, wickets:0, overs:0, balls:0, extras:{wide:0,noBall:0,byes:0}, batsmanStats:{}, bowlerStats:{}, timeline:[] };
+                    m.inn2 = inn2;
                 } else {
-                    alert("Match Engine Process completed successfully!");
-                    batch[`leagues/${leagueId}/matches/${mIdx}/status`] = "Over";
+                    m.state = 'completed'; m.status = 'completed';
+                    if(inn.total > m.inn1.total) { m.winner = inn.battingTeam; m.resultString = `${inn.battingTeam.name} won`; }
+                    else if(inn.total < m.inn1.total) { m.winner = m.inn1.battingTeam; m.resultString = `${m.inn1.battingTeam.name} won`; }
+                    else { m.tie = true; m.resultString = "Match Tied"; }
                 }
             } else {
-                // Increment player index to fetch next batsman from dynamic roster
-                let nextBatsmanIndex = Math.max(m.scores.activeStriker, m.scores.activeNonStriker) + 1;
-                batch[`leagues/${leagueId}/matches/${mIdx}/scores/activeStriker`] = nextBatsmanIndex;
-            }
-
-            update(ref(db), batch);
-        };
-
-        // CAMERA NODE SYSTEM HANDLERS
-        window.generateCameraToken = function() {
-            const token = "CAM_" + Math.random().toString(36).substr(2, 6).toUpperCase();
-            document.getElementById('lblActiveToken').innerText = token;
-        };
-
-        window.startBroadcastNode = function() {
-            const token = document.getElementById('lblActiveToken').innerText;
-            if(token === 'NOT_REGISTERED') return alert("Generate Token parameters first.");
-
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                .then(stream => {
-                    activeCamStreamObject = stream;
-                    const vid = document.getElementById('localCaptureVideo');
-                    vid.srcObject = stream;
-                    vid.classList.remove('hidden');
-                    document.getElementById('localCaptureFallback').classList.add('hidden');
-
-                    // Register camera stream token state configuration node to Firebase Realtime pipeline
-                    set(ref(db, `cameraNodes/${token}`), {
-                        status: "Active",
-                        timestamp: Date.now()
-                    });
-                })
-                .catch(err => alert("Hardware Pipeline capture blocked: " + err));
-        };
-
-        window.stopBroadcastNode = function() {
-            const token = document.getElementById('lblActiveToken').innerText;
-            if(activeCamStreamObject) {
-                activeCamStreamObject.getTracks().forEach(track => track.stop());
-            }
-            document.getElementById('localCaptureVideo').classList.add('hidden');
-            document.getElementById('localCaptureFallback').classList.remove('hidden');
-            
-            if(token !== 'NOT_REGISTERED') {
-                remove(ref(db, `cameraNodes/${token}`));
-            }
-        };
-
-        // SYSTEM LIFECYCLE EVALUATION VERIFICATION CHECK (120-Hour Auto-Purge Policy)
-        function verifySystemLifecycleTimestamps() {
-            const currentEpoch = Date.now();
-            const archiveBox = document.getElementById('archivedLeaguesContainer');
-            let hasArchive = false;
-
-            Object.values(globalLeaguesData).forEach(lg => {
-                if(currentEpoch - lg.createdEpoch > 432000000) { // 120 Hours Expiration Limit reached
-                    if(currentUser && lg.ownerId === currentUser.uid) {
-                        if(!hasArchive) { archiveBox.innerHTML = ''; hasArchive = true; }
-                        const item = document.createElement('div');
-                        item.className = "bg-slate-950 p-2 rounded border border-slate-800 text-[11px] text-slate-400 flex justify-between";
-                        item.innerHTML = `<span>📂 ${lg.name}</span><span class="text-amber-500 font-mono">Static Summary</span>`;
-                        archiveBox.appendChild(item);
+                if(wicketType && wicketType !== 'RunOut') { // Simplified RunOut logic for single file constraint
+                    m.state = 'select_batsman'; // Need to prompt for new batsman
+                } else {
+                    // Over change
+                    if(isLegal && inn.balls % 6 === 0) {
+                        swap = !swap; // End of over swap
+                        m.state = 'select_bowler';
                     }
                 }
+            }
+
+            if(swap && m.state === 'in_play') {
+                let temp = m.currentStriker; m.currentStriker = m.currentNonStriker; m.currentNonStriker = temp;
+            }
+
+            // Save
+            await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, m.id), m);
+
+            if(m.state === 'select_batsman') promptNewBatsman(m);
+        }
+
+        function promptNewBatsman(m) {
+            let inn = m[`inn${m.currentInnings}`];
+            let outPlayers = Object.keys(inn.batsmanStats).filter(k => inn.batsmanStats[k].out);
+            let available = inn.battingTeam.players.filter(p => p.id !== m.currentNonStriker && !outPlayers.includes(p.id));
+            let opts = available.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            
+            showModal("WICKET! Select New Batsman", `
+                <select id="new-bat">${opts}</select>
+                <button class="btn mt-2" onclick="saveNewBatsman()">Go</button>
+            `);
+        }
+        window.saveNewBatsman = async () => {
+            let nb = document.getElementById('new-bat').value;
+            closeModal();
+            await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, currentMatchDoc.id), {
+                currentStriker: nb, state: 'in_play'
+            });
+        };
+
+        window.startInnings2 = async () => {
+            await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, currentMatchDoc.id), {
+                currentInnings: 2, state: 'select_openers'
+            });
+        };
+
+        function showToast(text) {
+            if(!text) return;
+            document.querySelectorAll('.overlay-toast').forEach(el => {
+                el.innerText = text; el.style.opacity = '1';
+                setTimeout(() => el.style.opacity = '0', 2000);
             });
         }
 
-        window.filterLeagues = function() {
-            renderPublicLeagues();
+        // =========================================================================================
+        // 8. SCOREBOARD UI RENDERER
+        // =========================================================================================
+        function generateScoreboardHTML(m) {
+            if(!m || m.state === 'not_started' || m.state === 'toss' || m.state === 'bat_bowl') return `<div class="scoreboard">Match hasn't started scoring yet.</div>`;
+            
+            const inn = m[`inn${m.currentInnings}`];
+            if(!inn) return '';
+            const tRuns = inn.total; const tWick = inn.wickets;
+            const ovs = `${inn.overs}.${inn.balls%6}`;
+            const rr = inn.balls > 0 ? ((tRuns / inn.balls) * 6).toFixed(2) : '0.00';
+
+            const getPName = (team, id) => { let p = team.players.find(x=>x.id===id); return p?p.name:'Unknown'; };
+
+            let strikerName = getPName(inn.battingTeam, m.currentStriker);
+            let nsName = getPName(inn.battingTeam, m.currentNonStriker);
+            let bName = getPName(inn.bowlingTeam, m.currentBowler);
+
+            let sStat = inn.batsmanStats[m.currentStriker] || {runs:0, balls:0};
+            let nsStat = inn.batsmanStats[m.currentNonStriker] || {runs:0, balls:0};
+            let boStat = inn.bowlerStats[m.currentBowler] || {runs:0, balls:0, w:0};
+
+            let html = `
+            <div class="scoreboard">
+                <div class="score-top">
+                    <span>${inn.battingTeam.name}</span>
+                    <span>${tRuns}-${tWick} <span style="font-size:12px;">(${ovs})</span></span>
+                </div>
+                <div class="score-row"><span>CRR: ${rr}</span></div>
+                ${m.freeHit ? '<div class="badge mt-2 mb-2" style="background:#ff9800;">FREE HIT</div>' : ''}
+                <hr style="border-top:1px solid rgba(255,255,255,0.2); margin:8px 0;">
+                <div class="score-row striker-active"><span>${strikerName}*</span> <span>${sStat.runs}(${sStat.balls})</span></div>
+                <div class="score-row"><span>${nsName}</span> <span>${nsStat.runs}(${nsStat.balls})</span></div>
+                <hr style="border-top:1px solid rgba(255,255,255,0.2); margin:8px 0;">
+                <div class="score-row"><span>Bowler: ${bName}</span> <span>${Math.floor(boStat.balls/6)}.${boStat.balls%6}-${boStat.runs}-${boStat.w}</span></div>
+                <div class="timeline">This over: ${inn.timeline.join(' ')}</div>
+            </div>`;
+            return html;
+        }
+
+        // =========================================================================================
+        // 9. SHARE CAMERA LOGIC
+        // =========================================================================================
+        async function populateCameraLeagueDropdown() {
+            if(!window.currentUser) return;
+            const q = query(collection(db, 'leagues'), where('createdBy', '==', window.currentUser.uid));
+            const snap = await getDocs(q);
+            let html = snap.docs.map(d => `<option value="${d.id}">${d.data().name}</option>`).join('');
+            document.getElementById('cam-league-select').innerHTML = html || '<option>No leagues created</option>';
+        }
+
+        window.generateCameraCodes = async () => {
+            const leagueId = document.getElementById('cam-league-select').value;
+            if(!leagueId || leagueId.startsWith('No')) return;
+            
+            const count = parseInt(document.getElementById('cam-count').value);
+            const lRef = doc(db, 'leagues', leagueId);
+            const snap = await getDoc(lRef);
+            let existing = snap.data().cameraCodes || [];
+            
+            for(let i=0; i<count; i++) {
+                existing.push({ code: generateCode(), used: false, usedBy: null });
+            }
+            await updateDoc(lRef, { cameraCodes: existing });
+            alert(`${count} codes generated!`);
+            
+            let cHtml = existing.map(c => `<li>${c.code} - ${c.used ? 'USED' : 'AVAILABLE'}</li>`).join('');
+            document.getElementById('generated-codes-list').innerHTML = `<ul>${cHtml}</ul>`;
         };
+
+        // Profile Tab Logic
+        async function loadProfileData() {
+            const userSnap = await getDoc(doc(db, 'users', window.currentUser.uid));
+            const data = userSnap.data();
+            if(data.cameramanFor) {
+                document.getElementById('cam-status').innerText = `You are already Cameraman - League ID: ${data.cameramanFor}`;
+                document.getElementById('join-cam-code').disabled = true;
+            }
+        }
+
+        window.joinAsCameraman = async () => {
+            const code = document.getElementById('join-cam-code').value.toUpperCase().trim();
+            if(code.length !== 6) return alert("Invalid code format");
+
+            // Search all leagues for this code
+            const q = query(collection(db, 'leagues'));
+            const snap = await getDocs(q);
+            let foundLeague = null;
+            let codeIndex = -1;
+
+            snap.docs.forEach(d => {
+                let codes = d.data().cameraCodes || [];
+                let idx = codes.findIndex(c => c.code === code && !c.used);
+                if(idx !== -1) { foundLeague = d.id; codeIndex = idx; }
+            });
+
+            if(!foundLeague) return alert("Code invalid or already used.");
+
+            const lRef = doc(db, 'leagues', foundLeague);
+            const lSnap = await getDoc(lRef);
+            let codes = lSnap.data().cameraCodes;
+            codes[codeIndex].used = true;
+            codes[codeIndex].usedBy = window.currentUser.uid;
+
+            await updateDoc(lRef, { cameraCodes: codes });
+            await updateDoc(doc(db, 'users', window.currentUser.uid), { cameramanFor: foundLeague });
+            
+            alert("Successfully joined as cameraman!");
+            loadProfileData();
+        };
+
+        // Initially lock overlays if needed
+        if(!window.currentUser) {
+            document.getElementById('locked-overlay').classList.add('active');
+        }
+
+        // Final init
+        loadAllLeagues();
 
     </script>
 </body>
-  </html>
+</html>
