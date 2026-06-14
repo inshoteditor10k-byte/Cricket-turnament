@@ -294,7 +294,7 @@
         </div>
     </div>
 
-    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <!-- Firebase App Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } 
@@ -339,7 +339,6 @@
             } else {
                 document.getElementById("profile-unauth").classList.remove("hidden");
                 document.getElementById("profile-auth").classList.add("hidden");
-                // If not in profile tab, show lock
                 let activeTab = document.querySelector(".nav-item.active");
                 if(activeTab && activeTab.innerText.trim() !== 'Profile') {
                     document.getElementById("locked-overlay").classList.add("active");
@@ -387,7 +386,6 @@
             activeListeners = [];
         }
 
-        // Generic Modal
         window.showModal = (title, html) => {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-body').innerHTML = html;
@@ -395,7 +393,6 @@
         };
         window.closeModal = () => document.getElementById('generic-modal').classList.remove('active');
 
-        // Helpers
         function generateId() { return Math.random().toString(36).substr(2, 9); }
         function generateCode() { return Math.random().toString(36).substr(2, 6).toUpperCase(); }
 
@@ -435,7 +432,6 @@
                 const name = document.getElementById('league-name').value.trim();
                 if(!name) throw new Error("League Name required");
 
-                // Uniqueness check
                 const q = query(collection(db, 'leagues'), where('name', '==', name));
                 const snap = await getDocs(q);
                 if(!snap.empty) throw new Error("League name already exists!");
@@ -455,10 +451,8 @@
                     let players = [];
                     for(let p=1; p<=ppt; p++) {
                         players.push({
-                            id: generateId(),
-                            name: document.getElementById(`t${i}-p${p}-name`).value || `Player ${p}`,
-                            role: document.getElementById(`t${i}-p${p}-role`).value,
-                            img: document.getElementById(`t${i}-p${p}-img`).value
+                            id: generateId(), name: document.getElementById(`t${i}-p${p}-name`).value || `Player ${p}`,
+                            role: document.getElementById(`t${i}-p${p}-role`).value, img: document.getElementById(`t${i}-p${p}-img`).value
                         });
                     }
                     teams.push({ id: generateId(), name: tname, players });
@@ -476,8 +470,6 @@
                 };
 
                 await setDoc(doc(db, 'leagues', leagueId), leagueData);
-
-                // Auto Generate Fixtures
                 await generateFixtures(leagueId, teams, sDate, eDate, sTime);
 
                 alert("League created successfully!");
@@ -494,17 +486,15 @@
             const batch = writeBatch(db);
             let groupMatches = [];
             
-            // Double Round Robin for group stage to match IPL style
             for(let i=0; i<teams.length; i++){
                 for(let j=0; j<teams.length; j++){
                     if(i !== j) groupMatches.push({ t1: teams[i], t2: teams[j], type: 'group' });
                 }
             }
 
-            // Distribute matches over date range
             const startMs = new Date(`${sDate}T${sTime}`).getTime();
             const endMs = new Date(`${eDate}T23:59:00`).getTime();
-            const totalM = groupMatches.length + 4; // +4 playoffs
+            const totalM = groupMatches.length + 4; 
             const stepMs = (endMs - startMs) / (totalM > 1 ? totalM - 1 : 1);
 
             let allMatches = [...groupMatches];
@@ -528,14 +518,54 @@
         }
 
         // =========================================================================================
-        // 2. HOME & SEARCH
+        // 2. AUTO-DELETE (Strict 120hrs fix + Final Match completion required)
+        // =========================================================================================
+        // AUTO-DELETE: Runs on load + every 5-10 min. Deletes league ONLY if finalMatchEndedAt + 120hrs has passed. Never deletes upcoming/live leagues.
+        async function checkAndDeleteExpiredLeagues() {
+            try {
+                const now = Date.now();
+                const hr120 = 120 * 60 * 60 * 1000; // 120 hours in milliseconds
+
+                const snap = await getDocs(collection(db, 'leagues'));
+                for(let docSnap of snap.docs) {
+                    const l = docSnap.data();
+                    
+                    // ONLY consider leagues that have the finalMatchEndedAt field 
+                    // (This ensures upcoming/live/uncompleted leagues are safe and ignored)
+                    if (l.finalMatchEndedAt) {
+                        const deleteAt = l.finalMatchEndedAt + hr120;
+                        
+                        if (now >= deleteAt) {
+                            const mSnap = await getDocs(collection(db, `leagues/${l.id}/matches`));
+                            const batch = writeBatch(db);
+                            
+                            mSnap.docs.forEach(mDoc => batch.delete(mDoc.ref)); // Delete all match docs
+                            batch.delete(docSnap.ref); // Delete league doc
+                            
+                            await batch.commit();
+                            console.log(`Auto-Deleted perfectly completed + expired league: ${l.name}`);
+                        }
+                    }
+                }
+            } catch(e) {
+                console.error("Auto-Delete Error:", e);
+            }
+        }
+        
+        // Execute on app load
+        checkAndDeleteExpiredLeagues();
+        // Setup Interval to check periodically (every 5 minutes)
+        setInterval(checkAndDeleteExpiredLeagues, 5 * 60 * 1000);
+
+
+        // =========================================================================================
+        // 3. HOME & SEARCH
         // =========================================================================================
         async function loadAllLeagues() {
             const q = query(collection(db, 'leagues'), orderBy('createdAt', 'desc'));
             const snap = await getDocs(q);
             window.allLeagues = snap.docs.map(d => d.data());
             renderLeagues(window.allLeagues);
-            cleanupExpiredLeagues(window.allLeagues);
         }
 
         window.handleSearch = () => {
@@ -546,7 +576,7 @@
                 let name = l.name.toLowerCase();
                 let score = 0;
                 let idx = name.indexOf(val);
-                if(idx !== -1) score = val.length + (name.length - idx); // simple relevance calc
+                if(idx !== -1) score = val.length + (name.length - idx);
                 return { ...l, _score: score };
             }).filter(l => l._score > 0).sort((a,b) => b._score - a._score);
             
@@ -570,24 +600,6 @@
         }
 
         // =========================================================================================
-        // 3. AUTO-DELETE EXPIRY (120 hrs rule)
-        // =========================================================================================
-        async function cleanupExpiredLeagues(leagues) {
-            const now = Date.now();
-            const hr120 = 120 * 60 * 60 * 1000;
-            for(let l of leagues) {
-                if(l.status === 'completed' && l.completedAt && (now - l.completedAt) > hr120) {
-                    // Delete league and matches
-                    const mSnap = await getDocs(collection(db, `leagues/${l.id}/matches`));
-                    const batch = writeBatch(db);
-                    mSnap.docs.forEach(d => batch.delete(d.ref));
-                    batch.delete(doc(db, 'leagues', l.id));
-                    await batch.commit();
-                }
-            }
-        }
-
-        // =========================================================================================
         // 4. LEAGUE DETAIL & LIVE SCOREBOARD
         // =========================================================================================
         window.openLeagueDetail = async (id) => {
@@ -596,14 +608,12 @@
             document.getElementById('tab-home').classList.remove('active');
             switchDetailTab('matches');
 
-            // Listen to league
             const unsubL = onSnapshot(doc(db, 'leagues', id), (doc) => {
                 window.currentLeagueDoc = doc.data();
-                document.getElementById('detail-league-name').innerText = currentLeagueDoc.name;
+                if(currentLeagueDoc) document.getElementById('detail-league-name').innerText = currentLeagueDoc.name;
             });
             activeListeners.push(unsubL);
 
-            // Listen to matches
             const unsubM = onSnapshot(query(collection(db, `leagues/${id}/matches`), orderBy('scheduledTime', 'asc')), (snap) => {
                 const matches = snap.docs.map(d => d.data());
                 renderMatchesView(matches);
@@ -685,11 +695,9 @@
                     return;
                 }
                 const cams = matchDoc.activeCameramen;
-                // Round-robin every 5 seconds perfectly synced via Date.now()
                 const index = Math.floor(Date.now() / 5000) % cams.length;
                 const activeCamUid = cams[index];
                 vp.innerHTML = `[STREAM PLAYING]<br>Cameraman UID: ${activeCamUid.substr(0,5)}...<br><span style="font-size:10px;">(Replace with WebRTC logic)</span>`;
-                // To implement real stream: subscribe to activeCamUid's stream here
             }, 1000);
         }
 
@@ -697,6 +705,7 @@
         // 6. STANDINGS, POINTS TABLE & NRR
         // =========================================================================================
         function renderStandings(matches) {
+            if(!currentLeagueDoc) return;
             const completedGroups = matches.filter(m => m.type === 'group' && m.status === 'completed');
             let stats = {};
             currentLeagueDoc.teams.forEach(t => {
@@ -718,10 +727,8 @@
                     stats[m.team2.id].t++; stats[m.team2.id].pts+=1;
                 }
 
-                // NRR Math
-                // inn1 team
                 let o1 = r1.overs + (r1.balls/6);
-                if(r1.wickets >= currentLeagueDoc.playersPerTeam - 1) o1 = currentLeagueDoc.overs; // All out rule
+                if(r1.wickets >= currentLeagueDoc.playersPerTeam - 1) o1 = currentLeagueDoc.overs; 
                 stats[r1.battingTeam.id].runsScored += r1.total;
                 stats[r1.battingTeam.id].oversFaced += o1;
                 stats[r1.bowlingTeam.id].runsConceded += r1.total;
@@ -738,8 +745,7 @@
             });
 
             let table = Object.values(stats).map(s => {
-                s.nrr = (s.oversFaced>0 && s.oversBowled>0) ? 
-                    ((s.runsScored/s.oversFaced) - (s.runsConceded/s.oversBowled)) : 0;
+                s.nrr = (s.oversFaced>0 && s.oversBowled>0) ? ((s.runsScored/s.oversFaced) - (s.runsConceded/s.oversBowled)) : 0;
                 return s;
             });
             table.sort((a,b) => b.pts - a.pts || b.nrr - a.nrr);
@@ -750,10 +756,8 @@
             });
             document.getElementById('points-table-body').innerHTML = html;
 
-            // Playoff Logic Update
             const totalGroupM = currentLeagueDoc.numTeams * (currentLeagueDoc.numTeams - 1);
             if(completedGroups.length === totalGroupM && table.length >= 4) {
-                // Auto-fill playoffs if not done
                 const pMatches = matches.filter(m => m.type === 'playoff');
                 updatePlayoffTeams(pMatches, table);
             }
@@ -762,7 +766,6 @@
         }
 
         async function updatePlayoffTeams(pMatches, table) {
-            let updatesNeeded = false;
             let q1 = pMatches.find(m => m.title === 'Qualifier 1');
             let elim = pMatches.find(m => m.title === 'Eliminator');
             
@@ -811,7 +814,6 @@
                 if(el.id !== 'view-manage-match') el.style.display='none';
             });
 
-            // Listen to league and matches
             const unsub = onSnapshot(doc(db, 'leagues', leagueId), lDoc => window.currentLeagueDoc = lDoc.data());
             activeListeners.push(unsub);
 
@@ -953,7 +955,6 @@
             let inn = m[`inn${m.currentInnings}`];
             let isLegal = !(extraType === 'WD' || extraType === 'NB');
             
-            // Init stats if missing
             if(!inn.batsmanStats[m.currentStriker]) inn.batsmanStats[m.currentStriker] = { runs:0, balls:0, f:0, s:0, out:false };
             if(!inn.batsmanStats[m.currentNonStriker]) inn.batsmanStats[m.currentNonStriker] = { runs:0, balls:0, f:0, s:0, out:false };
             if(!inn.bowlerStats[m.currentBowler]) inn.bowlerStats[m.currentBowler] = { runs:0, balls:0, w:0 };
@@ -969,7 +970,6 @@
                 if(extraType === 'LB' || extraType === 'B') { inn.extras.byes += runs; inn.total += runs; bStat.balls++; isLegal = true; ballStr = `${runs}${extraType}`; }
             } else if (wicketType) {
                 if(m.freeHit && (wicketType==='Bowled' || wicketType==='Catch' || wicketType==='LBW' || wicketType==='Stumped')){
-                    // Not out on free hit. Counts as ball.
                     bStat.balls++; boStat.balls++; isLegal=true; ballStr = '.';
                 } else {
                     bStat.balls++; boStat.balls++; isLegal=true;
@@ -978,7 +978,6 @@
                     ballStr = 'W';
                 }
             } else {
-                // Normal Runs
                 bStat.runs += runs; bStat.balls++; boStat.balls++; inn.total += runs; boStat.runs += runs;
                 if(runs === 4) bStat.f++; if(runs === 6) bStat.s++;
             }
@@ -992,19 +991,16 @@
             
             showToast(wicketType ? "WICKET!" : (runs===4?"FOUR!":runs===6?"SIX!":""));
 
-            // Strike Rotation
             let swap = false;
             if(!wicketType && !extraType && runs % 2 !== 0) swap = true;
             if(extraType && (extraType==='LB' || extraType==='B' || extraType==='NB') && runs % 2 !== 0) swap = true;
 
-            // Check Innings End
             const target = m.currentInnings === 2 ? m.inn1.total + 1 : 9999;
             const allOut = inn.wickets >= (currentLeagueDoc.playersPerTeam - 1);
             const oversDone = inn.balls >= (currentLeagueDoc.overs * 6);
             const targetReached = m.currentInnings === 2 && inn.total >= target;
 
             if(targetReached || allOut || oversDone) {
-                // End Innings
                 if(m.currentInnings === 1) {
                     m.state = 'innings_break';
                     const inn2 = { battingTeam: inn.bowlingTeam, bowlingTeam: inn.battingTeam, total:0, wickets:0, overs:0, balls:0, extras:{wide:0,noBall:0,byes:0}, batsmanStats:{}, bowlerStats:{}, timeline:[] };
@@ -1016,12 +1012,11 @@
                     else { m.tie = true; m.resultString = "Match Tied"; }
                 }
             } else {
-                if(wicketType && wicketType !== 'RunOut') { // Simplified RunOut logic for single file constraint
-                    m.state = 'select_batsman'; // Need to prompt for new batsman
+                if(wicketType && wicketType !== 'RunOut') {
+                    m.state = 'select_batsman';
                 } else {
-                    // Over change
                     if(isLegal && inn.balls % 6 === 0) {
-                        swap = !swap; // End of over swap
+                        swap = !swap;
                         m.state = 'select_bowler';
                     }
                 }
@@ -1031,8 +1026,17 @@
                 let temp = m.currentStriker; m.currentStriker = m.currentNonStriker; m.currentNonStriker = temp;
             }
 
-            // Save
+            // Save Match state
             await updateDoc(doc(db, `leagues/${currentLeagueDoc.id}/matches`, m.id), m);
+
+            // IMPORTANT NEW FIX: Check if this is the ABSOLUTE FINAL match.
+            if (m.type === 'playoff' && m.title === 'Final' && m.state === 'completed') {
+                // League officially completes NOW
+                await updateDoc(doc(db, 'leagues', currentLeagueDoc.id), {
+                    status: 'completed',
+                    finalMatchEndedAt: Date.now() // This timestamp triggers the 120hrs countdown
+                });
+            }
 
             if(m.state === 'select_batsman') promptNewBatsman(m);
         }
@@ -1140,7 +1144,6 @@
             document.getElementById('generated-codes-list').innerHTML = `<ul>${cHtml}</ul>`;
         };
 
-        // Profile Tab Logic
         async function loadProfileData() {
             const userSnap = await getDoc(doc(db, 'users', window.currentUser.uid));
             const data = userSnap.data();
@@ -1154,7 +1157,6 @@
             const code = document.getElementById('join-cam-code').value.toUpperCase().trim();
             if(code.length !== 6) return alert("Invalid code format");
 
-            // Search all leagues for this code
             const q = query(collection(db, 'leagues'));
             const snap = await getDocs(q);
             let foundLeague = null;
@@ -1181,14 +1183,12 @@
             loadProfileData();
         };
 
-        // Initially lock overlays if needed
         if(!window.currentUser) {
             document.getElementById('locked-overlay').classList.add('active');
         }
 
-        // Final init
         loadAllLeagues();
 
     </script>
 </body>
-</html>
+    </html>
