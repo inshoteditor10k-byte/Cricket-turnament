@@ -44,7 +44,7 @@
     <!-- Top Header Navigation Bar -->
     <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-            <div class="bg-orange-600 text-white p-2 rounded-lg font-bold text-sm tracking-wider">IPC</div>
+            <div id="top-badge" class="bg-orange-600 text-white p-2 rounded-lg font-bold text-sm tracking-wider">IPC</div>
             <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-orange-500 via-white to-green-500 bg-clip-text text-transparent">
                 India Play Cricket
             </h1>
@@ -129,12 +129,22 @@
                     <!-- Step 1 Pane -->
                     <div id="wizard-step-1" class="wizard-pane space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">League Name</label>
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">League Name (e.g. Indian Premier League)</label>
                             <input type="text" id="league-name-input" placeholder="e.g. Mumbai Elite Championship" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 transition text-white">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Number of Teams (2 to 10)</label>
-                            <input type="number" id="league-teams-count" min="2" max="10" value="4" oninput="adjustTeamRosterInputs()" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 transition text-white">
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Number of Teams</label>
+                            <select id="league-teams-count" onchange="adjustTeamRosterInputs()" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 transition text-white">
+                                <option value="2">2 Teams</option>
+                                <option value="3">3 Teams</option>
+                                <option value="4" selected>4 Teams</option>
+                                <option value="5">5 Teams</option>
+                                <option value="6">6 Teams</option>
+                                <option value="7">7 Teams</option>
+                                <option value="8">8 Teams</option>
+                                <option value="9">9 Teams</option>
+                                <option value="10">10 Teams</option>
+                            </select>
                         </div>
                         <div class="pt-4 flex justify-end">
                             <button type="button" onclick="goToWizardStep(2)" class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 font-bold text-sm rounded-xl">Continue</button>
@@ -155,11 +165,36 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Players Per Team (2 to 11)</label>
-                                <input type="number" id="players-per-team" min="2" max="11" value="11" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 transition text-white">
-                                <span class="text-[10px] text-gray-500 mt-1 block">Solo 1-player match operations are disabled.</span>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Players Per Team</label>
+                                <select id="players-per-team" onchange="adjustTeamRosterInputs()" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 transition text-white">
+                                    <option value="1">1 Player (Solo)</option>
+                                    <option value="2">2 Players</option>
+                                    <option value="3">3 Players</option>
+                                    <option value="4">4 Players</option>
+                                    <option value="5">5 Players</option>
+                                    <option value="6">6 Players</option>
+                                    <option value="7">7 Players</option>
+                                    <option value="8">8 Players</option>
+                                    <option value="9">9 Players</option>
+                                    <option value="10">10 Players</option>
+                                    <option value="11" selected>11 Players</option>
+                                </select>
+                                <span class="text-[10px] text-gray-500 mt-1 block">Specify the squad size representing each roster.</span>
                             </div>
                         </div>
+
+                        <!-- Match Start Date & Daily Start Time Rules -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Match Start Date</label>
+                                <input type="date" id="match-start-date" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 transition text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Daily Start Time (Lock Engine)</label>
+                                <input type="time" id="match-start-time" value="18:00" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 transition text-white">
+                            </div>
+                        </div>
+
                         <div class="pt-4 flex justify-between">
                             <button type="button" onclick="goToWizardStep(1)" class="px-6 py-2.5 border border-gray-800 hover:bg-gray-900 font-bold text-sm rounded-xl">Back</button>
                             <button type="button" onclick="goToWizardStep(3)" class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 font-bold text-sm rounded-xl">Continue</button>
@@ -188,13 +223,13 @@
                 </div>
                 <div class="flex items-center space-x-8 text-center">
                     <div class="animate-pulse">
-                        <div class="w-24 h-24 bg-orange-600/20 text-orange-500 border border-orange-500 rounded-full flex items-center justify-center text-4xl font-extrabold mx-auto mb-3">T1</div>
-                        <p class="font-bold text-lg">Team One</p>
+                        <div id="vs-t1-badge" class="w-24 h-24 bg-orange-600/20 text-orange-500 border border-orange-500 rounded-full flex items-center justify-center text-4xl font-extrabold mx-auto mb-3">T1</div>
+                        <p id="vs-t1-name" class="font-bold text-lg">Team One</p>
                     </div>
                     <div class="text-4xl font-black text-gray-600 italic">VS</div>
                     <div class="animate-pulse">
-                        <div class="w-24 h-24 bg-green-600/20 text-green-500 border border-green-500 rounded-full flex items-center justify-center text-4xl font-extrabold mx-auto mb-3">T2</div>
-                        <p class="font-bold text-lg">Team Two</p>
+                        <div id="vs-t2-badge" class="w-24 h-24 bg-green-600/20 text-green-500 border border-green-500 rounded-full flex items-center justify-center text-4xl font-extrabold mx-auto mb-3">T2</div>
+                        <p id="vs-t2-name" class="font-bold text-lg">Team Two</p>
                     </div>
                 </div>
                 <p class="text-xs text-gray-500 tracking-wider">Loading fixtures & tables...</p>
@@ -462,6 +497,7 @@
                 <div class="flex flex-col h-full bg-gray-900">
                     <div class="flex border-b border-gray-800 bg-gray-950 text-xs font-bold uppercase tracking-widest text-gray-400">
                         <button onclick="switchLiveTab('scorecard')" id="live-tab-btn-scorecard" class="flex-1 py-3 text-center border-b-2 border-orange-500 text-white">Scorecard</button>
+                        <button onclick="switchLiveTab('fixtures')" id="live-tab-btn-fixtures" class="flex-1 py-3 text-center border-b-2 border-transparent">Fixtures</button>
                         <button onclick="switchLiveTab('standings')" id="live-tab-btn-standings" class="flex-1 py-3 text-center border-b-2 border-transparent">Standings</button>
                         <button onclick="switchLiveTab('brackets')" id="live-tab-btn-brackets" class="flex-1 py-3 text-center border-b-2 border-transparent">Playoffs</button>
                     </div>
@@ -503,6 +539,14 @@
                                         <!-- Real-time bowling cards -->
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+
+                        <!-- Fixtures Tab Pane (IPL Style) -->
+                        <div id="live-panel-fixtures" class="hidden space-y-4">
+                            <h4 class="text-xs font-extrabold uppercase tracking-widest text-orange-500 mb-2">League Match Fixtures (IPL Style)</h4>
+                            <div id="ipl-fixtures-container" class="space-y-4">
+                                <!-- Dynamic IPL Match Cards -->
                             </div>
                         </div>
 
@@ -669,6 +713,12 @@
 
         // 3. Document Lifecycle Hook and Initializations
         document.addEventListener("DOMContentLoaded", () => {
+            // Set current date on date input by default
+            const dateInput = document.getElementById("match-start-date");
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+
             auth.onAuthStateChanged(user => {
                 currentUser = user;
                 updateAuthUI();
@@ -778,28 +828,91 @@
             return term.length / text.length;
         }
 
+        // Auto-Shortname Generator
+        function generateShortName(fullName) {
+            if (!fullName) return "IPC";
+            const words = fullName.trim().split(/\s+/);
+            if (words.length === 1) {
+                return words[0].substring(0, 3).toUpperCase();
+            }
+            return words.map(w => w[0]).join("").toUpperCase();
+        }
+
+        // Calculate League End Date (1 round per day)
+        function calculateLeagueEndDate(startDateStr, roundsCount) {
+            if (!startDateStr) return "N/A";
+            const startDate = new Date(startDateStr);
+            const endDate = new Date(startDate.getTime() + (roundsCount - 1) * 24 * 60 * 60 * 1000);
+            return endDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        // Check if scorer console is locked/unlocked based on date and time
+        function checkMatchTimeLock(league) {
+            if (!league.metadata || !league.metadata.startDate || !league.metadata.startTime) return true;
+            
+            const now = new Date();
+            const startDate = new Date(league.metadata.startDate);
+            
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const startDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            
+            if (today < startDay) return false; // Future Date
+            
+            const [startH, startM] = league.metadata.startTime.split(':').map(Number);
+            const matchStartTimeToday = new Date(today.getFullYear(), today.getMonth(), today.getDate(), startH, startM);
+            const matchEndTimeToday = new Date(matchStartTimeToday.getTime() + 3 * 60 * 60 * 1000); // 3 Hours play window
+            
+            return (now >= matchStartTimeToday && now <= matchEndTimeToday);
+        }
+
         // 7. Automated Berger Round-Robin & Creation Wizard Elements
         function adjustTeamRosterInputs() {
             const teamCountInput = document.getElementById("league-teams-count");
             let count = parseInt(teamCountInput.value) || 4;
-            if (count < 2) count = 2;
-            if (count > 10) count = 10;
-            teamCountInput.value = count;
+
+            const playersCountInput = document.getElementById("players-per-team");
+            let pCount = parseInt(playersCountInput.value) || 11;
 
             const rosterArea = document.getElementById("roster-dynamic-inputs");
             rosterArea.innerHTML = "";
 
             for (let i = 1; i <= count; i++) {
+                let playerInputsHTML = "";
+                for (let j = 1; j <= pCount; j++) {
+                    playerInputsHTML += `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-2 bg-gray-900/50 rounded-lg border border-gray-800/80">
+                            <div>
+                                <label class="block text-[9px] text-gray-400 uppercase font-semibold">Player ${j} Name</label>
+                                <input type="text" id="team-${i}-player-${j}-name" placeholder="Name" class="w-full bg-gray-950 border border-gray-800 rounded p-1.5 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[9px] text-gray-400 uppercase font-semibold">Role</label>
+                                <select id="team-${i}-player-${j}-role" class="w-full bg-gray-950 border border-gray-800 rounded p-1.5 text-xs text-white">
+                                    <option value="Batsman">Batsman</option>
+                                    <option value="Bowler">Bowler</option>
+                                    <option value="All-Rounder">All-Rounder</option>
+                                    <option value="Wicket-Keeper">Wicket-Keeper</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[9px] text-gray-400 uppercase font-semibold">Photo URL (Optional)</label>
+                                <input type="text" id="team-${i}-player-${j}-img" placeholder="https://..." class="w-full bg-gray-950 border border-gray-800 rounded p-1.5 text-xs text-white">
+                            </div>
+                        </div>
+                    `;
+                }
+
                 rosterArea.innerHTML += `
                     <div class="border border-gray-800 p-4 rounded-xl space-y-4 bg-gray-950">
-                        <h4 class="text-xs font-black text-orange-500 uppercase tracking-widest">Team ${i} Specifications</h4>
-                        <div>
-                            <label class="block text-[10px] text-gray-400 uppercase font-bold mb-1">Team Name</label>
-                            <input type="text" id="team-${i}-name" placeholder="Team ${i} Name" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-xs text-white">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xs font-black text-orange-500 uppercase tracking-widest">Team ${i} Specifications</h4>
+                            <input type="text" id="team-${i}-name" placeholder="Team ${i} Name" class="bg-gray-900 border border-gray-800 rounded-lg py-1.5 px-3 text-xs text-white font-bold w-48">
                         </div>
                         <div class="space-y-2">
-                            <label class="block text-[10px] text-gray-400 uppercase font-bold">Roster Player Entries</label>
-                            <textarea id="team-${i}-roster" rows="3" placeholder="Enter player names separated by commas (e.g. Virat Kohli, Rohit Sharma, Jasprit Bumrah)" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-xs text-white"></textarea>
+                            <label class="block text-[10px] text-gray-400 uppercase font-bold">Roster Player Entries (${pCount} Players)</label>
+                            <div class="space-y-2 max-h-[250px] overflow-y-auto pr-1">
+                                ${playerInputsHTML}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -872,26 +985,35 @@
             const teamCount = parseInt(document.getElementById("league-teams-count").value);
             const oversLimit = document.getElementById("match-over-limit").value;
             const playersCount = parseInt(document.getElementById("players-per-team").value);
+            const startDate = document.getElementById("match-start-date").value;
+            const startTime = document.getElementById("match-start-time").value;
 
-            if (playersCount < 2 || playersCount > 11) {
-                alert("Players per team must range from 2 to 11. Solo modes are disabled.");
-                return;
-            }
+            const shortName = generateShortName(name);
 
             const teams = [];
             for (let i = 1; i <= teamCount; i++) {
                 const tName = document.getElementById(`team-${i}-name`).value.trim();
-                const rosterRaw = document.getElementById(`team-${i}-roster`).value.trim();
                 
-                if (!tName || !rosterRaw) {
-                    alert(`Team ${i} definitions or roster lists are incomplete.`);
+                if (!tName) {
+                    alert(`Team ${i} specifications or rosters are incomplete.`);
                     return;
                 }
 
-                const playersList = rosterRaw.split(",").map(p => p.trim()).filter(p => p.length > 0);
-                if (playersList.length < playersCount) {
-                    alert(`Team ${tName} must have at least ${playersCount} players defined in its roster.`);
-                    return;
+                const playersList = [];
+                for (let j = 1; j <= playersCount; j++) {
+                    const pName = document.getElementById(`team-${i}-player-${j}-name`).value.trim();
+                    const pRole = document.getElementById(`team-${i}-player-${j}-role`).value;
+                    const pImg = document.getElementById(`team-${i}-player-${j}-img`).value.trim();
+
+                    if (!pName) {
+                        alert(`Roster complete details required for Team ${i} Player ${j}.`);
+                        return;
+                    }
+                    playersList.push({
+                        name: pName,
+                        role: pRole,
+                        image: pImg || "https://img.icons8.com/color/150/cricket.png"
+                    });
                 }
 
                 teams.push({
@@ -908,9 +1030,12 @@
                 metadata: {
                     id: 'league_' + Date.now(),
                     name: name,
+                    shortName: shortName,
                     ownerId: currentUser.uid,
                     oversLimit: oversLimit,
                     playersCount: playersCount,
+                    startDate: startDate || new Date().toISOString().split('T')[0],
+                    startTime: startTime || "18:00",
                     createdAt: Date.now()
                 },
                 teams: teams,
@@ -925,6 +1050,13 @@
             db.ref('leagues/' + newLeagueData.metadata.id).set(newLeagueData)
                 .then(() => {
                     document.getElementById("vs-intro-league").textContent = name;
+                    
+                    // VS Badges adjustment
+                    document.getElementById("vs-t1-badge").textContent = generateShortName(teams[0].name);
+                    document.getElementById("vs-t1-name").textContent = teams[0].name;
+                    document.getElementById("vs-t2-badge").textContent = generateShortName(teams[1].name);
+                    document.getElementById("vs-t2-name").textContent = teams[1].name;
+
                     document.getElementById("vs-intro-overlay").classList.remove("hidden");
                     setTimeout(() => {
                         document.getElementById("vs-intro-overlay").classList.add("hidden");
@@ -986,10 +1118,13 @@
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
                                 ${activeLabel}
-                                <span class="text-xs text-gray-500 font-mono">Teams: ${league.teams.length}</span>
+                                <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2.5 py-1 rounded-lg">
+                                    ${league.metadata.shortName || generateShortName(league.metadata.name)}
+                                </span>
                             </div>
                             <h3 class="text-lg font-black tracking-tight line-clamp-1 text-white">${league.metadata.name}</h3>
                             <p class="text-xs text-gray-400">Overs Cap: ${league.metadata.oversLimit} | Max Players: ${league.metadata.playersCount}</p>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Starts: ${league.metadata.startDate || "N/A"} @ ${league.metadata.startTime || "N/A"}</p>
                         </div>
                         <button onclick="launchLiveSpectator('${key}')" class="w-full py-2.5 bg-gray-850 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-xs flex items-center justify-center space-x-2">
                             <span>Open Broadcast</span>
@@ -1022,9 +1157,24 @@
                         });
                     }
 
+                    // Auto-calculated End Update Date
+                    const roundsCount = league.fixtures ? Math.max(...league.fixtures.map(f => f.round)) : 1;
+                    const autoEndDate = calculateLeagueEndDate(league.metadata.startDate, roundsCount);
+
                     container.innerHTML += `
                         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl space-y-4">
-                            <h3 class="font-extrabold text-lg line-clamp-1">${league.metadata.name}</h3>
+                            <div class="flex justify-between items-start gap-2">
+                                <h3 class="font-extrabold text-lg line-clamp-1">${league.metadata.name}</h3>
+                                <span class="text-orange-500 font-bold text-xs uppercase bg-orange-600/10 px-2 py-1 rounded">
+                                    ${league.metadata.shortName || generateShortName(league.metadata.name)}
+                                </span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center text-xs text-gray-400 border-b border-gray-800 pb-2">
+                                <span>Rounds: ${roundsCount}</span>
+                                <span class="text-orange-400 font-semibold font-mono">Last Match Date: ${autoEndDate}</span>
+                            </div>
+
                             <div class="space-y-2">
                                 <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-widest">Select Match to Scorer</label>
                                 <select id="match-select-${key}" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2.5 text-xs text-white">
@@ -1050,10 +1200,18 @@
             const matchIndex = document.getElementById(`match-select-${leagueId}`).value;
             if (matchIndex === "" || matchIndex === null) return;
 
+            const league = allLeagues[leagueId];
+
+            // Trigger Match Control Lock Validation
+            const unlocked = checkMatchTimeLock(league);
+            if (!unlocked) {
+                alert(`ACCESS LOCKED: Match console for this league is locked. It can only be operated daily during the designated start time window (${league.metadata.startTime || "N/A"}).`);
+                return;
+            }
+
             selectedScorerLeagueId = leagueId;
             selectedScorerMatchIndex = parseInt(matchIndex);
 
-            const league = allLeagues[leagueId];
             const match = league.fixtures[selectedScorerMatchIndex];
 
             document.getElementById("scorer-match-teams").textContent = `${match.homeTeam} vs ${match.awayTeam}`;
@@ -1150,12 +1308,14 @@
             sBowler.innerHTML = "";
 
             bTeamObj.roster.forEach(player => {
-                sStriker.innerHTML += `<option value="${player}">${player}</option>`;
-                sNonStriker.innerHTML += `<option value="${player}">${player}</option>`;
+                const pName = typeof player === 'string' ? player : player.name;
+                sStriker.innerHTML += `<option value="${pName}">${pName}</option>`;
+                sNonStriker.innerHTML += `<option value="${pName}">${pName}</option>`;
             });
 
             bowlTeamObj.roster.forEach(player => {
-                sBowler.innerHTML += `<option value="${player}">${player}</option>`;
+                const pName = typeof player === 'string' ? player : player.name;
+                sBowler.innerHTML += `<option value="${pName}">${pName}</option>`;
             });
         }
 
@@ -1270,8 +1430,8 @@
                 const data = snapshot.val();
                 const battingTeam = league.teams.find(t => t.name === data.battingTeam);
                 
-                // Exclude already dismissed or current players (mocked logic - in pure build, user chooses out of remaining list)
-                const options = battingTeam.roster;
+                // choice choosing array of names
+                const options = battingTeam.roster.map(p => typeof p === 'string' ? p : p.name);
                 const selected = prompt(`Choose incoming batsman from list:\n${options.join(", ")}`);
                 if (selected) {
                     db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).update({ striker: selected });
@@ -1396,7 +1556,7 @@
         }
 
         function switchLiveTab(tab) {
-            const panes = ['scorecard', 'standings', 'brackets'];
+            const panes = ['scorecard', 'fixtures', 'standings', 'brackets'];
             panes.forEach(p => {
                 const pane = document.getElementById(`live-panel-${p}`);
                 const btn = document.getElementById(`live-tab-btn-${p}`);
@@ -1418,6 +1578,9 @@
             
             // Adjust header
             document.getElementById("live-spectator-league-title").textContent = league.metadata.name;
+
+            // Render fixtures in IPL Card design
+            renderIplFixtures(league);
 
             if (!data || !data.active) {
                 document.getElementById("match-countdown-string").textContent = "League Match Schedule Pending Kickoff";
@@ -1448,8 +1611,128 @@
             document.getElementById("overlay-active-batsman-2").textContent = `Non-Striker: ${data.nonStriker || '--'}`;
             document.getElementById("overlay-active-bowler").textContent = `Bowler: ${data.currentBowler || '--'}`;
 
+            // Populate Scorecard Tables dynamically with player cards and images
+            const bTable = document.getElementById("live-table-batting");
+            const bowlTable = document.getElementById("live-table-bowling");
+            bTable.innerHTML = "";
+            bowlTable.innerHTML = "";
+
+            const batTeamObj = league.teams.find(t => t.name === data.battingTeam);
+            if (batTeamObj && batTeamObj.roster) {
+                batTeamObj.roster.forEach(p => {
+                    const pName = typeof p === 'string' ? p : p.name;
+                    const pRole = typeof p === 'string' ? 'Player' : p.role;
+                    const pImg = typeof p === 'string' ? 'https://img.icons8.com/color/150/cricket.png' : p.image;
+                    
+                    const isStriker = data.striker === pName;
+                    const isNonStriker = data.nonStriker === pName;
+                    const statusSuffix = isStriker ? "<span class='text-orange-500 font-black'>*</span>" : (isNonStriker ? " (ns)" : "");
+
+                    bTable.innerHTML += `
+                        <tr class="border-b border-gray-800/50">
+                            <td class="py-2 flex items-center space-x-2">
+                                <img src="${pImg}" class="w-6 h-6 rounded-full object-cover border border-gray-800 bg-gray-900" onerror="this.src='https://img.icons8.com/color/150/cricket.png'">
+                                <div>
+                                    <p class="font-bold text-xs">${pName}${statusSuffix}</p>
+                                    <p class="text-[9px] text-gray-500">${pRole}</p>
+                                </div>
+                            </td>
+                            <td class="py-2 text-center font-mono text-xs">${isStriker ? data.runs : 0}</td>
+                            <td class="py-2 text-center font-mono text-xs">${isStriker ? Math.round(overToDecimal(data.overs)*6) : 0}</td>
+                            <td class="py-2 text-center font-mono text-xs">${isStriker ? '100.0' : '0.0'}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const bowlTeamObj = league.teams.find(t => t.name === data.bowlingTeam);
+            if (bowlTeamObj && bowlTeamObj.roster) {
+                bowlTeamObj.roster.forEach(p => {
+                    const pName = typeof p === 'string' ? p : p.name;
+                    const pRole = typeof p === 'string' ? 'Bowler' : p.role;
+                    const pImg = typeof p === 'string' ? 'https://img.icons8.com/color/150/cricket.png' : p.image;
+                    
+                    const isBowler = data.currentBowler === pName;
+
+                    bowlTable.innerHTML += `
+                        <tr class="border-b border-gray-800/50">
+                            <td class="py-2 flex items-center space-x-2">
+                                <img src="${pImg}" class="w-6 h-6 rounded-full object-cover border border-gray-800 bg-gray-900" onerror="this.src='https://img.icons8.com/color/150/cricket.png'">
+                                <div>
+                                    <p class="font-bold text-xs">${pName}</p>
+                                    <p class="text-[9px] text-gray-500">${pRole}</p>
+                                </div>
+                            </td>
+                            <td class="py-2 text-center font-mono text-xs">${isBowler ? data.overs : '0.0'}</td>
+                            <td class="py-2 text-center font-mono text-xs">0</td>
+                            <td class="py-2 text-center font-mono text-xs">${isBowler ? data.runs : 0}</td>
+                            <td class="py-2 text-center font-mono text-xs">${isBowler ? data.wickets : 0}</td>
+                            <td class="py-2 text-center font-mono text-xs">${isBowler ? '6.00' : '0.00'}</td>
+                        </tr>
+                    `;
+                });
+            }
+
             // Standings render triggers
             calculateDynamicStandings(league);
+        }
+
+        // Render IPL style match fixtures
+        function renderIplFixtures(league) {
+            const container = document.getElementById("ipl-fixtures-container");
+            if (!container) return;
+            container.innerHTML = "";
+
+            const startDateStr = league.metadata.startDate || new Date().toISOString().split('T')[0];
+            const startTimeStr = league.metadata.startTime || "18:00";
+
+            if (league.fixtures) {
+                league.fixtures.forEach((match, index) => {
+                    const matchDate = new Date(new Date(startDateStr).getTime() + (match.round - 1) * 24 * 60 * 60 * 1000);
+                    const dateStr = matchDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                    
+                    let badgeColor = "bg-gray-800 text-gray-300";
+                    if (match.status === "LIVE") badgeColor = "bg-red-600 text-white animate-pulse";
+                    if (match.status === "COMPLETED") badgeColor = "bg-green-600 text-white";
+
+                    const score1Str = match.status === "COMPLETED" || match.status === "LIVE" ? `${match.scorecard.inning1.runs}/${match.scorecard.inning1.wickets} (${match.scorecard.inning1.overs})` : "";
+                    const score2Str = match.status === "COMPLETED" || match.status === "LIVE" ? `${match.scorecard.inning2.runs}/${match.scorecard.inning2.wickets} (${match.scorecard.inning2.overs})` : "";
+
+                    container.innerHTML += `
+                        <div class="bg-gray-950 border border-gray-800 rounded-xl overflow-hidden shadow-lg hover:border-orange-500/50 transition">
+                            <div class="bg-gray-900 px-3 py-1.5 flex justify-between items-center text-[10px] border-b border-gray-800/80">
+                                <span class="text-gray-400 font-bold uppercase tracking-wider">Match ${index + 1} &bull; Round ${match.round}</span>
+                                <span class="font-mono text-orange-400">${dateStr} @ ${startTimeStr}</span>
+                            </div>
+                            <div class="p-4 flex items-center justify-between gap-4">
+                                <!-- Team 1 -->
+                                <div class="flex-1 flex flex-col items-center text-center">
+                                    <div class="w-10 h-10 bg-orange-600/10 text-orange-500 font-black rounded-full flex items-center justify-center text-sm border border-orange-500/20 mb-1">
+                                        ${generateShortName(match.homeTeam)}
+                                    </div>
+                                    <span class="text-xs font-bold truncate max-w-[80px]">${match.homeTeam}</span>
+                                    <span class="text-[10px] text-gray-400 font-mono mt-0.5">${score1Str}</span>
+                                </div>
+
+                                <!-- VS Split -->
+                                <div class="flex flex-col items-center">
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full ${badgeColor} font-black uppercase tracking-widest">${match.status}</span>
+                                    <span class="text-xs italic text-gray-600 font-black my-1">VS</span>
+                                </div>
+
+                                <!-- Team 2 -->
+                                <div class="flex-1 flex flex-col items-center text-center">
+                                    <div class="w-10 h-10 bg-green-600/10 text-green-500 font-black rounded-full flex items-center justify-center text-sm border border-green-500/20 mb-1">
+                                        ${generateShortName(match.awayTeam)}
+                                    </div>
+                                    <span class="text-xs font-bold truncate max-w-[80px]">${match.awayTeam}</span>
+                                    <span class="text-[10px] text-gray-400 font-mono mt-0.5">${score2Str}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
         }
 
         // NRR Standings & Decimal Over Transformations
@@ -1715,11 +1998,11 @@
 
         // 12. Client-side Database Purging and Management
         function checkAutomatedDataPurging() {
-            // Client checks to ensure expired tournaments (+120 hours) are deleted
+            // Client checks to ensure expired tournaments (+10 days) are deleted
             Object.keys(allLeagues).forEach(key => {
                 const league = allLeagues[key];
                 if (league.metadata && league.metadata.createdAt) {
-                    const limitTime = 120 * 3600 * 1000; // 5 Days
+                    const limitTime = 10 * 24 * 3600 * 1000; // 10 Days safety window
                     if (Date.now() - league.metadata.createdAt > limitTime) {
                         db.ref('leagues/' + key).remove()
                             .then(() => console.log(`Garbage Collector: Purged expired tournament session [${key}].`));
@@ -1729,4 +2012,4 @@
         }
     </script>
 </body>
-  </html>
+</html>
