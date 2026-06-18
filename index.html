@@ -216,7 +216,7 @@
                             <span class="text-[9px] text-gray-400 uppercase tracking-widest font-black">Dynamic Schedule Duration</span>
                             <div class="flex justify-between text-xs pt-1">
                                 <span class="text-gray-300">Total Matches: <strong id="calc-total-matches" class="text-orange-500">10</strong></span>
-                                <span class="text-gray-300">Last Match: <strong id="calc-last-date" class="text-green-500">N/A</strong></span>
+                                <span class="text-gray-350">Last Match: <strong id="calc-last-date" class="text-green-500">N/A</strong></span>
                             </div>
                         </div>
 
@@ -278,7 +278,7 @@
                 <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold">Launch Creation Wizard</button>
             </div>
 
-            <!-- In-Play Scorer Console -->
+            <!-- In-Play Scorer Console (Fully Automated - Manual "End Inning" button removed) -->
             <div id="scorer-console-view" class="hidden bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-4">
                 <div class="flex justify-between items-center border-b border-gray-850 pb-3">
                     <div>
@@ -289,7 +289,7 @@
                 </div>
 
                 <!-- Step A: Toss Selection -->
-                <div id="scorer-toss-panel" class="p-4 bg-gray-950 border border-gray-800 rounded-xl space-y-4">
+                <div id="scorer-toss-panel" class="p-4 bg-gray-955 border border-gray-800 rounded-xl space-y-4">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-center">Coin Toss Initialization</h4>
                     <div class="flex justify-center my-2">
                         <!-- Coin Visual -->
@@ -310,7 +310,7 @@
                 </div>
 
                 <!-- Step B: Select Lineups -->
-                <div id="scorer-lineup-panel" class="hidden p-4 bg-gray-950 border border-gray-800 rounded-xl space-y-3">
+                <div id="scorer-lineup-panel" class="hidden p-4 bg-gray-955 border border-gray-800 rounded-xl space-y-3">
                     <h4 class="text-xs font-bold uppercase tracking-wider">Select Opening Roles</h4>
                     <div class="space-y-2.5">
                         <div>
@@ -340,7 +340,7 @@
                         <p class="text-2xl font-black" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-400">(0.0)</span></p>
                         <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5">
                             <p class="text-gray-400 font-bold" id="scorer-metric-striker">Striker: --</p>
-                            <p class="text-gray-505" id="scorer-metric-nonstriker">Non-Striker: --</p>
+                            <p class="text-gray-500" id="scorer-metric-nonstriker">Non-Striker: --</p>
                             <p class="text-gray-404" id="scorer-metric-bowler">Bowler: --</p>
                         </div>
                     </div>
@@ -355,30 +355,29 @@
                     <div class="space-y-3">
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Event Transition Controller</label>
                         <div class="grid grid-cols-4 gap-1.5">
-                            <button onclick="scoreBalls(0)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs">0 Run</button>
-                            <button onclick="scoreBalls(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs">1 Run</button>
-                            <button onclick="scoreBalls(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs">2 Runs</button>
-                            <button onclick="scoreBalls(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs">3 Runs</button>
+                            <button onclick="scoreBalls(0)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white">0 Run</button>
+                            <button onclick="scoreBalls(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white">1 Run</button>
+                            <button onclick="scoreBalls(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white">2 Runs</button>
+                            <button onclick="scoreBalls(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white">3 Runs</button>
                         </div>
                         <div class="grid grid-cols-3 gap-1.5">
-                            <button onclick="scoreBalls(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-xs">4 Run</button>
-                            <button onclick="scoreBalls(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-xs">6 Run</button>
-                            <button onclick="triggerCustomRun()" class="py-2.5 bg-gray-800 hover:bg-gray-700 text-xs font-bold rounded-lg">___ Run</button>
+                            <button onclick="scoreBalls(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-xs text-white">4 Run</button>
+                            <button onclick="scoreBalls(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-xs text-white">6 Run</button>
+                            <button onclick="triggerCustomRun()" class="py-2.5 bg-gray-800 hover:bg-gray-700 text-xs font-bold rounded-lg text-white">___ Run</button>
                         </div>
                         <div class="grid grid-cols-3 gap-1.5">
-                            <button onclick="scoreExtra('WD')" class="py-2.5 bg-gray-850 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-orange-400">Wide (+1)</button>
-                            <button onclick="scoreExtra('NB')" class="py-2.5 bg-gray-850 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-yellow-400">No Ball (+1)</button>
-                            <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-850 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-gray-400">Leg Bye</button>
+                            <button onclick="scoreExtra('WD')" class="py-2.5 bg-gray-855 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-orange-400">Wide (+1)</button>
+                            <button onclick="scoreExtra('NB')" class="py-2.5 bg-gray-855 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-yellow-400">No Ball (+1)</button>
+                            <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-855 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-gray-400">Leg Bye</button>
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="openWicketModal()" class="py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase">Wicket</button>
-                            <button onclick="forceEndInning()" class="py-2.5 border border-red-800 hover:bg-red-900/20 text-red-500 font-bold rounded-lg text-[10px] uppercase">End Innings</button>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="openWicketModal()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase">Wicket</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Direct Device Stream Box inside Scorer Console -->
-                <div class="border border-gray-800 p-3.5 rounded-xl bg-gray-950 space-y-3 mt-4">
+                <div class="border border-gray-800 p-3.5 rounded-xl bg-gray-955 space-y-3 mt-4">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-orange-500 flex items-center space-x-2">
                         <i class="fa-solid fa-video animate-pulse"></i>
                         <span>Direct Live Stream Console</span>
@@ -453,7 +452,7 @@
                         <i class="fa-brands fa-google"></i>
                         <span>Continue with Google</span>
                     </button>
-                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-850 font-bold rounded-xl text-xs text-gray-400">Logout</button>
+                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-855 font-bold rounded-xl text-xs text-gray-400">Logout</button>
                 </div>
 
                 <!-- Camera Key Registration Box -->
@@ -623,7 +622,7 @@
                             </div>
                         </div>
 
-                        <!-- Fixtures Tab Pane (IPL Style) -->
+                        <!-- Fixtures Tab Pane -->
                         <div id="live-panel-fixtures" class="hidden space-y-4">
                             <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500">Tournament Schedule</h4>
                             <div id="ipl-fixtures-container" class="space-y-3">
@@ -720,7 +719,7 @@
                 <p id="cameraman-timer-label" class="text-xs text-gray-400 mt-1">Match starts in: --:--:--</p>
             </div>
 
-            <div class="text-center text-xs text-gray-500">
+            <div class="text-center text-xs text-gray-550">
                 Ensure device stays online. Keep active window open to process continuous signals.
             </div>
         </section>
@@ -841,10 +840,12 @@
             const buttons = ['home', 'create', 'created', 'share', 'profile'];
             buttons.forEach(b => {
                 const btn = document.getElementById(`nav-btn-${b}`);
-                if (b === tabId) {
-                    btn.classList.add("text-orange-500");
-                } else {
-                    btn.classList.remove("text-orange-500");
+                if (btn) {
+                    if (b === tabId) {
+                        btn.classList.add("text-orange-500");
+                    } else {
+                        btn.classList.remove("text-orange-500");
+                    }
                 }
             });
 
@@ -1001,7 +1002,7 @@
                             </div>
                             <div class="col-span-3">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Role</label>
-                                <select id="team-${i}-player-${j}-role" class="w-full bg-gray-950 border border-gray-850 rounded p-1 text-[10px] text-white">
+                                <select id="team-${i}-player-${j}-role" class="w-full bg-gray-950 border border-gray-855 rounded p-1 text-[10px] text-white">
                                     <option value="Batsman">Batsman</option>
                                     <option value="Bowler">Bowler</option>
                                     <option value="All-Rounder">All-Rounder</option>
@@ -1010,7 +1011,7 @@
                             </div>
                             <div class="col-span-3">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Image URL</label>
-                                <input type="text" id="team-${i}-player-${j}-img" placeholder="https://..." class="w-full bg-gray-950 border border-gray-850 rounded p-1 text-[10px] text-white">
+                                <input type="text" id="team-${i}-player-${j}-img" placeholder="https://..." class="w-full bg-gray-950 border border-gray-855 rounded p-1 text-[10px] text-white">
                             </div>
                             <div class="col-span-2 text-center flex flex-col items-center">
                                 <span class="text-[8px] text-gray-400 font-bold block">Captain</span>
@@ -1102,7 +1103,7 @@
                 rawGroupMatches = [
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'A', away: 'E', round: 3 },
                     { home: 'B', away: 'C', round: 4 }, { home: 'D', away: 'E', round: 5 }, { home: 'A', away: 'C', round: 6 },
-                    { home: 'B', away: 'D', rounded: 7 }, { home: 'C', away: 'E', round: 8 }, { home: 'A', away: 'D', round: 9 },
+                    { home: 'B', away: 'D', round: 7 }, { home: 'C', away: 'E', round: 8 }, { home: 'A', away: 'D', round: 9 },
                     { home: 'B', away: 'E', round: 10 }
                 ];
                 playoffTemplates = [
@@ -1148,7 +1149,7 @@
                     { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', round: 10 }, { home: 'E', away: 'H', round: 11 }, { home: 'F', away: 'G', round: 12 },
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
-                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', rounded: 23 }, { home: 'D', away: 'F', round: 24 },
+                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', round: 23 }, { home: 'D', away: 'F', round: 24 },
                     { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
                 ];
                 playoffTemplates = [
@@ -1349,12 +1350,12 @@
             });
         }
 
+        // Bulletproof Leagues listing to prevent crashes if metadata is partially empty
         function renderLeaguesList() {
             const grid = document.getElementById("leagues-grid");
             const emptyState = document.getElementById("empty-leagues-state");
             if (!grid) return;
 
-            // Secure search bar element access against timing crash completely
             const searchBarInput = document.getElementById("search-bar");
             const query = searchBarInput ? searchBarInput.value : "";
 
@@ -1363,7 +1364,7 @@
 
             Object.keys(allLeagues).forEach(key => {
                 const league = allLeagues[key];
-                if (league && league.metadata) {
+                if (league && typeof league === 'object' && league.metadata) {
                     const density = calculateSearchDensity(league.metadata.name, query);
                     if (density !== -1) {
                         items.push({ key, league, density });
@@ -1386,20 +1387,26 @@
                     ? `<span class="bg-red-600 px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse">LIVE</span>` 
                     : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
 
+                const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
+                const teamCount = league.teams ? league.teams.length : 0;
+                const startDate = league.metadata ? (league.metadata.startDate || "N/A") : "N/A";
+                const shortName = league.metadata ? (league.metadata.shortName || generateShortName(league.metadata.name)) : "IPC";
+                const name = league.metadata ? (league.metadata.name || "Unnamed League") : "Unnamed League";
+
                 grid.innerHTML += `
                     <div class="bg-gray-900 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition">
                         <div class="flex items-center justify-between">
                             ${activeLabel}
                             <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2 py-0.5 rounded">
-                                ${league.metadata.shortName || generateShortName(league.metadata.name)}
+                                ${shortName}
                             </span>
                         </div>
-                        <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${league.metadata.name}</h3>
+                        <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${name}</h3>
                         <div class="flex justify-between items-center text-[10px] text-gray-400">
-                            <span>Overs: ${league.metadata.oversLimit} | Teams: ${league.teams.length}</span>
-                            <span class="font-mono text-orange-400">${league.metadata.startDate}</span>
+                            <span>Overs: ${oversLimit} | Teams: ${teamCount}</span>
+                            <span class="font-mono text-orange-400">${startDate}</span>
                         </div>
-                        <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-855 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5">
+                        <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white">
                             <span>View Broadcast</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </button>
@@ -1418,7 +1425,7 @@
             let count = 0;
             Object.keys(allLeagues).forEach(key => {
                 const league = allLeagues[key];
-                if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
+                if (league && typeof league === 'object' && league.metadata && league.metadata.ownerId === currentUser.uid) {
                     count++;
                     
                     let optionsHTML = "";
@@ -1545,6 +1552,8 @@
                     overLog: [],
                     isSuperOver: false,
                     inning: 1,
+                    needsInning2Lineup: false,
+                    needsCompletionSave: false,
                     tossResult: `${winner} won toss and elected to ${decision} first.`
                 };
 
@@ -1597,7 +1606,8 @@
             const updates = {
                 striker: str,
                 nonStriker: nonStr,
-                currentBowler: bowl
+                currentBowler: bowl,
+                needsInning2Lineup: false
             };
 
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).update(updates)
@@ -1629,22 +1639,36 @@
                 if (data.isSuperOver) {
                     document.getElementById("super-over-badge").classList.remove("hidden");
                 }
+
+                // If first innings has finished automatically and needs inning 2 roster lineup, update Scorer UI immediately
+                if (data.needsInning2Lineup) {
+                    setupLineupOptions(data.battingTeam, data.bowlingTeam);
+                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
+                    document.getElementById("scorer-controls").classList.add("hidden");
+                }
+
+                // If match complete save is requested, trigger automatic outcome save
+                if (data.needsCompletionSave) {
+                    const league = allLeagues[selectedScorerLeagueId];
+                    db.ref(`leagues/${selectedScorerLeagueId}/liveMatch/active`).set(false).then(() => {
+                        saveCompletedMatchOutcome(league, data.outcome, data);
+                    });
+                }
             });
         }
 
         // Action scoring events logic with Strike Rotation (1, 3, 5 Swap Striker)
+        // Fixed: Scorer transactions don't write nested playerStats transactions inside the liveMatch block.
         function scoreBalls(runs) {
             const league = allLeagues[selectedScorerLeagueId];
+            if (!league) return;
+
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                 if (data) {
                     data.runs += runs;
                     data.overs = incrementOverBalls(data.overs);
                     data.overLog = data.overLog || [];
                     data.overLog.push(runs);
-                    
-                    if (runs === 4 || runs === 6) {
-                        triggerOverlayBroadcast(selectedScorerLeagueId, runs === 4 ? "SUPER FOUR!" : "MAXIMUM SIX!", `${runs} Runs Scored!`);
-                    }
 
                     // Strike Rotation: 1, 3, 5 runs rotates strike
                     if (runs === 1 || runs === 3 || runs === 5) {
@@ -1653,7 +1677,19 @@
                         data.nonStriker = temp;
                     }
 
-                    // Save stats for Orange Cap & MVP
+                    // Automatic Inning Termination Check
+                    evaluateMatchProgress(data, league);
+                }
+                return data;
+            }, (error, committed, snapshot) => {
+                if (committed && snapshot.exists()) {
+                    const data = snapshot.val();
+                    
+                    if (runs === 4 || runs === 6) {
+                        triggerOverlayBroadcast(selectedScorerLeagueId, runs === 4 ? "SUPER FOUR!" : "MAXIMUM SIX!", `${runs} Runs Scored!`);
+                    }
+
+                    // Save stats for Orange Cap & MVP cleanly outside liveMatch transaction
                     if (data.striker) {
                         db.ref(`leagues/${selectedScorerLeagueId}/playerStats/${data.striker}`).transaction(p => {
                             if (!p) p = { runs: 0, wickets: 0, mvpPoints: 0 };
@@ -1662,11 +1698,7 @@
                             return p;
                         });
                     }
-
-                    // Automatic Inning Termination Check
-                    evaluateMatchProgress(data, league);
                 }
-                return data;
             });
         }
 
@@ -1674,7 +1706,6 @@
             const count = prompt("Enter precise runs:", "0");
             const parsed = parseInt(count);
             if (!isNaN(parsed) && parsed >= 0) {
-                // Custom runs (e.g. 0, 2, 4, 6 or any other number besides 1, 3, 5) do not swap strike
                 const league = allLeagues[selectedScorerLeagueId];
                 db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                     if (data) {
@@ -1690,6 +1721,12 @@
                             data.nonStriker = temp;
                         }
 
+                        evaluateMatchProgress(data, league);
+                    }
+                    return data;
+                }, (error, committed, snapshot) => {
+                    if (committed && snapshot.exists()) {
+                        const data = snapshot.val();
                         if (data.striker) {
                             db.ref(`leagues/${selectedScorerLeagueId}/playerStats/${data.striker}`).transaction(p => {
                                 if (!p) p = { runs: 0, wickets: 0, mvpPoints: 0 };
@@ -1698,9 +1735,7 @@
                                 return p;
                             });
                         }
-                        evaluateMatchProgress(data, league);
                     }
-                    return data;
                 });
             }
         }
@@ -1732,17 +1767,24 @@
 
         function commitWicket(type) {
             document.getElementById("wicket-modal").classList.add("hidden");
-            triggerOverlayBroadcast(selectedScorerLeagueId, "WICKET DISMISSAL!", type);
-
             const league = allLeagues[selectedScorerLeagueId];
+            if (!league) return;
+
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                 if (data) {
                     data.wickets += 1;
                     data.overs = incrementOverBalls(data.overs);
                     data.overLog = data.overLog || [];
                     data.overLog.push("W");
-
-                    // Save stats for Purple Cap & MVP
+                    evaluateMatchProgress(data, league);
+                }
+                return data;
+            }, (error, committed, snapshot) => {
+                if (committed && snapshot.exists()) {
+                    const data = snapshot.val();
+                    triggerOverlayBroadcast(selectedScorerLeagueId, "WICKET DISMISSAL!", type);
+                    
+                    // Increment bowler wickets cleanly outside liveMatch transaction
                     if (data.currentBowler) {
                         db.ref(`leagues/${selectedScorerLeagueId}/playerStats/${data.currentBowler}`).transaction(p => {
                             if (!p) p = { runs: 0, wickets: 0, mvpPoints: 0 };
@@ -1751,17 +1793,12 @@
                             return p;
                         });
                     }
-                    evaluateMatchProgress(data, league);
-                }
-                return data;
-            }).then(() => {
-                // If match hasn't automatically ended, ask for incoming batsman
-                db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).once('value', s => {
-                    const d = s.val();
-                    if (d && d.active) {
+
+                    // Check if match hasn't automatically ended, ask for incoming batsman
+                    if (data.active) {
                         promptNewBatsmanSelection();
                     }
-                });
+                }
             });
         }
 
@@ -1780,7 +1817,7 @@
                 const isOversFinished = data.overs >= oversLimit;
 
                 if (isAllOut || isOversFinished) {
-                    // Finalize Inning 1
+                    // Set flags to trigger client-side opening lineups screen cleanly
                     data.inning = 2;
                     data.inning1Runs = data.runs;
                     data.inning1Wickets = data.wickets;
@@ -1798,12 +1835,7 @@
                     data.battingTeam = data.bowlingTeam;
                     data.bowlingTeam = prevBatting;
 
-                    triggerOverlayBroadcast(league.metadata.id, "INNINGS OVER", `Target for ${data.battingTeam}: ${data.targetRuns}`);
-                    alert(`Innings completed. Target: ${data.targetRuns} Runs. Please set opening rosters for Innings 2.`);
-                    
-                    setupLineupOptions(data.battingTeam, data.bowlingTeam);
-                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
-                    document.getElementById("scorer-controls").classList.add("hidden");
+                    data.needsInning2Lineup = true; // Flag to lock scorer view to opening roles selector
                 }
             } else if (data.inning === 2) {
                 const target = data.targetRuns;
@@ -1811,41 +1843,34 @@
                 const isAllOut = data.wickets >= maxWickets;
                 const isOversFinished = data.overs >= oversLimit;
 
-                if (isTargetReached) {
-                    data.active = false;
-                    data.outcome = `${data.battingTeam} won by ${playersCount - 1 - data.wickets} wickets!`;
-                    triggerOverlayBroadcast(league.metadata.id, "CHAMPIONS!", data.outcome);
-                    alert(`Match Completed! Winner: ${data.battingTeam}`);
-                    saveCompletedMatchOutcome(league, data.outcome, data);
-                } else if (isAllOut || isOversFinished) {
-                    if (data.runs === target - 1) {
+                if (isTargetReached || isAllOut || isOversFinished) {
+                    // Signal client that match is complete to trigger auto-finalization
+                    data.needsCompletionSave = true;
+
+                    if (isTargetReached) {
+                        data.outcome = `${data.battingTeam} won by ${playersCount - 1 - data.wickets} wickets!`;
+                    } else if (data.runs === target - 1) {
                         data.outcome = "MATCH TIED! SUPER OVER REQUIRED.";
-                        triggerOverlayBroadcast(league.metadata.id, "MATCH TIED!", "Super Over Active");
-                        alert("Scores are tied! Launch Super Over button is active.");
-                        document.getElementById("super-over-trigger-container").classList.remove("hidden");
                     } else {
-                        data.active = false;
                         data.outcome = `${data.bowlingTeam} won by ${target - 1 - data.runs} runs!`;
-                        triggerOverlayBroadcast(league.metadata.id, "COMPLETED!", data.outcome);
-                        alert(`Match Completed! Winner: ${data.bowlingTeam}`);
-                        saveCompletedMatchOutcome(league, data.outcome, data);
                     }
                 }
             }
         }
 
         function saveCompletedMatchOutcome(league, outcome, liveMatchData) {
+            if (!league) return;
             const matchIdx = liveMatchData.matchIndex;
             if (matchIdx === null || matchIdx === undefined) return;
 
             const fixturePath = `leagues/${league.metadata.id}/fixtures/${matchIdx}`;
             
             const inning1Data = {
-                runs: liveMatchData.inning === 2 ? liveMatchData.inning1Runs : liveMatchData.runs,
-                wickets: liveMatchData.inning === 2 ? liveMatchData.inning1Wickets : liveMatchData.wickets,
-                overs: liveMatchData.inning === 2 ? liveMatchData.inning1Overs : liveMatchData.overs,
+                runs: liveMatchData.inning1Runs || liveMatchData.runs,
+                wickets: liveMatchData.inning1Wickets || liveMatchData.wickets,
+                overs: liveMatchData.inning1Overs || liveMatchData.overs,
                 completed: true,
-                battingTeam: liveMatchData.inning === 2 ? liveMatchData.teams.home : liveMatchData.battingTeam
+                battingTeam: liveMatchData.teams.home
             };
 
             const inning2Data = {
@@ -1853,7 +1878,7 @@
                 wickets: liveMatchData.wickets,
                 overs: liveMatchData.overs,
                 completed: true,
-                battingTeam: liveMatchData.battingTeam
+                battingTeam: liveMatchData.teams.away
             };
 
             db.ref(fixturePath).update({
@@ -1871,46 +1896,48 @@
 
         // Playoff Bracket promotions automation
         function autoAdvancePlayoffs(leagueId, league) {
+            if (!league) return;
             const fixtures = league.fixtures || [];
             const groupCompleted = fixtures.filter(f => f.type === 'GROUP').every(f => f.status === 'COMPLETED');
             if (!groupCompleted) return; 
 
             // Temporary standings calculation
-            const standings = [];
             const standingsMap = {};
             league.teams.forEach(t => {
                 standingsMap[t.name] = { name: t.name, points: 0, runsScored: 0, oversFaced: 0.0, runsConceded: 0, oversBowled: 0.0 };
             });
 
             fixtures.forEach(match => {
-                if (match.status === "COMPLETED") {
+                if (match.status === "COMPLETED" && match.scorecard) {
                     const score1 = match.scorecard.inning1;
                     const score2 = match.scorecard.inning2;
-                    const team1 = score1.battingTeam;
-                    const team2 = score2.battingTeam;
+                    if (score1 && score2) {
+                        const team1 = score1.battingTeam;
+                        const team2 = score2.battingTeam;
 
-                    if (standingsMap[team1] && standingsMap[team2]) {
-                        standingsMap[team1].runsScored += score1.runs;
-                        standingsMap[team2].runsScored += score2.runs;
-                        standingsMap[team1].runsConceded += score2.runs;
-                        standingsMap[team2].runsConceded += score1.runs;
+                        if (standingsMap[team1] && standingsMap[team2]) {
+                            standingsMap[team1].runsScored += score1.runs;
+                            standingsMap[team2].runsScored += score2.runs;
+                            standingsMap[team1].runsConceded += score2.runs;
+                            standingsMap[team2].runsConceded += score1.runs;
 
-                        const limit = parseFloat(league.metadata.oversLimit) || 5.0;
-                        const overFacedDecimal = score1.completed ? limit : overToDecimal(score1.overs);
-                        const overBowledDecimal = score2.completed ? limit : overToDecimal(score2.overs);
+                            const limit = parseFloat(league.metadata.oversLimit) || 5.0;
+                            const overFacedDecimal = score1.completed ? limit : overToDecimal(score1.overs);
+                            const overBowledDecimal = score2.completed ? limit : overToDecimal(score2.overs);
 
-                        standingsMap[team1].oversFaced += overFacedDecimal;
-                        standingsMap[team2].oversBowled += overFacedDecimal;
-                        standingsMap[team2].oversFaced += overBowledDecimal;
-                        standingsMap[team1].oversBowled += overBowledDecimal;
+                            standingsMap[team1].oversFaced += overFacedDecimal;
+                            standingsMap[team2].oversBowled += overFacedDecimal;
+                            standingsMap[team2].oversFaced += overBowledDecimal;
+                            standingsMap[team1].oversBowled += overBowledDecimal;
 
-                        if (score1.runs > score2.runs) {
-                            standingsMap[team1].points += 2;
-                        } else if (score2.runs > score1.runs) {
-                            standingsMap[team2].points += 2;
-                        } else {
-                            standingsMap[team1].points += 1;
-                            standingsMap[team2].points += 1;
+                            if (score1.runs > score2.runs) {
+                                standingsMap[team1].points += 2;
+                            } else if (score2.runs > score1.runs) {
+                                standingsMap[team2].points += 2;
+                            } else {
+                                standingsMap[team1].points += 1;
+                                standingsMap[team2].points += 1;
+                            }
                         }
                     }
                 }
@@ -2456,9 +2483,9 @@
                     if (match.status === "COMPLETED") badgeColor = "bg-green-600 text-white";
 
                     container.innerHTML += `
-                        <div class="bg-gray-955 border border-gray-850 rounded-xl p-3 flex justify-between items-center text-xs">
+                        <div class="bg-gray-955 border border-gray-855 rounded-xl p-3 flex justify-between items-center text-xs">
                             <div class="flex-1 space-y-1">
-                                <p class="text-[9px] text-gray-450 uppercase font-black tracking-wider">Match ${index + 1} &bull; ${match.type}</p>
+                                <p class="text-[9px] text-gray-455 uppercase font-black tracking-wider">Match ${index + 1} &bull; ${match.type}</p>
                                 <div class="flex items-center space-x-2 font-bold">
                                     <span>${generateShortName(match.homeTeam)}</span>
                                     <span class="text-gray-655 font-black">vs</span>
@@ -2580,12 +2607,12 @@
                 if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
                     count++;
                     list.innerHTML += `
-                        <div class="flex items-center justify-between bg-gray-950 p-2.5 rounded-xl border border-gray-800">
+                        <div class="flex items-center justify-between bg-gray-955 p-2.5 rounded-xl border border-gray-800">
                             <div class="space-y-0.5 max-w-[200px]">
                                 <h4 class="text-xs font-bold text-white truncate">${league.metadata.name}</h4>
                                 <p class="text-[9px] text-gray-400">Short: ${league.metadata.shortName || generateShortName(league.metadata.name)}</p>
                             </div>
-                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-650 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white">
+                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-650 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans">
                                 <i class="fa-solid fa-trash-can"></i>
                                 <span>Delete</span>
                             </button>
@@ -2595,7 +2622,7 @@
             });
 
             if (count === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-550 text-center py-2">No leagues created by you yet.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-2">No leagues created by you yet.</p>`;
             }
         }
 
@@ -2679,7 +2706,7 @@
                         : `<span class="text-xs text-yellow-500 font-semibold">Awaiting...</span>`;
 
                     list.innerHTML += `
-                        <div class="flex items-center justify-between bg-gray-950 p-2 rounded-lg border border-gray-800">
+                        <div class="flex items-center justify-between bg-gray-955 p-2 rounded-lg border border-gray-800">
                             <span class="font-mono text-sm tracking-wider text-orange-500 font-black">${key}</span>
                             ${status}
                         </div>
