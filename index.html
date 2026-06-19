@@ -125,7 +125,7 @@
             </div>
             
             <div id="empty-leagues-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-550">No active leagues match your search parameters.</p>
+                <p class="text-xs text-gray-500">No active leagues match your search parameters.</p>
             </div>
         </section>
 
@@ -204,11 +204,11 @@
                         <div class="space-y-3">
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Match Start Date</label>
-                                <input type="date" id="match-start-date" onchange="updateCalculatedLastDate()" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
+                                <input type="date" id="match-start-date" onchange="updateCalculatedLastDate()" class="w-full bg-gray-955 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
                             </div>
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Daily Start Time</label>
-                                <input type="time" id="match-start-time" value="18:00" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
+                                <input type="time" id="match-start-time" value="18:00" class="w-full bg-gray-955 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
                             </div>
                         </div>
 
@@ -281,7 +281,7 @@
 
             <!-- In-Play Scorer Console (Fully Automated Scorer console) -->
             <div id="scorer-console-view" class="hidden bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-4">
-                <div class="flex justify-between items-center border-b border-gray-850 pb-3">
+                <div class="flex justify-between items-center border-b border-gray-855 pb-3">
                     <div>
                         <span id="scorer-match-header" class="text-[9px] text-orange-500 font-bold uppercase tracking-widest">Live Match Scorer</span>
                         <h3 id="scorer-match-teams" class="text-sm font-black mt-0.5">Select Teams to Start</h3>
@@ -306,7 +306,7 @@
                             <option value="bat">Batting First</option>
                             <option value="bowl">Bowling First</option>
                         </select>
-                        <button onclick="executeCoinFlip()" class="w-full py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-bold text-[10px] uppercase tracking-widest">Flip Coin & Start</button>
+                        <button onclick="executeCoinFlip()" class="w-full py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-bold text-[10px] uppercase tracking-widest text-white">Flip Coin & Start</button>
                     </div>
                 </div>
 
@@ -341,7 +341,7 @@
                         <p class="text-2xl font-black" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-400">(0.0)</span></p>
                         <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5">
                             <p class="text-gray-400 font-bold" id="scorer-metric-striker">Striker: --</p>
-                            <p class="text-gray-500" id="scorer-metric-nonstriker">Non-Striker: --</p>
+                            <p class="text-gray-505" id="scorer-metric-nonstriker">Non-Striker: --</p>
                             <p class="text-gray-404" id="scorer-metric-bowler">Bowler: --</p>
                         </div>
                     </div>
@@ -453,7 +453,7 @@
                         <i class="fa-brands fa-google"></i>
                         <span>Continue with Google</span>
                     </button>
-                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-855 font-bold rounded-xl text-xs text-gray-400">Logout</button>
+                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-855 hover:bg-gray-855 font-bold rounded-xl text-xs text-gray-400">Logout</button>
                 </div>
 
                 <!-- Camera Key Registration Box -->
@@ -476,12 +476,17 @@
             </div>
         </section>
 
-        <!-- Dynamic Live Match Broadcast View Overlay (JioCinema / Hotstar scorecard styling & DVR) -->
+        <!-- Dynamic Live Match Broadcast View Overlay (JioCinema / Hotstar scorecard styling & DVR & Views) -->
         <section id="live-match-spectator-overlay" class="hidden fixed inset-0 bg-gray-950 z-50 overflow-y-auto">
             <!-- Header bar inside live match view -->
             <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10">
                 <div class="flex items-center space-x-2">
                     <span class="bg-red-600 text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded text-white animate-pulse">LIVE</span>
+                    <!-- Real-Time Viewer Count Pill -->
+                    <span class="bg-black/40 text-gray-300 text-[9px] px-2 py-0.5 rounded flex items-center space-x-1 font-mono">
+                        <i class="fa-solid fa-eye text-orange-500"></i>
+                        <span id="overlay-live-views" class="font-bold">1</span>
+                    </span>
                     <h3 id="live-spectator-league-title" class="text-xs font-bold truncate max-w-[150px]">Elite League</h3>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -526,11 +531,11 @@
                             </div>
                             <!-- Bowler Bug -->
                             <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded">
-                                <span id="overlay-active-bowler" class="text-gray-300">🎳 Bowler: --</span>
+                                <span id="overlay-active-bowler" class="text-gray-300">Bowler: --</span>
                             </div>
                         </div>
 
-                        <!-- Row 2: Scorecard Bug Banner (Hotstar compact style) -->
+                        <!-- Row 2: Scorecard Bug Banner -->
                         <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 text-white rounded px-2 py-1 flex items-center justify-between font-black shadow-lg border border-orange-500 gap-1 text-[11px]">
                             <div class="flex items-center space-x-1.5">
                                 <span id="overlay-teams-abbrev" class="tracking-wide text-[10px] bg-black/30 px-1.5 py-0.5 rounded">T1 vs T2</span>
@@ -551,13 +556,13 @@
 
                         <!-- Playback Controller Seek Bar (Rewind Option buttons) -->
                         <div class="flex items-center space-x-1.5 pt-0.5 justify-start">
-                            <button onclick="handleRewind(10)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5">
+                            <button onclick="handleRewind(10)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
                                 <i class="fa-solid fa-backward text-[6px]"></i> <span>Rewind 10s</span>
                             </button>
-                            <button onclick="handleRewind(20)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5">
+                            <button onclick="handleRewind(20)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
                                 <i class="fa-solid fa-backward text-[6px]"></i> <span>Rewind 20s</span>
                             </button>
-                            <button onclick="resumeLiveStream()" class="px-1.5 py-0.5 bg-green-600/80 hover:bg-green-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5">
+                            <button onclick="resumeLiveStream()" class="px-1.5 py-0.5 bg-green-600/80 hover:bg-green-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
                                 <i class="fa-solid fa-play text-[6px]"></i> <span>Resume</span>
                             </button>
                         </div>
@@ -706,20 +711,20 @@
                 </div>
                 
                 <!-- Modal filter toggle (Top 10 vs See All) -->
-                <div class="flex space-x-2 bg-gray-950 p-1 rounded-lg text-[10px] font-bold">
+                <div class="flex space-x-2 bg-gray-955 p-1 rounded-lg text-[10px] font-bold">
                     <button id="btn-leaderboard-top10" onclick="toggleLeaderboardScope('top10')" class="flex-1 py-1.5 rounded-md text-center bg-orange-600 text-white">Top 10</button>
                     <button id="btn-leaderboard-seeall" onclick="toggleLeaderboardScope('seeall')" class="flex-1 py-1.5 rounded-md text-center text-gray-400">See All</button>
                 </div>
 
                 <!-- List container -->
-                <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1" id="leaderboard-modal-list">
+                <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white" id="leaderboard-modal-list">
                     <!-- Sorted players list goes here -->
                 </div>
             </div>
         </div>
 
         <!-- Dynamic Live Cameraman Broadcaster View Overlay -->
-        <section id="cameraman-live-overlay" class="hidden fixed inset-0 bg-gray-950 z-50 p-6 flex flex-col justify-between">
+        <section id="cameraman-live-overlay" class="hidden fixed inset-0 bg-gray-955 z-50 p-6 flex flex-col justify-between">
             <div class="flex justify-between items-center border-b border-gray-800 pb-4">
                 <div>
                     <span class="bg-green-600 text-[10px] font-black tracking-widest px-2 py-0.5 rounded text-white uppercase">Broadcasting Active</span>
@@ -732,13 +737,13 @@
             <div class="relative max-w-2xl mx-auto w-full aspect-video bg-black rounded-xl overflow-hidden my-6">
                 <video id="cameraman-preview-video" class="w-full h-full object-cover" autoplay playsinline muted></video>
                 <canvas id="cameraman-capture-canvas" class="hidden"></canvas>
-                <div class="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 rounded border border-gray-850 text-[10px] font-mono text-white">
+                <div class="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 rounded border border-gray-855 text-[10px] font-mono text-white">
                     <span class="text-green-500 animate-pulse">&bull;</span> Streaming via WebRTC & Canvas fallbacks
                 </div>
             </div>
 
             <!-- Countdown screen inside cameraman if matching is not active -->
-            <div id="cameraman-countdown-panel" class="hidden text-center max-w-md mx-auto py-6 bg-gray-900 border border-gray-850 rounded-xl">
+            <div id="cameraman-countdown-panel" class="hidden text-center max-w-md mx-auto py-6 bg-gray-900 border border-gray-855 rounded-xl">
                 <h4 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Awaiting Active Matches</h4>
                 <p id="cameraman-timer-label" class="text-xs text-gray-400 mt-1">Match starts in: --:--:--</p>
             </div>
@@ -803,6 +808,7 @@
         let selectedScorerLeagueId = null;
         let selectedScorerMatchIndex = null;
         let videoRotationMode = false;
+        let managedCountdownsTimer = null;
         
         // Dynamic Cameraman Broadcasting states
         let localCameraStream = null;
@@ -1040,7 +1046,7 @@
                             </div>
                             <div class="col-span-3">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Image URL</label>
-                                <input type="text" id="team-${i}-player-${j}-img" placeholder="https://..." class="w-full bg-gray-950 border border-gray-855 rounded p-1 text-[10px] text-white">
+                                <input type="text" id="team-${i}-player-${j}-img" placeholder="https://..." class="w-full bg-gray-955 border border-gray-855 rounded p-1 text-[10px] text-white">
                             </div>
                             <div class="col-span-2 text-center flex flex-col items-center">
                                 <span class="text-[8px] text-gray-400 font-bold block">Captain</span>
@@ -1178,7 +1184,7 @@
                     { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', round: 10 }, { home: 'E', away: 'H', round: 11 }, { home: 'F', away: 'G', round: 12 },
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
-                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', round: 23 }, { home: 'D', away: 'F', round: 24 },
+                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', rounded: 23 }, { home: 'D', away: 'F', round: 24 },
                     { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
                 ];
                 playoffTemplates = [
@@ -1222,7 +1228,7 @@
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
                     { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', round: 42 },
                     { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', round: 45 },
-                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', round: 47 }, { home: 'I', away: 'E', round: 48 },
+                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', rounded: 47 }, { home: 'I', away: 'E', round: 48 },
                     { home: 'J', away: 'F', round: 49 }, { home: 'I', away: 'G', round: 50 }, { home: 'J', away: 'H', round: 51 },
                     { home: 'D', away: 'A', round: 52 }, { home: 'C', away: 'B', round: 53 }, { home: 'H', away: 'E', round: 54 },
                     { home: 'G', away: 'F', round: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
@@ -1470,7 +1476,7 @@
                     const autoEndDate = calculateLeagueEndDate(league.metadata.startDate, roundsCount);
 
                     container.innerHTML += `
-                        <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3">
+                        <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3" id="managed-league-card-${key}">
                             <div class="flex justify-between items-start gap-1">
                                 <h3 class="font-extrabold text-sm line-clamp-1">${league.metadata.name}</h3>
                                 <span class="text-orange-500 font-bold text-[10px] uppercase bg-orange-600/10 px-1.5 py-0.5 rounded">
@@ -1489,9 +1495,17 @@
                                     ${optionsHTML || `<option disabled>All matches completed</option>`}
                                 </select>
                             </div>
-                            <button onclick="initiateMatchScoring('${key}')" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider" ${!optionsHTML ? 'disabled' : ''}>
-                                Open Scorer Console
-                            </button>
+
+                            <!-- Dynamic Countdown and Console trigger button wrapper -->
+                            <div class="space-y-2 pt-1">
+                                <div id="countdown-banner-${key}" class="hidden text-center py-2 bg-gray-955 border border-red-500/20 rounded-xl">
+                                    <p class="text-[9px] text-red-500 font-black uppercase tracking-widest">Awaiting scheduled start time</p>
+                                    <p id="countdown-timer-${key}" class="text-xs font-mono font-bold text-white mt-0.5">--:--:--</p>
+                                </div>
+                                <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white" ${!optionsHTML ? 'disabled' : ''}>
+                                    Open Scorer Console
+                                </button>
+                            </div>
                         </div>
                     `;
                 }
@@ -1501,7 +1515,56 @@
                 if (emptyState) emptyState.classList.remove("hidden");
             } else {
                 if (emptyState) emptyState.classList.add("hidden");
+                // Launch dynamic countdown supervisions
+                initManagedLeaguesTickers();
             }
+        }
+
+        function initManagedLeaguesTickers() {
+            if (managedCountdownsTimer) clearInterval(managedCountdownsTimer);
+            
+            const tick = () => {
+                Object.keys(allLeagues).forEach(key => {
+                    const league = allLeagues[key];
+                    if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
+                        const targetStr = `${league.metadata.startDate}T${league.metadata.startTime || "18:00"}`;
+                        const targetTime = new Date(targetStr).getTime();
+                        const now = Date.now();
+
+                        const banner = document.getElementById(`countdown-banner-${key}`);
+                        const timer = document.getElementById(`countdown-timer-${key}`);
+                        const button = document.getElementById(`btn-score-console-${key}`);
+
+                        if (!banner || !timer || !button) return;
+
+                        if (now < targetTime) {
+                            // Match is in the future. Lock access.
+                            banner.classList.remove("hidden");
+                            button.setAttribute("disabled", "true");
+                            button.className = "w-full py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase tracking-wider cursor-not-allowed";
+                            button.textContent = "Locked (Starts Daily Start Time)";
+
+                            // Compute ticking diff
+                            const diff = targetTime - now;
+                            const days = Math.floor(diff / (24 * 3600 * 1000));
+                            const hours = Math.floor((diff % (24 * 3600 * 1000)) / (3600 * 1000));
+                            const mins = Math.floor((diff % (3600 * 1000)) / (60 * 1000));
+                            const secs = Math.floor((diff % (60 * 1000)) / 1000);
+
+                            timer.textContent = `${days > 0 ? `${days}d ` : ""}${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+                        } else {
+                            // Match is active/unlocked. Enable starting!
+                            banner.classList.add("hidden");
+                            button.removeAttribute("disabled");
+                            button.className = "w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white";
+                            button.textContent = "START LIVE / Open Console";
+                        }
+                    }
+                });
+            };
+
+            tick();
+            managedCountdownsTimer = setInterval(tick, 1000);
         }
 
         function initiateMatchScoring(leagueId) {
@@ -1583,6 +1646,7 @@
                     inning: 1,
                     needsInning2Lineup: false,
                     needsCompletionSave: false,
+                    viewerCount: 1,
                     tossResult: `${winner} won toss and elected to ${decision} first.`
                 };
 
@@ -2132,6 +2196,9 @@
             currentlySelectedLeagueId = leagueId;
             document.getElementById("live-match-spectator-overlay").classList.remove("hidden");
             
+            // Increment dynamic live viewer count in Firebase Rtdb
+            db.ref(`leagues/${leagueId}/liveMatch/viewerCount`).transaction(c => (c || 0) + 1);
+
             db.ref(`leagues/${leagueId}/alertBroadcast`).on('value', snapshot => {
                 const alertData = snapshot.val();
                 if (alertData && (Date.now() - alertData.timestamp < 6000)) {
@@ -2149,6 +2216,10 @@
         }
 
         function closeLiveSpectatorOverlay() {
+            if (currentlySelectedLeagueId) {
+                // Decrement viewer count cleanly
+                db.ref(`leagues/${currentlySelectedLeagueId}/liveMatch/viewerCount`).transaction(c => Math.max(0, (c || 1) - 1));
+            }
             document.getElementById("live-match-spectator-overlay").classList.add("hidden");
             if (rotationTimer) clearInterval(rotationTimer);
             currentlySelectedLeagueId = null;
@@ -2295,18 +2366,60 @@
 
             if (league && league.fixtures) {
                 league.fixtures.forEach((match, index) => {
-                    const homeCaptain = getCaptainDetails(league, match.homeTeam);
-                    const thumbImg = homeCaptain.image || "https://img.icons8.com/color/150/cricket.png";
+                    let homeCaptain = getCaptainDetails(league, match.homeTeam);
+                    let awayCaptain = getCaptainDetails(league, match.awayTeam);
+                    
+                    let thumbImg = homeCaptain.image;
+                    let hasCustomUrl = thumbImg && thumbImg !== "https://img.icons8.com/color/150/cricket.png";
+                    let winnerName = "";
+
+                    if (match.status === "COMPLETED") {
+                        const runs1 = match.scorecard && match.scorecard.inning1 ? match.scorecard.inning1.runs : 0;
+                        const runs2 = match.scorecard && match.scorecard.inning2 ? match.scorecard.inning2.runs : 0;
+                        
+                        if (runs1 > runs2) {
+                            winnerName = match.homeTeam;
+                        } else if (runs2 > runs1) {
+                            winnerName = match.awayTeam;
+                        } else {
+                            winnerName = "Tie";
+                        }
+                    }
+
+                    // Render fallbacks or custom image URL
+                    let fallbackBadgeHTML = "";
+                    if (!hasCustomUrl) {
+                        // Drawing initials with fallback styling
+                        fallbackBadgeHTML = `
+                            <div class="absolute inset-0 bg-gradient-to-br from-orange-650/40 to-amber-600/50 flex items-center justify-center font-black text-2xl tracking-widest text-orange-400">
+                                ${generateShortName(match.homeTeam)}
+                            </div>
+                        `;
+                    } else {
+                        fallbackBadgeHTML = `<img src="${thumbImg}" class="w-full h-full object-cover opacity-80">`;
+                    }
 
                     container.innerHTML += `
-                        <div onclick="playArchivedVideo('${league.metadata.id}', ${index})" class="bg-gray-955 border border-gray-855 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition">
+                        <div onclick="launchLiveSpectator('${league.metadata.id}')" class="bg-gray-955 border border-gray-850 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition">
                             <div class="relative aspect-video bg-black flex items-center justify-center">
-                                <img src="${thumbImg}" class="w-full h-full object-cover opacity-80" onerror="this.src='https://img.icons8.com/color/150/cricket.png'">
+                                ${fallbackBadgeHTML}
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                                
+                                <!-- Winner ribbon overlay -->
+                                ${winnerName ? `
+                                    <span class="absolute top-2 left-2 bg-green-600 text-white font-black text-[7px] px-1.5 py-0.5 rounded shadow tracking-widest uppercase">
+                                        🏆 WINNER: ${winnerName}
+                                    </span>
+                                ` : `
+                                    <span class="absolute top-2 left-2 bg-blue-600 text-white font-black text-[7px] px-1.5 py-0.5 rounded shadow tracking-widest uppercase">
+                                        Fixture
+                                    </span>
+                                `}
+
                                 <span class="absolute bottom-2 right-2 bg-black/60 text-[8px] font-black px-1.5 py-0.5 rounded text-white">PLAYBACK</span>
                             </div>
                             <div class="p-2 space-y-1">
-                                <p class="text-[10px] font-bold truncate">${match.homeTeam} vs ${match.awayTeam}</p>
+                                <p class="text-[10px] font-bold truncate text-white">${match.homeTeam} vs ${match.awayTeam}</p>
                                 <p class="text-[8px] text-gray-500 font-semibold uppercase">Captain: ${homeCaptain.name}</p>
                             </div>
                         </div>
@@ -2359,13 +2472,11 @@
         // Live stats calculations and scoring sync logic
         function syncLiveViewerState(league) {
             if (!league) return;
-
+            const data = league.liveMatch;
             const titleElement = document.getElementById("live-spectator-league-title");
-            if (titleElement) titleElement.textContent = league.metadata ? league.metadata.name : "Elite League";
+            if (titleElement) titleElement.textContent = league.metadata.name;
 
-            // Populate fixtures, standings and awards globally for the selected league (ALWAYS load these!)
             renderIplFixtures(league);
-            calculateDynamicStandings(league);
             updateCapLeaders(league);
 
             const matchCountdownStr = document.getElementById("match-countdown-string");
@@ -2379,7 +2490,6 @@
             const runsRateElement = document.getElementById("overlay-run-rates");
             const reqRunsElement = document.getElementById("overlay-required-runs");
 
-            const data = league.liveMatch;
             if (!data || !data.active) {
                 // No active match, show countdown/fallback pane
                 document.getElementById("live-countdown-panel").classList.remove("hidden");
@@ -2417,6 +2527,10 @@
             if (activeBat1) activeBat1.textContent = `🏏 ${data.striker || '--'}*`;
             if (activeBat2) activeBat2.textContent = `${data.nonStriker || '--'}`;
             if (activeBowl) activeBowl.textContent = `🎳 ${data.currentBowler || '--'}`;
+
+            // Sync dynamic live viewers count in real-time
+            const viewsElement = document.getElementById("overlay-live-views");
+            if (viewsElement) viewsElement.textContent = data.viewerCount || 1;
 
             // Calculate Live Run Rates
             const overDec = overToDecimal(data.overs);
@@ -2499,6 +2613,8 @@
                     `;
                 });
             }
+
+            calculateDynamicStandings(league);
         }
 
         // Leaderboards Calculation & Awards Tab Updating
@@ -2529,91 +2645,6 @@
             document.getElementById("mvp-points").textContent = players[0].mvpPoints;
         }
 
-        // Interactive Cap Modal opening sequence
-        function openStatsLeaderboardModal(type) {
-            currentLeaderboardType = type;
-            currentLeaderboardScope = 'top10';
-            
-            const modal = document.getElementById("stats-leaderboard-modal");
-            if (modal) modal.classList.remove("hidden");
-
-            const title = document.getElementById("leaderboard-modal-title");
-            if (title) {
-                title.textContent = type === 'runs' ? "Orange Cap Standings" : "Purple Cap Standings";
-            }
-
-            renderCapLeaderboardList();
-        }
-
-        function closeStatsLeaderboardModal() {
-            const modal = document.getElementById("stats-leaderboard-modal");
-            if (modal) modal.classList.add("hidden");
-        }
-
-        function toggleLeaderboardScope(scope) {
-            currentLeaderboardScope = scope;
-            
-            const btnTop10 = document.getElementById("btn-leaderboard-top10");
-            const btnSeeAll = document.getElementById("btn-leaderboard-seeall");
-            
-            if (scope === 'top10') {
-                btnTop10.className = "flex-1 py-1.5 rounded-md text-center bg-orange-600 text-white";
-                btnSeeAll.className = "flex-1 py-1.5 rounded-md text-center text-gray-400";
-            } else {
-                btnTop10.className = "flex-1 py-1.5 rounded-md text-center text-gray-400";
-                btnSeeAll.className = "flex-1 py-1.5 rounded-md text-center bg-orange-600 text-white";
-            }
-            
-            renderCapLeaderboardList();
-        }
-
-        function renderCapLeaderboardList() {
-            const listContainer = document.getElementById("leaderboard-modal-list");
-            if (!listContainer || !currentlySelectedLeagueId) return;
-            listContainer.innerHTML = "";
-
-            const league = allLeagues[currentlySelectedLeagueId];
-            if (!league) return;
-
-            const stats = league.playerStats || {};
-            const players = Object.keys(stats).map(name => ({
-                name: name,
-                runs: stats[name].runs || 0,
-                wickets: stats[name].wickets || 0,
-                mvpPoints: stats[name].mvpPoints || 0
-            }));
-
-            // Sort based on type
-            if (currentLeaderboardType === 'runs') {
-                players.sort((a, b) => b.runs - a.runs);
-            } else {
-                players.sort((a, b) => b.wickets - a.wickets);
-            }
-
-            // Limit scope if top10 selected
-            const visiblePlayers = currentLeaderboardScope === 'top10' ? players.slice(0, 10) : players;
-
-            if (visiblePlayers.length === 0) {
-                listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No stats recorded yet.</p>`;
-                return;
-            }
-
-            visiblePlayers.forEach((p, idx) => {
-                const val = currentLeaderboardType === 'runs' ? `${p.runs} Runs` : `${p.wickets} Wickets`;
-                const metricColor = currentLeaderboardType === 'runs' ? 'text-amber-500' : 'text-fuchsia-500';
-                
-                listContainer.innerHTML += `
-                    <div class="flex items-center justify-between bg-gray-950 p-2.5 rounded-lg border border-gray-800">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-[10px] font-black text-gray-550">#${idx + 1}</span>
-                            <span class="text-xs font-bold text-white">${p.name}</span>
-                        </div>
-                        <span class="text-xs font-black font-mono ${metricColor}">${val}</span>
-                    </div>
-                `;
-            });
-        }
-
         // Render IPL fixtures in tabs
         function renderIplFixtures(league) {
             const container = document.getElementById("ipl-fixtures-container");
@@ -2638,7 +2669,7 @@
                                 <p class="text-[9px] text-gray-455 uppercase font-black tracking-wider">Match ${index + 1} &bull; ${match.type}</p>
                                 <div class="flex items-center space-x-2 font-bold text-white">
                                     <span>${generateShortName(match.homeTeam)}</span>
-                                    <span class="text-gray-650 font-black">vs</span>
+                                    <span class="text-gray-655 font-black">vs</span>
                                     <span>${generateShortName(match.awayTeam)}</span>
                                 </div>
                                 <p class="text-[9px] font-mono text-orange-400">${dateStr} @ ${startTimeStr}</p>
@@ -2775,7 +2806,7 @@
             });
 
             if (count === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-2">No leagues created by you yet.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-550 text-center py-2">No leagues created by you yet.</p>`;
             }
         }
 
