@@ -177,7 +177,7 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Match Overs</label>
-                                <select id="match-over-limit" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
+                                <select id="match-over-limit" class="w-full bg-gray-955 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
                                     <option value="5" selected>5 Overs</option>
                                     <option value="10">10 Overs</option>
                                     <option value="20">20 Overs (T20)</option>
@@ -185,7 +185,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Players Per Team</label>
-                                <select id="players-per-team" onchange="updateCalculatedLastDate()" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
+                                <select id="players-per-team" onchange="updateCalculatedLastDate()" class="w-full bg-gray-955 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
                                     <option value="2">2 Players</option>
                                     <option value="3">3 Players</option>
                                     <option value="4">4 Players</option>
@@ -275,7 +275,7 @@
             </div>
 
             <div id="empty-managed-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-550 mb-4">You have not created any leagues yet.</p>
+                <p class="text-xs text-gray-500 mb-4">You have not created any leagues yet.</p>
                 <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold">Launch Creation Wizard</button>
             </div>
 
@@ -333,7 +333,7 @@
                 <!-- Step C: Event Controller & Action Buttons -->
                 <div id="scorer-controls" class="hidden space-y-4">
                     <!-- Inline Match Score Visual -->
-                    <div class="bg-gray-950 p-3.5 border border-gray-800 rounded-xl space-y-3">
+                    <div class="bg-gray-955 p-3.5 border border-gray-800 rounded-xl space-y-3">
                         <div class="flex justify-between items-center">
                             <p class="text-[9px] text-gray-500 uppercase tracking-widest font-bold" id="scorer-inning-label">First Innings</p>
                             <span id="super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[9px] px-2 py-0.5 rounded">SUPER OVER</span>
@@ -477,7 +477,7 @@
         </section>
 
         <!-- Dynamic Live Match Broadcast View Overlay (JioCinema / Hotstar scorecard styling & DVR & Views) -->
-        <section id="live-match-spectator-overlay" class="hidden fixed inset-0 bg-gray-950 z-50 overflow-y-auto">
+        <section id="live-match-spectator-overlay" class="hidden fixed inset-0 bg-gray-955 z-50 overflow-y-auto">
             <!-- Header bar inside live match view -->
             <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10">
                 <div class="flex items-center space-x-2">
@@ -723,33 +723,28 @@
             </div>
         </div>
 
-        <!-- Dynamic Live Cameraman Broadcaster View Overlay -->
+        <!-- Dynamic Live Cameraman Broadcaster View Overlay (Dedicated mobile fullscreen live video stream panel) -->
         <section id="cameraman-live-overlay" class="hidden fixed inset-0 bg-gray-955 z-50 p-6 flex flex-col justify-between">
             <div class="flex justify-between items-center border-b border-gray-800 pb-4">
                 <div>
-                    <span class="bg-green-600 text-[10px] font-black tracking-widest px-2 py-0.5 rounded text-white uppercase">Broadcasting Active</span>
-                    <h3 id="cameraman-assigned-title" class="text-lg font-black mt-1">League Feed Slot</h3>
+                    <span class="bg-green-600 text-[10px] font-black tracking-widest px-2 py-0.5 rounded text-white uppercase animate-pulse">Broadcasting Live</span>
+                    <h3 id="cameraman-assigned-title" class="text-lg font-black mt-1 text-white">League Feed Slot</h3>
                 </div>
-                <button onclick="stopBroadcasting()" class="px-3 py-1 bg-red-600 hover:bg-red-700 font-bold text-xs rounded-lg text-white">Terminate</button>
+                <button onclick="stopBroadcasting()" class="px-3 py-1.5 bg-red-650 hover:bg-red-700 font-bold text-xs rounded-lg text-white">Terminate Stream</button>
             </div>
 
             <!-- Preview Viewport -->
-            <div class="relative max-w-2xl mx-auto w-full aspect-video bg-black rounded-xl overflow-hidden my-6">
+            <div class="relative max-w-2xl mx-auto w-full aspect-video bg-black rounded-xl overflow-hidden my-6 border border-gray-800">
                 <video id="cameraman-preview-video" class="w-full h-full object-cover" autoplay playsinline muted></video>
                 <canvas id="cameraman-capture-canvas" class="hidden"></canvas>
                 <div class="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1 rounded border border-gray-855 text-[10px] font-mono text-white">
-                    <span class="text-green-500 animate-pulse">&bull;</span> Streaming via WebRTC & Canvas fallbacks
+                    <span class="text-green-500 animate-pulse">&bull;</span> Dedicated Environment Feed Active
                 </div>
             </div>
 
-            <!-- Countdown screen inside cameraman if matching is not active -->
-            <div id="cameraman-countdown-panel" class="hidden text-center max-w-md mx-auto py-6 bg-gray-900 border border-gray-855 rounded-xl">
-                <h4 class="text-sm font-bold uppercase text-orange-500 tracking-wider">Awaiting Active Matches</h4>
-                <p id="cameraman-timer-label" class="text-xs text-gray-400 mt-1">Match starts in: --:--:--</p>
-            </div>
-
-            <div class="text-center text-xs text-gray-550">
-                Ensure device stays online. Keep active window open to process continuous signals.
+            <div class="text-center text-xs text-gray-550 space-y-1">
+                <p class="text-orange-500 font-black">KEEP ACTIVE &bull; STAYS LIVE</p>
+                <p>Ensure device stays online. Keep active window open to process continuous signals.</p>
             </div>
         </section>
 
@@ -1014,6 +1009,25 @@
             return true;
         }
 
+        // Helper to compute exact target scheduled timestamp of any match round offset
+        function getMatchScheduledTimestamp(league, matchIndex) {
+            const match = league.fixtures[matchIndex];
+            if (!match) return 0;
+            const startDateStr = league.metadata.startDate;
+            const startTimeStr = league.metadata.startTime || "18:00";
+            
+            const startDate = new Date(startDateStr);
+            // Add (match.round - 1) days
+            const matchDate = new Date(startDate.getTime() + (match.round - 1) * 24 * 60 * 60 * 1000);
+            
+            const year = matchDate.getFullYear();
+            const month = String(matchDate.getMonth() + 1).padStart(2, '0');
+            const day = String(matchDate.getDate()).padStart(2, '0');
+            
+            const matchTargetStr = `${year}-${month}-${day}T${startTimeStr}`;
+            return new Date(matchTargetStr).getTime();
+        }
+
         // 7. Dynamic Team Input Matrix with Captain Designation radio button
         function adjustTeamRosterInputs() {
             const teamCountInput = document.getElementById("league-teams-count");
@@ -1057,7 +1071,7 @@
                 }
 
                 rosterArea.innerHTML += `
-                    <div class="border border-gray-800 p-3 rounded-xl space-y-2 bg-gray-950 text-white">
+                    <div class="border border-gray-800 p-3 rounded-xl space-y-2 bg-gray-955 text-white">
                         <div class="flex justify-between items-center">
                             <h4 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Team ${i} Specifications</h4>
                             <input type="text" id="team-${i}-name" placeholder="Team ${i} Name" class="bg-gray-900 border border-gray-800 rounded py-1 px-2 text-xs text-white font-bold w-32">
@@ -1527,8 +1541,17 @@
                 Object.keys(allLeagues).forEach(key => {
                     const league = allLeagues[key];
                     if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
-                        const targetStr = `${league.metadata.startDate}T${league.metadata.startTime || "18:00"}`;
-                        const targetTime = new Date(targetStr).getTime();
+                        const selectEl = document.getElementById(`match-select-${key}`);
+                        if (!selectEl) return;
+                        
+                        const selectedIdx = parseInt(selectEl.value);
+                        if (isNaN(selectedIdx)) return;
+
+                        const match = league.fixtures[selectedIdx];
+                        if (!match) return;
+
+                        // Calculate exact scheduled target timestamp based on round day offsets
+                        const targetTime = getMatchScheduledTimestamp(league, selectedIdx);
                         const now = Date.now();
 
                         const banner = document.getElementById(`countdown-banner-${key}`);
@@ -1538,13 +1561,12 @@
                         if (!banner || !timer || !button) return;
 
                         if (now < targetTime) {
-                            // Match is in the future. Lock access.
+                            // Match is scheduled for the future. LOCK Access completely.
                             banner.classList.remove("hidden");
                             button.setAttribute("disabled", "true");
                             button.className = "w-full py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase tracking-wider cursor-not-allowed";
-                            button.textContent = "Locked (Starts Daily Start Time)";
+                            button.textContent = "Locked (Scheduled Start pending)";
 
-                            // Compute ticking diff
                             const diff = targetTime - now;
                             const days = Math.floor(diff / (24 * 3600 * 1000));
                             const hours = Math.floor((diff % (24 * 3600 * 1000)) / (3600 * 1000));
@@ -1553,7 +1575,7 @@
 
                             timer.textContent = `${days > 0 ? `${days}d ` : ""}${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
                         } else {
-                            // Match is active/unlocked. Enable starting!
+                            // Match start time has successfully passed. Unlock scorer!
                             banner.classList.add("hidden");
                             button.removeAttribute("disabled");
                             button.className = "w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white";
@@ -2196,7 +2218,7 @@
             currentlySelectedLeagueId = leagueId;
             document.getElementById("live-match-spectator-overlay").classList.remove("hidden");
             
-            // Increment dynamic live viewer count in Firebase Rtdb
+            // Increment dynamic live viewer count in Firebase Rtdb safely
             db.ref(`leagues/${leagueId}/liveMatch/viewerCount`).transaction(c => (c || 0) + 1);
 
             db.ref(`leagues/${leagueId}/alertBroadcast`).on('value', snapshot => {
@@ -2217,7 +2239,7 @@
 
         function closeLiveSpectatorOverlay() {
             if (currentlySelectedLeagueId) {
-                // Decrement viewer count cleanly
+                // Decrement live viewer count cleanly
                 db.ref(`leagues/${currentlySelectedLeagueId}/liveMatch/viewerCount`).transaction(c => Math.max(0, (c || 1) - 1));
             }
             document.getElementById("live-match-spectator-overlay").classList.add("hidden");
@@ -2400,7 +2422,7 @@
                     }
 
                     container.innerHTML += `
-                        <div onclick="launchLiveSpectator('${league.metadata.id}')" class="bg-gray-955 border border-gray-850 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition">
+                        <div onclick="launchLiveSpectator('${league.metadata.id}')" class="bg-gray-955 border border-gray-855 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition">
                             <div class="relative aspect-video bg-black flex items-center justify-center">
                                 ${fallbackBadgeHTML}
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
@@ -2796,7 +2818,7 @@
                                 <h4 class="text-xs font-bold text-white truncate">${league.metadata.name}</h4>
                                 <p class="text-[9px] text-gray-400">Short: ${league.metadata.shortName || generateShortName(league.metadata.name)}</p>
                             </div>
-                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-650 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans">
+                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-655 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans">
                                 <i class="fa-solid fa-trash-can"></i>
                                 <span>Delete</span>
                             </button>
@@ -2927,6 +2949,7 @@
             }
         }
 
+        // Dedicated Cameraman remote broadcaster UI Redirection fixed flawlessly
         function initiateRemoteCameraBroadcast(leagueId, code) {
             document.getElementById("cameraman-live-overlay").classList.remove("hidden");
             document.getElementById("cameraman-assigned-title").textContent = `Linked Feed: ${code}`;
