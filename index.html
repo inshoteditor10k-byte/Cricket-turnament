@@ -101,7 +101,7 @@
                     <i class="fa-brands fa-google text-md"></i>
                     <span>Continue with Google</span>
                 </button>
-                <button onclick="closeAuthGate()" class="mt-4 text-xs text-gray-500 hover:text-gray-400 underline">Browse Public Directories</button>
+                <button onclick="closeAuthGate()" class="mt-4 text-xs text-gray-550 hover:text-gray-400 underline">Browse Public Directories</button>
             </div>
         </div>
 
@@ -125,7 +125,7 @@
             </div>
             
             <div id="empty-leagues-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-500">No active leagues match your search parameters.</p>
+                <p class="text-xs text-gray-505">No active leagues match your search parameters.</p>
             </div>
         </section>
 
@@ -275,7 +275,7 @@
             </div>
 
             <div id="empty-managed-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-500 mb-4">You have not created any leagues yet.</p>
+                <p class="text-xs text-gray-550 mb-4">You have not created any leagues yet.</p>
                 <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold">Launch Creation Wizard</button>
             </div>
 
@@ -420,7 +420,7 @@
 
                 <div class="space-y-3">
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">Associated League</label>
-                    <select id="camera-association-select" class="w-full bg-gray-950 border border-gray-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-orange-500 text-xs text-white">
+                    <select id="camera-association-select" class="w-full bg-gray-955 border border-gray-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-orange-500 text-xs text-white">
                         <!-- Populated with managed leagues -->
                     </select>
                 </div>
@@ -710,7 +710,7 @@
                     <button onclick="closeStatsLeaderboardModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg">Close</button>
                 </div>
                 
-                <!-- Modal filter toggle (Top 10 vs See All) -->
+                <!-- Modal filter toggle -->
                 <div class="flex space-x-2 bg-gray-955 p-1 rounded-lg text-[10px] font-bold">
                     <button id="btn-leaderboard-top10" onclick="toggleLeaderboardScope('top10')" class="flex-1 py-1.5 rounded-md text-center bg-orange-600 text-white">Top 10</button>
                     <button id="btn-leaderboard-seeall" onclick="toggleLeaderboardScope('seeall')" class="flex-1 py-1.5 rounded-md text-center text-gray-400">See All</button>
@@ -730,7 +730,7 @@
                     <span class="bg-green-600 text-[10px] font-black tracking-widest px-2 py-0.5 rounded text-white uppercase animate-pulse">Broadcasting Live</span>
                     <h3 id="cameraman-assigned-title" class="text-lg font-black mt-1 text-white">League Feed Slot</h3>
                 </div>
-                <button onclick="stopBroadcasting()" class="px-3 py-1.5 bg-red-650 hover:bg-red-700 font-bold text-xs rounded-lg text-white">Terminate Stream</button>
+                <button onclick="stopBroadcasting()" class="px-3 py-1.5 bg-red-655 hover:bg-red-700 font-bold text-xs rounded-lg text-white">Terminate Stream</button>
             </div>
 
             <!-- Preview Viewport -->
@@ -742,7 +742,7 @@
                 </div>
             </div>
 
-            <div class="text-center text-xs text-gray-550 space-y-1">
+            <div class="text-center text-xs text-gray-555 space-y-1">
                 <p class="text-orange-500 font-black">KEEP ACTIVE &bull; STAYS LIVE</p>
                 <p>Ensure device stays online. Keep active window open to process continuous signals.</p>
             </div>
@@ -1199,7 +1199,7 @@
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
                     { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', rounded: 23 }, { home: 'D', away: 'F', round: 24 },
-                    { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
+                    { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', rounded: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
                 ];
                 playoffTemplates = [
                     { type: 'QUALIFIER 1', homePlaceholder: 'Rank 1 Team', awayPlaceholder: 'Rank 2 Team', round: 29 },
@@ -1215,7 +1215,7 @@
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'F', away: 'I', round: 17 }, { home: 'A', away: 'F', round: 18 }, { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'H', round: 20 },
                     { home: 'D', away: 'I', round: 21 }, { home: 'E', away: 'H', round: 22 }, { home: 'A', away: 'G', round: 23 }, { home: 'B', away: 'H', round: 24 },
-                    { home: 'C', away: 'I', round: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
+                    { home: 'C', away: 'I', rounded: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
                     { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', round: 32 },
                     { home: 'C', away: 'F', round: 33 }, { home: 'D', away: 'G', round: 34 }, { home: 'E', away: 'I', round: 35 }, { home: 'F', away: 'H', round: 36 }
                 ];
@@ -1668,7 +1668,6 @@
                     inning: 1,
                     needsInning2Lineup: false,
                     needsCompletionSave: false,
-                    viewerCount: 1,
                     tossResult: `${winner} won toss and elected to ${decision} first.`
                 };
 
@@ -2381,6 +2380,7 @@
             return { name: "Captain", image: "https://img.icons8.com/color/150/cricket.png" };
         }
 
+        // Reconfigured with Dual Team Split Premium Thumbnail Layout (verbatim details requested)
         function renderVideoArchiveGrid(league) {
             const container = document.getElementById("video-archive-grid");
             if (!container) return;
@@ -2392,7 +2392,7 @@
                     let awayCaptain = getCaptainDetails(league, match.awayTeam);
                     
                     let thumbImg = homeCaptain.image;
-                    let hasCustomUrl = thumbImg && thumbImg !== "https://img.icons8.com/color/150/cricket.png";
+                    let hasCustomUrl = thumbImg && thumbImg !== "https://img.icons8.com/color/150/cricket.png" && thumbImg.trim() !== "";
                     let winnerName = "";
 
                     if (match.status === "COMPLETED") {
@@ -2409,40 +2409,75 @@
                     }
 
                     // Render fallbacks or custom image URL
-                    let fallbackBadgeHTML = "";
-                    if (!hasCustomUrl) {
-                        // Drawing initials with fallback styling
-                        fallbackBadgeHTML = `
-                            <div class="absolute inset-0 bg-gradient-to-br from-orange-650/40 to-amber-600/50 flex items-center justify-center font-black text-2xl tracking-widest text-orange-400">
+                    let homeImgHTML = "";
+                    let homeHasPic = homeCaptain.image && homeCaptain.image !== "https://img.icons8.com/color/150/cricket.png" && homeCaptain.image.trim() !== "";
+                    if (homeHasPic) {
+                        homeImgHTML = `<img src="${homeCaptain.image}" class="w-12 h-12 rounded-full object-cover border-2 border-orange-500 shadow-md">`;
+                    } else {
+                        homeImgHTML = `
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-600 to-amber-500 flex items-center justify-center font-black text-xs tracking-wider border-2 border-orange-500 text-white shadow-md">
                                 ${generateShortName(match.homeTeam)}
                             </div>
                         `;
+                    }
+
+                    let awayImgHTML = "";
+                    let awayHasPic = awayCaptain.image && awayCaptain.image !== "https://img.icons8.com/color/150/cricket.png" && awayCaptain.image.trim() !== "";
+                    if (awayHasPic) {
+                        awayImgHTML = `<img src="${awayCaptain.image}" class="w-12 h-12 rounded-full object-cover border-2 border-green-500 shadow-md">`;
                     } else {
-                        fallbackBadgeHTML = `<img src="${thumbImg}" class="w-full h-full object-cover opacity-80">`;
+                        awayImgHTML = `
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center font-black text-xs tracking-wider border-2 border-green-500 text-white shadow-md">
+                                ${generateShortName(match.awayTeam)}
+                            </div>
+                        `;
                     }
 
                     container.innerHTML += `
-                        <div onclick="launchLiveSpectator('${league.metadata.id}')" class="bg-gray-955 border border-gray-855 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition">
-                            <div class="relative aspect-video bg-black flex items-center justify-center">
-                                ${fallbackBadgeHTML}
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                                
-                                <!-- Winner ribbon overlay -->
+                        <div onclick="launchLiveSpectator('${league.metadata.id}')" class="bg-gray-955 border border-gray-850 rounded-2xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition duration-300 shadow-xl text-white">
+                            <!-- Header ribbon/badge -->
+                            <div class="bg-gray-900/80 px-2.5 py-1 flex justify-between items-center text-[8px] border-b border-gray-850">
+                                <span class="text-gray-400 font-bold uppercase tracking-wider">Round ${match.round} &bull; ${match.type || 'Match'}</span>
                                 ${winnerName ? `
-                                    <span class="absolute top-2 left-2 bg-green-600 text-white font-black text-[7px] px-1.5 py-0.5 rounded shadow tracking-widest uppercase">
-                                        🏆 WINNER: ${winnerName}
+                                    <span class="bg-green-600 text-white font-black px-1.5 py-0.5 rounded text-[7px] uppercase tracking-wider animate-pulse">
+                                        🏆 WINNER: ${generateShortName(winnerName)}
                                     </span>
                                 ` : `
-                                    <span class="absolute top-2 left-2 bg-blue-600 text-white font-black text-[7px] px-1.5 py-0.5 rounded shadow tracking-widest uppercase">
-                                        Fixture
+                                    <span class="bg-blue-600 text-white font-black px-1.5 py-0.5 rounded text-[7px] uppercase tracking-wider">
+                                        ${match.status}
                                     </span>
                                 `}
-
-                                <span class="absolute bottom-2 right-2 bg-black/60 text-[8px] font-black px-1.5 py-0.5 rounded text-white">PLAYBACK</span>
                             </div>
-                            <div class="p-2 space-y-1">
-                                <p class="text-[10px] font-bold truncate text-white">${match.homeTeam} vs ${match.awayTeam}</p>
-                                <p class="text-[8px] text-gray-500 font-semibold uppercase">Captain: ${homeCaptain.name}</p>
+
+                            <!-- Main Thumbnail Layout (Dual Team Split UI) -->
+                            <div class="p-3 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-between relative min-h-[85px] gap-2">
+                                <!-- Left Home Team Side -->
+                                <div class="flex flex-col items-center flex-1 text-center space-y-1">
+                                    ${homeImgHTML}
+                                    <div class="space-y-0.5">
+                                        <p class="text-[9px] font-black truncate max-w-[65px] text-white">${homeCaptain.name}</p>
+                                        <p class="text-[8px] text-orange-400 font-semibold truncate max-w-[65px]">${generateShortName(match.homeTeam)}</p>
+                                    </div>
+                                </div>
+
+                                <!-- Mid VS Split -->
+                                <div class="flex flex-col items-center">
+                                    <span class="text-[9px] font-black bg-gray-800 px-1.5 py-0.5 rounded-full border border-gray-700 text-gray-400 italic">VS</span>
+                                </div>
+
+                                <!-- Right Away Team Side -->
+                                <div class="flex flex-col items-center flex-1 text-center space-y-1">
+                                    ${awayImgHTML}
+                                    <div class="space-y-0.5">
+                                        <p class="text-[9px] font-black truncate max-w-[65px] text-white">${awayCaptain.name}</p>
+                                        <p class="text-[8px] text-green-400 font-semibold truncate max-w-[65px]">${generateShortName(match.awayTeam)}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card bottom labels -->
+                            <div class="bg-gray-900/40 p-2 text-center border-t border-gray-850">
+                                <p class="text-[9px] font-bold text-gray-300 truncate">${match.homeTeam} vs ${match.awayTeam}</p>
                             </div>
                         </div>
                     `;
