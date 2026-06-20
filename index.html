@@ -101,7 +101,7 @@
                     <i class="fa-brands fa-google text-md"></i>
                     <span>Continue with Google</span>
                 </button>
-                <button onclick="closeAuthGate()" class="mt-4 text-xs text-gray-500 hover:text-gray-400 underline">Browse Public Directories</button>
+                <button onclick="closeAuthGate()" class="mt-4 text-xs text-gray-555 hover:text-gray-400 underline">Browse Public Directories</button>
             </div>
         </div>
 
@@ -125,7 +125,7 @@
             </div>
             
             <div id="empty-leagues-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-550">No active leagues match your search parameters.</p>
+                <p class="text-xs text-gray-500">No active leagues match your search parameters.</p>
             </div>
         </section>
 
@@ -333,7 +333,7 @@
                 <!-- Step C: Event Controller & Action Buttons -->
                 <div id="scorer-controls" class="hidden space-y-4">
                     <!-- Inline Match Score Visual -->
-                    <div class="bg-gray-950 p-3.5 border border-gray-800 rounded-xl space-y-3">
+                    <div class="bg-gray-955 p-3.5 border border-gray-800 rounded-xl space-y-3">
                         <div class="flex justify-between items-center">
                             <p class="text-[9px] text-gray-500 uppercase tracking-widest font-bold" id="scorer-inning-label">First Innings</p>
                             <span id="super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[9px] px-2 py-0.5 rounded">SUPER OVER</span>
@@ -341,7 +341,7 @@
                         <p class="text-2xl font-black" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-400">(0.0)</span></p>
                         <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5">
                             <p class="text-gray-400 font-bold" id="scorer-metric-striker">Striker: --</p>
-                            <p class="text-gray-505" id="scorer-metric-nonstriker">Non-Striker: --</p>
+                            <p class="text-gray-550" id="scorer-metric-nonstriker">Non-Striker: --</p>
                             <p class="text-gray-404" id="scorer-metric-bowler">Bowler: --</p>
                         </div>
                     </div>
@@ -556,13 +556,13 @@
 
                         <!-- Playback Controller Seek Bar (Rewind Option buttons) -->
                         <div class="flex items-center space-x-1.5 pt-0.5 justify-start">
-                            <button onclick="handleRewind(10)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
+                            <button onclick="handleRewind(10)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-655 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
                                 <i class="fa-solid fa-backward text-[6px]"></i> <span>Rewind 10s</span>
                             </button>
-                            <button onclick="handleRewind(20)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
+                            <button onclick="handleRewind(20)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-655 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
                                 <i class="fa-solid fa-backward text-[6px]"></i> <span>Rewind 20s</span>
                             </button>
-                            <button onclick="resumeLiveStream()" class="px-1.5 py-0.5 bg-green-600/80 hover:bg-green-650 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
+                            <button onclick="resumeLiveStream()" class="px-1.5 py-0.5 bg-green-600/80 hover:bg-green-655 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white">
                                 <i class="fa-solid fa-play text-[6px]"></i> <span>Resume</span>
                             </button>
                         </div>
@@ -582,11 +582,12 @@
 
                 <!-- Bottom: Dynamic Tabs (Fit nicely in single view) -->
                 <div class="flex flex-col flex-1 bg-gray-900 overflow-hidden">
-                    <div class="flex border-b border-gray-800 bg-gray-950 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    <div class="flex border-b border-gray-800 bg-gray-955 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                         <button onclick="switchLiveTab('scorecard')" id="live-tab-btn-scorecard" class="flex-1 py-3 text-center border-b-2 border-orange-500 text-white">Scorecard</button>
                         <button onclick="switchLiveTab('fixtures')" id="live-tab-btn-fixtures" class="flex-1 py-3 text-center border-b-2 border-transparent">Fixtures</button>
                         <button onclick="switchLiveTab('standings')" id="live-tab-btn-standings" class="flex-1 py-3 text-center border-b-2 border-transparent">Standings</button>
                         <button onclick="switchLiveTab('awards')" id="live-tab-btn-awards" class="flex-1 py-3 text-center border-b-2 border-transparent">Awards</button>
+                        <button onclick="switchLiveTab('videos')" id="live-tab-btn-videos" class="flex-1 py-3 text-center border-b-2 border-transparent">Videos</button>
                     </div>
 
                     <div class="p-4 flex-1 overflow-y-auto">
@@ -694,6 +695,14 @@
                                         <span id="mvp-points" class="text-lg font-black text-emerald-500">0</span> <span class="text-[10px] text-gray-400">Pts</span>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Videos Tab Pane (Premium Thumbnails Grid - Verbatim details requested) -->
+                        <div id="live-panel-videos" class="hidden space-y-4">
+                            <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500">Match Broadcast Archive (60 hrs)</h4>
+                            <div id="videos-tab-grid" class="grid grid-cols-2 gap-3">
+                                <!-- Populated dynamically with exact same premium card layout! -->
                             </div>
                         </div>
 
@@ -1059,11 +1068,11 @@
                         <div class="grid grid-cols-12 gap-1.5 p-1.5 bg-gray-900/50 rounded border border-gray-800/80 items-center text-white">
                             <div class="col-span-4">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Player ${j} Name</label>
-                                <input type="text" id="team-${i}-player-${j}-name" placeholder="Name" class="w-full bg-gray-950 border border-gray-850 rounded p-1 text-[10px] text-white">
+                                <input type="text" id="team-${i}-player-${j}-name" placeholder="Name" class="w-full bg-gray-955 border border-gray-850 rounded p-1 text-[10px] text-white">
                             </div>
                             <div class="col-span-3">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Role</label>
-                                <select id="team-${i}-player-${j}-role" class="w-full bg-gray-950 border border-gray-850 rounded p-1 text-[10px] text-white">
+                                <select id="team-${i}-player-${j}-role" class="w-full bg-gray-955 border border-gray-850 rounded p-1 text-[10px] text-white">
                                     <option value="Batsman">Batsman</option>
                                     <option value="Bowler">Bowler</option>
                                     <option value="All-Rounder">All-Rounder</option>
@@ -1206,7 +1215,7 @@
             } else if (N === 8) {
                 rawGroupMatches = [
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 }, { home: 'G', away: 'H', round: 4 },
-                    { home: 'A', away: 'C', round: 5 }, { home: 'B', away: 'D', rounded: 6 }, { home: 'E', away: 'G', round: 7 }, { home: 'F', away: 'H', round: 8 },
+                    { home: 'A', away: 'C', round: 5 }, { home: 'B', away: 'D', round: 6 }, { home: 'E', away: 'G', round: 7 }, { home: 'F', away: 'H', round: 8 },
                     { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', round: 10 }, { home: 'E', away: 'H', round: 11 }, { home: 'F', away: 'G', round: 12 },
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
@@ -1227,7 +1236,7 @@
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'F', away: 'I', round: 17 }, { home: 'A', away: 'F', round: 18 }, { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'H', round: 20 },
                     { home: 'D', away: 'I', round: 21 }, { home: 'E', away: 'H', round: 22 }, { home: 'A', away: 'G', round: 23 }, { home: 'B', away: 'H', round: 24 },
-                    { home: 'C', away: 'I', round: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
+                    { home: 'C', away: 'I', rounded: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
                     { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', round: 32 },
                     { home: 'C', away: 'F', round: 33 }, { home: 'D', away: 'G', round: 34 }, { home: 'E', away: 'I', round: 35 }, { home: 'F', away: 'H', round: 36 }
                 ];
@@ -1528,7 +1537,7 @@
 
                             <div class="space-y-1.5">
                                 <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest">Select Match</label>
-                                <select id="match-select-${key}" onchange="initManagedLeaguesTickers()" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white">
+                                <select id="match-select-${key}" onchange="initManagedLeaguesTickers()" class="w-full bg-gray-955 border border-gray-800 rounded-lg p-2 text-xs text-white">
                                     ${optionsHTML || `<option disabled>All matches completed</option>`}
                                 </select>
                             </div>
@@ -2409,8 +2418,10 @@
         // Reconfigured with Dual Team Split Premium Thumbnail Layout (verbatim details requested)
         function renderVideoArchiveGrid(league) {
             const container = document.getElementById("video-archive-grid");
-            if (!container) return;
-            container.innerHTML = "";
+            const tabContainer = document.getElementById("videos-tab-grid");
+            if (!container && !tabContainer) return;
+            
+            let htmlContent = "";
 
             if (league && league.fixtures) {
                 league.fixtures.forEach((match, index) => {
@@ -2418,17 +2429,19 @@
                     let awayCaptain = getCaptainDetails(league, match.awayTeam);
                     
                     let thumbImg = homeCaptain.image;
-                    let hasCustomUrl = thumbImg && thumbImg !== "https://img.icons8.com/color/150/cricket.png" && thumbImg.trim() !== "";
-                    let winnerName = "";
+                    let homeHasPic = thumbImg && thumbImg !== "https://img.icons8.com/color/150/cricket.png" && thumbImg.trim() !== "";
+                    let awayHasPic = awayCaptain.image && awayCaptain.image !== "https://img.icons8.com/color/150/cricket.png" && awayCaptain.image.trim() !== "";
 
+                    let winnerName = "";
                     if (match.status === "COMPLETED") {
                         const runs1 = match.scorecard && match.scorecard.inning1 ? match.scorecard.inning1.runs : 0;
                         const runs2 = match.scorecard && match.scorecard.inning2 ? match.scorecard.inning2.runs : 0;
                         
+                        // Corrected Winner Calculation logic using actual first/second inning batting teams
                         if (runs1 > runs2) {
-                            winnerName = match.homeTeam;
+                            winnerName = match.scorecard && match.scorecard.inning1 ? match.scorecard.inning1.battingTeam : match.homeTeam;
                         } else if (runs2 > runs1) {
-                            winnerName = match.awayTeam;
+                            winnerName = match.scorecard && match.scorecard.inning2 ? match.scorecard.inning2.battingTeam : match.awayTeam;
                         } else {
                             winnerName = "Tie";
                         }
@@ -2436,79 +2449,78 @@
 
                     // Render fallbacks or custom image URL
                     let homeImgHTML = "";
-                    let homeHasPic = homeCaptain.image && homeCaptain.image !== "https://img.icons8.com/color/150/cricket.png" && homeCaptain.image.trim() !== "";
                     if (homeHasPic) {
-                        homeImgHTML = `<img src="${homeCaptain.image}" class="w-12 h-12 rounded-full object-cover border-2 border-orange-500 shadow-md">`;
+                        homeImgHTML = `<img src="${homeCaptain.image}" class="w-10 h-10 rounded-full object-cover border-2 border-orange-500 shadow-md">`;
                     } else {
                         homeImgHTML = `
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-600 to-amber-500 flex items-center justify-center font-black text-xs tracking-wider border-2 border-orange-500 text-white shadow-md">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-600 to-amber-500 flex items-center justify-center font-black text-[10px] border-2 border-orange-500 text-white shadow-md">
                                 ${generateShortName(match.homeTeam)}
                             </div>
                         `;
                     }
 
                     let awayImgHTML = "";
-                    let awayHasPic = awayCaptain.image && awayCaptain.image !== "https://img.icons8.com/color/150/cricket.png" && awayCaptain.image.trim() !== "";
                     if (awayHasPic) {
-                        awayImgHTML = `<img src="${awayCaptain.image}" class="w-12 h-12 rounded-full object-cover border-2 border-green-500 shadow-md">`;
+                        awayImgHTML = `<img src="${awayCaptain.image}" class="w-10 h-10 rounded-full object-cover border-2 border-green-500 shadow-md">`;
                     } else {
                         awayImgHTML = `
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center font-black text-xs tracking-wider border-2 border-green-500 text-white shadow-md">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center font-black text-[10px] border-2 border-green-500 text-white shadow-md">
                                 ${generateShortName(match.awayTeam)}
                             </div>
                         `;
                     }
 
-                    container.innerHTML += `
-                        <div onclick="launchLiveSpectator('${league.metadata.id}')" class="bg-gray-955 border border-gray-850 rounded-2xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition duration-300 shadow-xl text-white">
-                            <!-- Header ribbon/badge -->
-                            <div class="bg-gray-900/80 px-2.5 py-1 flex justify-between items-center text-[8px] border-b border-gray-855">
-                                <span class="text-gray-400 font-bold uppercase tracking-wider">Round ${match.round} &bull; ${match.type || 'Match'}</span>
+                    let clickAction = "";
+                    if (match.status === "LIVE") {
+                        clickAction = `launchLiveSpectator('${league.metadata.id}')`;
+                    } else if (match.status === "COMPLETED") {
+                        clickAction = `playArchivedVideo('${league.metadata.id}', ${index})`;
+                    } else {
+                        clickAction = `alert('This match has not started yet. Scheduled start time: ${league.metadata.startDate} @ ${league.metadata.startTime}')`;
+                    }
+
+                    htmlContent += `
+                        <div onclick="${clickAction}" class="bg-gray-955 border border-gray-850 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition duration-300 shadow-lg text-white">
+                            <!-- Header ribbon -->
+                            <div class="bg-gray-900 px-2 py-0.5 flex justify-between items-center text-[7px] border-b border-gray-850">
+                                <span class="text-gray-400 font-bold uppercase tracking-wider">Round ${match.round}</span>
                                 ${winnerName ? `
-                                    <span class="bg-green-600 text-white font-black px-1.5 py-0.5 rounded text-[7px] uppercase tracking-wider animate-pulse">
+                                    <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider">
                                         🏆 WINNER: ${generateShortName(winnerName)}
                                     </span>
                                 ` : `
-                                    <span class="bg-blue-600 text-white font-black px-1.5 py-0.5 rounded text-[7px] uppercase tracking-wider">
+                                    <span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider">
                                         ${match.status}
                                     </span>
                                 `}
                             </div>
 
-                            <!-- Main Thumbnail Layout (Dual Team Split UI) -->
-                            <div class="p-3 bg-gradient-to-b from-gray-900 to-gray-955 flex items-center justify-between relative min-h-[85px] gap-2">
-                                <!-- Left Home Team Side -->
-                                <div class="flex flex-col items-center flex-1 text-center space-y-1">
+                            <!-- Content split layout -->
+                            <div class="p-2 bg-gradient-to-b from-gray-900 to-gray-955 flex items-center justify-between min-h-[75px] gap-1">
+                                <!-- Left Team -->
+                                <div class="flex flex-col items-center flex-1 text-center">
                                     ${homeImgHTML}
-                                    <div class="space-y-0.5">
-                                        <p class="text-[9px] font-black truncate max-w-[65px] text-white">${homeCaptain.name}</p>
-                                        <p class="text-[8px] text-orange-400 font-semibold truncate max-w-[65px]">${generateShortName(match.homeTeam)}</p>
-                                    </div>
+                                    <p class="text-[8px] font-black truncate max-w-[55px] text-white mt-1">${homeCaptain.name}</p>
+                                    <p class="text-[7px] text-orange-400 font-bold truncate max-w-[55px]">${generateShortName(match.homeTeam)}</p>
                                 </div>
+                                
+                                <!-- VS Split -->
+                                <span class="text-[8px] font-black bg-gray-800 px-1 py-0.5 rounded text-gray-450 italic">VS</span>
 
-                                <!-- Mid VS Split -->
-                                <div class="flex flex-col items-center">
-                                    <span class="text-[9px] font-black bg-gray-800 px-1.5 py-0.5 rounded-full border border-gray-700 text-gray-400 italic">VS</span>
-                                </div>
-
-                                <!-- Right Away Team Side -->
-                                <div class="flex flex-col items-center flex-1 text-center space-y-1">
+                                <!-- Right Team -->
+                                <div class="flex flex-col items-center flex-1 text-center">
                                     ${awayImgHTML}
-                                    <div class="space-y-0.5">
-                                        <p class="text-[9px] font-black truncate max-w-[65px] text-white">${awayCaptain.name}</p>
-                                        <p class="text-[8px] text-green-400 font-semibold truncate max-w-[65px]">${generateShortName(match.awayTeam)}</p>
-                                    </div>
+                                    <p class="text-[8px] font-black truncate max-w-[55px] text-white mt-1">${awayCaptain.name}</p>
+                                    <p class="text-[7px] text-green-400 font-bold truncate max-w-[55px]">${generateShortName(match.awayTeam)}</p>
                                 </div>
-                            </div>
-
-                            <!-- Card bottom labels -->
-                            <div class="bg-gray-900/40 p-2 text-center border-t border-gray-855">
-                                <p class="text-[9px] font-bold text-gray-300 truncate">${match.homeTeam} vs ${match.awayTeam}</p>
                             </div>
                         </div>
                     `;
                 });
             }
+
+            if (container) container.innerHTML = htmlContent;
+            if (tabContainer) tabContainer.innerHTML = htmlContent;
         }
 
         function playArchivedVideo(leagueId, matchIndex) {
@@ -2551,7 +2563,7 @@
         }
 
         function switchLiveTab(tab) {
-            const panes = ['scorecard', 'fixtures', 'standings', 'awards'];
+            const panes = ['scorecard', 'fixtures', 'standings', 'awards', 'videos'];
             panes.forEach(p => {
                 const pane = document.getElementById(`live-panel-${p}`);
                 const btn = document.getElementById(`live-tab-btn-${p}`);
