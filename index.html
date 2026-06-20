@@ -48,20 +48,16 @@
             scrollbar-width: none;
         }
 
-        /* Fully immersive landscape mode video container to prevent cutoff on rotation */
+        /* Responsive Mobile Video Rotation Frame Support */
         .rotated-landscape-frame {
             transform: rotate(90deg);
             transform-origin: center;
-            width: 100vh !important;
-            height: 100vw !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            z-index: 100 !important;
-            object-fit: contain !important;
-            background-color: #000;
+            width: 100vh;
+            height: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
         }
     </style>
 </head>
@@ -129,7 +125,7 @@
             </div>
             
             <div id="empty-leagues-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-500">No active leagues match your search parameters.</p>
+                <p class="text-xs text-gray-550">No active leagues match your search parameters.</p>
             </div>
         </section>
 
@@ -221,7 +217,7 @@
                             <span class="text-[9px] text-gray-400 uppercase tracking-widest font-black">Dynamic Schedule Duration</span>
                             <div class="flex justify-between text-xs pt-1">
                                 <span class="text-gray-300">Total Matches: <strong id="calc-total-matches" class="text-orange-500">10</strong></span>
-                                <span class="text-gray-352">Last Match: <strong id="calc-last-date" class="text-green-500">N/A</strong></span>
+                                <span class="text-gray-350">Last Match: <strong id="calc-last-date" class="text-green-500">N/A</strong></span>
                             </div>
                         </div>
 
@@ -238,7 +234,7 @@
                         </div>
                         <div class="pt-3 flex justify-between border-t border-gray-800">
                             <button type="button" onclick="goToWizardStep(2)" class="px-5 py-2 border border-gray-800 hover:bg-gray-900 font-bold text-xs rounded-xl">Back</button>
-                            <button type="button" onclick="submitNewLeague()" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 font-extrabold text-xs rounded-xl uppercase">Compile League</button>
+                            <button type="button" onclick="submitNewLeague()" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 font-extrabold text-xs rounded-xl uppercase text-white">Compile League</button>
                         </div>
                     </div>
 
@@ -280,7 +276,7 @@
 
             <div id="empty-managed-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
                 <p class="text-xs text-gray-550 mb-4">You have not created any leagues yet.</p>
-                <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold">Launch Creation Wizard</button>
+                <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold text-white">Launch Creation Wizard</button>
             </div>
 
             <!-- In-Play Scorer Console (Fully Automated Scorer console) -->
@@ -337,7 +333,7 @@
                 <!-- Step C: Event Controller & Action Buttons -->
                 <div id="scorer-controls" class="hidden space-y-4">
                     <!-- Inline Match Score Visual -->
-                    <div class="bg-gray-955 p-3.5 border border-gray-800 rounded-xl space-y-3">
+                    <div class="bg-gray-950 p-3.5 border border-gray-800 rounded-xl space-y-3">
                         <div class="flex justify-between items-center">
                             <p class="text-[9px] text-gray-500 uppercase tracking-widest font-bold" id="scorer-inning-label">First Innings</p>
                             <span id="super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[9px] px-2 py-0.5 rounded">SUPER OVER</span>
@@ -345,7 +341,7 @@
                         <p class="text-2xl font-black" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-400">(0.0)</span></p>
                         <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5">
                             <p class="text-gray-400 font-bold" id="scorer-metric-striker">Striker: --</p>
-                            <p class="text-gray-550" id="scorer-metric-nonstriker">Non-Striker: --</p>
+                            <p class="text-gray-505" id="scorer-metric-nonstriker">Non-Striker: --</p>
                             <p class="text-gray-404" id="scorer-metric-bowler">Bowler: --</p>
                         </div>
                     </div>
@@ -529,13 +525,13 @@
                         <!-- Row 1: Active Batsman & Bowler Stats Overlay -->
                         <div class="flex items-center justify-between text-[9px] font-bold tracking-tight gap-1">
                             <!-- Batting Bug -->
-                            <div class="bg-black/85 backdrop-blur-md border border-gray-855 px-2 py-0.5 rounded flex items-center space-x-2">
+                            <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded flex items-center space-x-2">
                                 <span id="overlay-active-batsman-1" class="text-white">🏏 Striker: --</span>
                                 <span id="overlay-active-batsman-2" class="text-gray-400">--</span>
                             </div>
                             <!-- Bowler Bug -->
-                            <div class="bg-black/85 backdrop-blur-md border border-gray-855 px-2 py-0.5 rounded">
-                                <span id="overlay-active-bowler" class="text-gray-300">🎳 Bowler: --</span>
+                            <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded">
+                                <span id="overlay-active-bowler" class="text-gray-300">Bowler: --</span>
                             </div>
                         </div>
 
@@ -819,7 +815,7 @@
         let directCamStream = null;
         let directCamInterval = null;
 
-        // Playback Rewind Buffer arrays (Buffers up to 60 seconds of live gameplay at 5 FPS)
+        // Playback Rewind Buffer arrays
         let frameBuffer = []; 
         let isRewindPlaybackActive = false;
         let rewindIndex = 0;
@@ -850,10 +846,22 @@
         function toggleVideoRotation() {
             const box = document.getElementById("live-camera-feed-box");
             if (!videoRotationMode) {
-                box.classList.add("rotated-landscape-frame");
+                box.style.position = "fixed";
+                box.style.top = "0";
+                box.style.left = "0";
+                box.style.width = "100vw";
+                box.style.height = "100vh";
+                box.style.zIndex = "999";
+                box.style.backgroundColor = "black";
                 videoRotationMode = true;
             } else {
-                box.classList.remove("rotated-landscape-frame");
+                box.style.position = "";
+                box.style.top = "";
+                box.style.left = "";
+                box.style.width = "";
+                box.style.height = "";
+                box.style.zIndex = "";
+                box.style.backgroundColor = "";
                 videoRotationMode = false;
             }
         }
@@ -1198,12 +1206,12 @@
             } else if (N === 8) {
                 rawGroupMatches = [
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 }, { home: 'G', away: 'H', round: 4 },
-                    { home: 'A', away: 'C', round: 5 }, { home: 'B', away: 'D', round: 6 }, { home: 'E', away: 'G', round: 7 }, { home: 'F', away: 'H', round: 8 },
+                    { home: 'A', away: 'C', round: 5 }, { home: 'B', away: 'D', rounded: 6 }, { home: 'E', away: 'G', round: 7 }, { home: 'F', away: 'H', round: 8 },
                     { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', round: 10 }, { home: 'E', away: 'H', round: 11 }, { home: 'F', away: 'G', round: 12 },
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
                     { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', rounded: 23 }, { home: 'D', away: 'F', round: 24 },
-                    { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', rounded: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
+                    { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
                 ];
                 playoffTemplates = [
                     { type: 'QUALIFIER 1', homePlaceholder: 'Rank 1 Team', awayPlaceholder: 'Rank 2 Team', round: 29 },
@@ -1218,7 +1226,7 @@
                     { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', round: 10 }, { home: 'H', away: 'I', round: 11 }, { home: 'E', away: 'G', round: 12 },
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'F', away: 'I', round: 17 }, { home: 'A', away: 'F', round: 18 }, { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'H', round: 20 },
-                    { home: 'D', away: 'I', round: 21 }, { home: 'E', away: 'H', round: 22 }, { home: 'A', away: 'G', round: 23 }, { home: 'B', away: 'H', rounded: 24 },
+                    { home: 'D', away: 'I', round: 21 }, { home: 'E', away: 'H', round: 22 }, { home: 'A', away: 'G', round: 23 }, { home: 'B', away: 'H', round: 24 },
                     { home: 'C', away: 'I', round: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
                     { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', round: 32 },
                     { home: 'C', away: 'F', round: 33 }, { home: 'D', away: 'G', round: 34 }, { home: 'E', away: 'I', round: 35 }, { home: 'F', away: 'H', round: 36 }
@@ -1245,7 +1253,7 @@
                     { home: 'E', away: 'C', round: 34 }, { home: 'F', away: 'D', round: 35 }, { home: 'G', away: 'B', round: 36 },
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
                     { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', round: 42 },
-                    { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', rounded: 45 },
+                    { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', round: 45 },
                     { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', rounded: 47 }, { home: 'I', away: 'E', round: 48 },
                     { home: 'J', away: 'F', round: 49 }, { home: 'I', away: 'G', round: 50 }, { home: 'J', away: 'H', round: 51 },
                     { home: 'D', away: 'A', round: 52 }, { home: 'C', away: 'B', round: 53 }, { home: 'H', away: 'E', round: 54 },
@@ -1298,6 +1306,7 @@
             return compiledFixtures;
         }
 
+        // Prepopulate player stats on creation cleanly
         function submitNewLeague() {
             const name = document.getElementById("league-name-input").value.trim();
             const teamCount = parseInt(document.getElementById("league-teams-count").value);
@@ -1309,6 +1318,8 @@
             const shortName = generateShortName(name);
 
             const teams = [];
+            const playerStats = {};
+
             for (let i = 1; i <= teamCount; i++) {
                 const tName = document.getElementById(`team-${i}-name`).value.trim();
                 
@@ -1337,6 +1348,13 @@
                         image: pImg || "https://img.icons8.com/color/150/cricket.png",
                         isCaptain: (j === captainIdx)
                     });
+
+                    // Pre-initialize player stats to prevent empty single person awards!
+                    playerStats[pName] = {
+                        runs: 0,
+                        wickets: 0,
+                        mvpPoints: 0
+                    };
                 }
 
                 teams.push({
@@ -1361,6 +1379,7 @@
                 },
                 teams: teams,
                 fixtures: fixtures,
+                playerStats: playerStats,
                 liveMatch: {
                     active: false,
                     matchIndex: null
@@ -1509,7 +1528,7 @@
 
                             <div class="space-y-1.5">
                                 <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest">Select Match</label>
-                                <select id="match-select-${key}" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white">
+                                <select id="match-select-${key}" onchange="initManagedLeaguesTickers()" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white">
                                     ${optionsHTML || `<option disabled>All matches completed</option>`}
                                 </select>
                             </div>
@@ -1673,8 +1692,6 @@
                     needsInning2Lineup: false,
                     needsCompletionSave: false,
                     viewerCount: 1,
-                    battingFirstTeam: battingFirst, // Save exact batting first order to prevent standings bugs
-                    battingSecondTeam: bowlingFirst,
                     tossResult: `${winner} won toss and elected to ${decision} first.`
                 };
 
@@ -1943,6 +1960,8 @@
                     data.inning1Runs = data.runs;
                     data.inning1Wickets = data.wickets;
                     data.inning1Overs = data.overs;
+                    data.inning1BattingTeam = data.battingTeam; // Track exact first innings batting team
+                    data.inning2BattingTeam = data.bowlingTeam; // Track exact second innings batting team
                     data.targetRuns = data.runs + 1;
 
                     // Reset variables for Inning 2
@@ -1991,7 +2010,7 @@
                 wickets: liveMatchData.inning1Wickets || liveMatchData.wickets,
                 overs: liveMatchData.inning1Overs || liveMatchData.overs,
                 completed: true,
-                battingTeam: liveMatchData.battingFirstTeam || liveMatchData.teams.home
+                battingTeam: liveMatchData.inning1BattingTeam || liveMatchData.teams.home
             };
 
             const inning2Data = {
@@ -1999,7 +2018,7 @@
                 wickets: liveMatchData.wickets,
                 overs: liveMatchData.overs,
                 completed: true,
-                battingTeam: liveMatchData.battingSecondTeam || liveMatchData.teams.away
+                battingTeam: liveMatchData.inning2BattingTeam || liveMatchData.teams.away
             };
 
             db.ref(fixturePath).update({
@@ -2319,10 +2338,10 @@
             });
         }
 
-        // Live DVR/Rewind frame buffering pipeline (Increased buffer to 300 frames to guarantee 60s rewind duration works flawlessly)
+        // Live DVR/Rewind frame buffering pipeline
         function bufferIncomingFrame(src) {
             frameBuffer.push({ src, timestamp: Date.now() });
-            if (frameBuffer.length > 300) { 
+            if (frameBuffer.length > 150) {
                 frameBuffer.shift(); 
             }
         }
@@ -2422,7 +2441,7 @@
                         homeImgHTML = `<img src="${homeCaptain.image}" class="w-12 h-12 rounded-full object-cover border-2 border-orange-500 shadow-md">`;
                     } else {
                         homeImgHTML = `
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-600 to-amber-500 flex items-center justify-center font-black text-xs tracking-wider border-2 border-orange-500 text-white shadow-md font-sans">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-600 to-amber-500 flex items-center justify-center font-black text-xs tracking-wider border-2 border-orange-500 text-white shadow-md">
                                 ${generateShortName(match.homeTeam)}
                             </div>
                         `;
@@ -2434,7 +2453,7 @@
                         awayImgHTML = `<img src="${awayCaptain.image}" class="w-12 h-12 rounded-full object-cover border-2 border-green-500 shadow-md">`;
                     } else {
                         awayImgHTML = `
-                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center font-black text-xs tracking-wider border-2 border-green-500 text-white shadow-md font-sans">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center font-black text-xs tracking-wider border-2 border-green-500 text-white shadow-md">
                                 ${generateShortName(match.awayTeam)}
                             </div>
                         `;
@@ -2457,7 +2476,7 @@
                             </div>
 
                             <!-- Main Thumbnail Layout (Dual Team Split UI) -->
-                            <div class="p-3 bg-gradient-to-b from-gray-900 to-gray-950 flex items-center justify-between relative min-h-[85px] gap-2">
+                            <div class="p-3 bg-gradient-to-b from-gray-900 to-gray-955 flex items-center justify-between relative min-h-[85px] gap-2">
                                 <!-- Left Home Team Side -->
                                 <div class="flex flex-col items-center flex-1 text-center space-y-1">
                                     ${homeImgHTML}
@@ -2483,7 +2502,7 @@
                             </div>
 
                             <!-- Card bottom labels -->
-                            <div class="bg-gray-900/40 p-2 text-center border-t border-gray-850">
+                            <div class="bg-gray-900/40 p-2 text-center border-t border-gray-855">
                                 <p class="text-[9px] font-bold text-gray-300 truncate">${match.homeTeam} vs ${match.awayTeam}</p>
                             </div>
                         </div>
@@ -2496,19 +2515,38 @@
             const league = allLeagues[leagueId];
             if (!league) return;
 
+            // Open the spectator overlay first
+            currentlySelectedLeagueId = leagueId;
+            document.getElementById("live-match-spectator-overlay").classList.remove("hidden");
+
+            // Hide countdown panel explicitly to allow playback rendering
+            const countdown = document.getElementById("live-countdown-panel");
+            const img = document.getElementById("live-camera-img");
+            if (countdown) countdown.classList.add("hidden");
+            if (img) img.classList.remove("hidden");
+
             const archive = league.archivedVideos && league.archivedVideos[matchIndex];
             if (archive && archive.frames) {
                 isRewindPlaybackActive = true;
                 frameBuffer = archive.frames;
                 rewindIndex = 0;
-                handleRewind(10); 
-                alert(`Playing archived playback for match!`);
+                
+                // Start playback timer
+                if (rewindTimer) clearInterval(rewindTimer);
+                rewindTimer = setInterval(() => {
+                    if (rewindIndex < frameBuffer.length) {
+                        if (img) img.src = frameBuffer[rewindIndex].src;
+                        rewindIndex++;
+                    } else {
+                        rewindIndex = 0; // Loop playback!
+                    }
+                }, 200);
+                
+                alert("Playing archived playback of this match!");
             } else {
-                alert("Dynamic playback streams are saving. Real-time captain thumbnail initiated.");
-                displaySpectatorFallbackUI('img');
+                alert("Archiving frames. Showing team captain photo as fallback.");
                 const homeCaptain = getCaptainDetails(league, league.fixtures[matchIndex].homeTeam);
-                const liveImg = document.getElementById("live-camera-img");
-                if (liveImg) liveImg.src = homeCaptain.image;
+                if (img) img.src = homeCaptain.image;
             }
         }
 
@@ -2681,7 +2719,7 @@
             calculateDynamicStandings(league);
         }
 
-        // Leaderboards Calculation & Awards Tab Updating (Safely copies players array to prevent sorting mutations!)
+        // Leaderboards Calculation & Awards Tab Updating
         function updateCapLeaders(league) {
             const stats = league.playerStats || {};
             const players = Object.keys(stats).map(name => ({
@@ -2693,19 +2731,20 @@
 
             if (players.length === 0) return;
 
-            // Clone to separate arrays before sorting to prevent indexing bugs
-            const orangeCapPlayers = [...players].sort((a, b) => b.runs - a.runs);
-            const purpleCapPlayers = [...players].sort((a, b) => b.wickets - a.wickets);
-            const mvpPlayers = [...players].sort((a, b) => b.mvpPoints - a.mvpPoints);
+            // Orange Cap
+            players.sort((a, b) => b.runs - a.runs);
+            document.getElementById("orange-cap-name").textContent = players[0].name;
+            document.getElementById("orange-cap-runs").textContent = players[0].runs;
 
-            document.getElementById("orange-cap-name").textContent = orangeCapPlayers[0].name;
-            document.getElementById("orange-cap-runs").textContent = orangeCapPlayers[0].runs;
+            // Purple Cap
+            players.sort((a, b) => b.wickets - a.wickets);
+            document.getElementById("purple-cap-name").textContent = players[0].name;
+            document.getElementById("purple-cap-wickets").textContent = players[0].wickets;
 
-            document.getElementById("purple-cap-name").textContent = purpleCapPlayers[0].name;
-            document.getElementById("purple-cap-wickets").textContent = purpleCapPlayers[0].wickets;
-
-            document.getElementById("mvp-name").textContent = mvpPlayers[0].name;
-            document.getElementById("mvp-points").textContent = mvpPlayers[0].mvpPoints;
+            // MVP
+            players.sort((a, b) => b.mvpPoints - a.mvpPoints);
+            document.getElementById("mvp-name").textContent = players[0].name;
+            document.getElementById("mvp-points").textContent = players[0].mvpPoints;
         }
 
         // Render IPL fixtures in tabs
@@ -2891,6 +2930,7 @@
         // 11. Share Camera Key Generators
         function populateShareCameraDropdown() {
             const select = document.getElementById("camera-association-select");
+            if (!select) return;
             select.innerHTML = "";
 
             let count = 0;
@@ -2932,20 +2972,20 @@
             });
         }
 
-        // Fetch active codes
         function fetchActiveCameramenCodes(leagueId) {
             db.ref(`leagues/${leagueId}/cameramen`).on('value', snapshot => {
                 const data = snapshot.val() || {};
                 const list = document.getElementById("codes-list");
                 const wrapper = document.getElementById("active-camera-codes");
                 
+                if (!list) return;
                 list.innerHTML = "";
                 const keys = Object.keys(data).filter(k => k !== "scorer-direct"); // Hide internal scoring cameras
 
                 if (keys.length > 0) {
-                    wrapper.classList.remove("hidden");
+                    if (wrapper) wrapper.classList.remove("hidden");
                 } else {
-                    wrapper.classList.add("hidden");
+                    if (wrapper) wrapper.classList.add("hidden");
                 }
 
                 keys.forEach(key => {
