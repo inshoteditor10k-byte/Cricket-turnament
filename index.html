@@ -607,8 +607,8 @@
                     </div>
                 </div>
 
-                <!-- Match Archives & Video Playback Section (Rendered directly under feed screen) -->
-                <div class="bg-gray-900 border-b border-gray-800 p-3.5 space-y-2">
+                <!-- Match Archives & Video Playback Section (Hidden to prevent viewport blocking, fully integrated in Videos Tab panel below) -->
+                <div id="video-archive-block-container" class="hidden bg-gray-900 border-b border-gray-800 p-3.5 space-y-2">
                     <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 flex items-center space-x-1.5">
                         <i class="fa-solid fa-circle-play"></i>
                         <span>Match Video Archive (Available for 60 hrs)</span>
@@ -726,11 +726,12 @@
                                     </div>
                                 </div>
 
-                                <!-- MVP Card -->
-                                <div class="bg-emerald-600/10 border border-emerald-500/20 p-3 rounded-xl flex items-center justify-between shadow">
+                                <!-- MVP Card (Interactive Click) -->
+                                <div onclick="openStatsLeaderboardModal('mvp')" class="bg-emerald-600/10 border border-emerald-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-emerald-500/40 transition shadow shadow-emerald-500/5">
                                     <div>
                                         <span class="bg-emerald-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Tournament MVP</span>
                                         <h3 id="mvp-name" class="text-xs font-black mt-1 text-white">Awaiting Stats</h3>
+                                        <span class="text-[8px] text-emerald-400 font-semibold uppercase tracking-wider block mt-1">Click to view sequence</span>
                                     </div>
                                     <div class="text-right">
                                         <span id="mvp-points" class="text-lg font-black text-emerald-500 font-mono">0</span> <span class="text-[10px] text-gray-400 font-bold">Pts</span>
@@ -1286,9 +1287,9 @@
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 }, { home: 'G', away: 'H', round: 4 },
                     { home: 'A', away: 'C', round: 5 }, { home: 'B', away: 'D', round: 6 }, { home: 'E', away: 'G', round: 7 }, { home: 'F', away: 'H', round: 8 },
                     { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', round: 10 }, { home: 'E', away: 'H', round: 11 }, { home: 'F', away: 'G', round: 12 },
-                    { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
+                    { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', rounded: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
-                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', rounded: 23 }, { home: 'D', away: 'F', round: 24 },
+                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', round: 23 }, { home: 'D', away: 'F', round: 24 },
                     { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
                 ];
                 playoffTemplates = [
@@ -1305,7 +1306,7 @@
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'F', away: 'I', round: 17 }, { home: 'A', away: 'F', round: 18 }, { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'H', round: 20 },
                     { home: 'D', away: 'I', round: 21 }, { home: 'E', away: 'H', round: 22 }, { home: 'A', away: 'G', round: 23 }, { home: 'B', away: 'H', round: 24 },
-                    { home: 'C', away: 'I', rounded: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
+                    { home: 'C', away: 'I', round: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
                     { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', round: 32 },
                     { home: 'C', away: 'F', round: 33 }, { home: 'D', away: 'G', round: 34 }, { home: 'E', away: 'I', round: 35 }, { home: 'F', away: 'H', round: 36 }
                 ];
@@ -1325,7 +1326,7 @@
                     { home: 'C', away: 'I', round: 16 }, { home: 'D', away: 'J', round: 17 }, { home: 'E', away: 'I', round: 18 },
                     { home: 'F', away: 'J', round: 19 }, { home: 'G', away: 'I', round: 20 }, { home: 'H', away: 'J', round: 21 },
                     { home: 'A', away: 'D', round: 22 }, { home: 'B', away: 'C', round: 23 }, { home: 'E', away: 'H', round: 24 },
-                    { home: 'F', away: 'G', round: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', rounded: 27 },
+                    { home: 'F', away: 'G', round: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', round: 27 },
                     { home: 'A', away: 'F', round: 28 }, { home: 'B', away: 'E', round: 29 }, { home: 'C', away: 'H', round: 30 },
                     { home: 'D', away: 'G', round: 31 }, { home: 'I', away: 'B', round: 32 }, { home: 'J', away: 'A', round: 33 },
                     { home: 'E', away: 'C', round: 34 }, { home: 'F', away: 'D', round: 35 }, { home: 'G', away: 'B', round: 36 },
@@ -1544,7 +1545,7 @@
                 if (league.liveMatch && league.liveMatch.active) {
                     const lm = league.liveMatch;
                     liveScoreHTML = `
-                        <div class="bg-gray-950 p-2.5 rounded-xl border border-red-500/20 my-2">
+                        <div class="bg-gray-955 p-2.5 rounded-xl border border-red-500/20 my-2">
                             <div class="flex justify-between items-center text-[10px] text-gray-400 font-semibold">
                                 <span>🏏 ${lm.battingTeam}</span>
                                 <span>vs ${lm.bowlingTeam}</span>
@@ -2297,8 +2298,18 @@
                 battingTeam: liveMatchData.inning2BattingTeam || liveMatchData.teams.away
             };
 
-            // Update tournament-wide playerStats dictionary with this match's final stats
-            const updatedPlayerStats = { ...league.playerStats };
+            // Update tournament-wide playerStats with this match's final stats
+            const updatedPlayerStats = {};
+            if (league.playerStats) {
+                Object.keys(league.playerStats).forEach(pName => {
+                    const p = league.playerStats[pName];
+                    updatedPlayerStats[pName] = {
+                        runs: p.runs || 0,
+                        wickets: p.wickets || 0,
+                        mvpPoints: p.mvpPoints || 0
+                    };
+                });
+            }
             
             if (liveMatchData.batsmanStats) {
                 Object.keys(liveMatchData.batsmanStats).forEach(pName => {
@@ -2329,6 +2340,7 @@
                     inning2: inning2Data
                 }
             }).then(() => {
+                // Save updated tournament playerStats
                 db.ref(`leagues/${league.metadata.id}/playerStats`).set(updatedPlayerStats).then(() => {
                     autoAdvancePlayoffs(league.metadata.id, league);
                     exitScorerConsole();
@@ -2544,6 +2556,9 @@
         function launchLiveSpectator(leagueId) {
             currentlySelectedLeagueId = leagueId;
             document.getElementById("live-match-spectator-overlay").classList.remove("hidden");
+            
+            // Force reset the active tab to Scorecard!
+            switchLiveTab('scorecard');
             
             // Increment dynamic live viewer count in Firebase Rtdb safely
             db.ref(`leagues/${leagueId}/liveMatch/viewerCount`).transaction(c => (c || 0) + 1);
@@ -2773,9 +2788,9 @@
                     }
 
                     htmlContent += `
-                        <div onclick="${clickAction}" class="bg-gray-955 border border-gray-850 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition duration-300 shadow-lg text-white">
+                        <div onclick="${clickAction}" class="bg-gray-955 border border-gray-855 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition duration-300 shadow-lg text-white">
                             <!-- Header ribbon -->
-                            <div class="bg-gray-900 px-2 py-0.5 flex justify-between items-center text-[7px] border-b border-gray-850">
+                            <div class="bg-gray-900 px-2 py-0.5 flex justify-between items-center text-[7px] border-b border-gray-855">
                                 <span class="text-gray-400 font-bold uppercase tracking-wider">Round ${match.round}</span>
                                 ${winnerName ? `
                                     <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
@@ -2876,11 +2891,6 @@
             });
         }
 
-        // Helper to check if a player name is already inside the dismissed Safe array list
-        function dismissedBatsmanCheck(list, name) {
-            return list.includes(name);
-        }
-
         // Live stats calculations and scoring sync logic
         function syncLiveViewerState(league) {
             if (!league) return;
@@ -2908,6 +2918,14 @@
                 if (matchCountdownStr) matchCountdownStr.textContent = "League Schedule Match Pending";
                 if (abbrevElement) abbrevElement.textContent = "No Live Match";
                 if (scoreElement) scoreElement.textContent = "0 - 0 (0.0)";
+                
+                // Calculate and populate standings & fallbacks even if no active match
+                calculateDynamicStandings(league);
+                
+                const bTable = document.getElementById("live-table-batting");
+                const bowlTable = document.getElementById("live-table-bowling");
+                if (bTable) bTable.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No live scorecard available</td></tr>`;
+                if (bowlTable) bowlTable.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No live scorecard available</td></tr>`;
                 return;
             }
 
@@ -3058,29 +3076,35 @@
 
         // Leaderboards Calculation & Awards Tab Updating (Dynamically aggregates historical + active live match statistics)
         function updateCapLeaders(league) {
-            const stats = { ...league.playerStats };
-
-            // Integrate stats of active match on the fly for responsive viewer feedback
+            const stats = {};
+            
+            // 1. Initialize with tournament-wide playerStats
+            if (league.playerStats) {
+                Object.keys(league.playerStats).forEach(pName => {
+                    const p = league.playerStats[pName];
+                    stats[pName] = {
+                        runs: p.runs || 0,
+                        wickets: p.wickets || 0,
+                        mvpPoints: p.mvpPoints || 0
+                    };
+                });
+            }
+            
+            // 2. If there is an active live match, merge live match stats
             if (league.liveMatch && league.liveMatch.active) {
                 const lm = league.liveMatch;
                 if (lm.batsmanStats) {
                     Object.keys(lm.batsmanStats).forEach(pName => {
                         if (!stats[pName]) stats[pName] = { runs: 0, wickets: 0, mvpPoints: 0 };
-                        stats[pName] = {
-                            runs: (stats[pName].runs || 0) + (lm.batsmanStats[pName].runs || 0),
-                            wickets: stats[pName].wickets || 0,
-                            mvpPoints: (stats[pName].mvpPoints || 0) + (lm.batsmanStats[pName].runs || 0)
-                        };
+                        stats[pName].runs += (lm.batsmanStats[pName].runs || 0);
+                        stats[pName].mvpPoints += (lm.batsmanStats[pName].runs || 0);
                     });
                 }
                 if (lm.bowlerStats) {
                     Object.keys(lm.bowlerStats).forEach(pName => {
                         if (!stats[pName]) stats[pName] = { runs: 0, wickets: 0, mvpPoints: 0 };
-                        stats[pName] = {
-                            runs: stats[pName].runs || 0,
-                            wickets: (stats[pName].wickets || 0) + (lm.bowlerStats[pName].wickets || 0),
-                            mvpPoints: (stats[pName].mvpPoints || 0) + (lm.bowlerStats[pName].wickets * 20)
-                        };
+                        stats[pName].wickets += (lm.bowlerStats[pName].wickets || 0);
+                        stats[pName].mvpPoints += (lm.bowlerStats[pName].wickets * 20);
                     });
                 }
             }
@@ -3094,7 +3118,7 @@
 
             if (players.length === 0) return;
 
-            // Orange Cap sorting sequence
+            // Orange Cap sorting sequence (Runs)
             const orangePlayers = [...players].sort((a, b) => b.runs - a.runs || a.name.localeCompare(b.name));
             if (orangePlayers.length > 0 && orangePlayers[0].runs > 0) {
                 document.getElementById("orange-cap-name").textContent = orangePlayers[0].name;
@@ -3104,7 +3128,7 @@
                 document.getElementById("orange-cap-runs").textContent = "0";
             }
 
-            // Purple Cap sorting sequence
+            // Purple Cap sorting sequence (Wickets)
             const purplePlayers = [...players].sort((a, b) => b.wickets - a.wickets || a.name.localeCompare(b.name));
             if (purplePlayers.length > 0 && purplePlayers[0].wickets > 0) {
                 document.getElementById("purple-cap-name").textContent = purplePlayers[0].name;
@@ -3114,7 +3138,7 @@
                 document.getElementById("purple-cap-wickets").textContent = "0";
             }
 
-            // MVP sorting sequence
+            // MVP sorting sequence (Points)
             const mvpPlayers = [...players].sort((a, b) => b.mvpPoints - a.mvpPoints || a.name.localeCompare(b.name));
             if (mvpPlayers.length > 0 && mvpPlayers[0].mvpPoints > 0) {
                 document.getElementById("mvp-name").textContent = mvpPlayers[0].name;
@@ -3163,29 +3187,35 @@
             if (!listContainer) return;
             listContainer.innerHTML = "";
 
-            const stats = { ...league.playerStats };
+            const stats = {};
             
-            // Merge active match details
+            // 1. Initialize with tournament-wide playerStats
+            if (league.playerStats) {
+                Object.keys(league.playerStats).forEach(pName => {
+                    const p = league.playerStats[pName];
+                    stats[pName] = {
+                        runs: p.runs || 0,
+                        wickets: p.wickets || 0,
+                        mvpPoints: p.mvpPoints || 0
+                    };
+                });
+            }
+            
+            // 2. If there is an active live match, merge live match stats
             if (league.liveMatch && league.liveMatch.active) {
                 const lm = league.liveMatch;
                 if (lm.batsmanStats) {
                     Object.keys(lm.batsmanStats).forEach(pName => {
                         if (!stats[pName]) stats[pName] = { runs: 0, wickets: 0, mvpPoints: 0 };
-                        stats[pName] = {
-                            runs: (stats[pName].runs || 0) + (lm.batsmanStats[pName].runs || 0),
-                            wickets: stats[pName].wickets || 0,
-                            mvpPoints: (stats[pName].mvpPoints || 0) + (lm.batsmanStats[pName].runs || 0)
-                        };
+                        stats[pName].runs += (lm.batsmanStats[pName].runs || 0);
+                        stats[pName].mvpPoints += (lm.batsmanStats[pName].runs || 0);
                     });
                 }
                 if (lm.bowlerStats) {
                     Object.keys(lm.bowlerStats).forEach(pName => {
                         if (!stats[pName]) stats[pName] = { runs: 0, wickets: 0, mvpPoints: 0 };
-                        stats[pName] = {
-                            runs: stats[pName].runs || 0,
-                            wickets: (stats[pName].wickets || 0) + (lm.bowlerStats[pName].wickets || 0),
-                            mvpPoints: (stats[pName].mvpPoints || 0) + (lm.bowlerStats[pName].wickets * 20)
-                        };
+                        stats[pName].wickets += (lm.bowlerStats[pName].wickets || 0);
+                        stats[pName].mvpPoints += (lm.bowlerStats[pName].wickets * 20);
                     });
                 }
             }
@@ -3203,16 +3233,22 @@
                 document.getElementById("leaderboard-modal-title").textContent = "Orange Cap Leaderboard";
                 filteredPlayers = players.filter(p => p.runs > 0);
                 filteredPlayers.sort((a, b) => b.runs - a.runs || a.name.localeCompare(b.name));
-            } else {
+            } else if (currentLeaderboardType === 'wickets') {
                 document.getElementById("leaderboard-modal-title").textContent = "Purple Cap Leaderboard";
                 filteredPlayers = players.filter(p => p.wickets > 0);
                 filteredPlayers.sort((a, b) => b.wickets - a.wickets || a.name.localeCompare(b.name));
+            } else {
+                document.getElementById("leaderboard-modal-title").textContent = "MVP Points Leaderboard";
+                filteredPlayers = players.filter(p => p.mvpPoints > 0);
+                filteredPlayers.sort((a, b) => b.mvpPoints - a.mvpPoints || a.name.localeCompare(b.name));
             }
 
             const displayPlayers = currentLeaderboardScope === 'top10' ? filteredPlayers.slice(0, 10) : filteredPlayers;
 
             displayPlayers.forEach((p, idx) => {
-                const scoreValue = currentLeaderboardType === 'runs' ? `${p.runs} Runs` : `${p.wickets} Wkts`;
+                const scoreValue = currentLeaderboardType === 'runs' 
+                    ? `${p.runs} Runs` 
+                    : (currentLeaderboardType === 'wickets' ? `${p.wickets} Wkts` : `${p.mvpPoints} Pts`);
                 const rankColor = idx === 0 ? "text-yellow-400 font-extrabold" : "text-gray-400";
                 
                 listContainer.innerHTML += `
