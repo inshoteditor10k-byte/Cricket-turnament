@@ -96,12 +96,21 @@
                     <i class="fa-solid fa-lock"></i>
                 </div>
                 <h2 class="text-xl font-extrabold mb-2">Sign-In Required</h2>
-                <p class="text-gray-400 text-xs mb-6">You must authenticate using Google to access tournaments, league management dashboards, and remote stream connections.</p>
-                <button onclick="loginWithGoogle()" class="w-full py-3 px-4 bg-orange-600 hover:bg-orange-700 active:translate-y-0.5 transform transition font-bold rounded-xl flex items-center justify-center space-x-3 text-white text-sm">
-                    <i class="fa-brands fa-google text-md"></i>
-                    <span>Continue with Google</span>
-                </button>
-                <button onclick="closeAuthGate()" class="mt-4 text-xs text-gray-555 hover:text-gray-400 underline">Browse Public Directories</button>
+                <p class="text-gray-400 text-xs mb-6">Authenticate using Google or continue as a Guest Scorer to start broadcasting.</p>
+                
+                <div class="space-y-3">
+                    <button onclick="loginWithGoogle()" class="w-full py-3 px-4 bg-orange-600 hover:bg-orange-700 active:translate-y-0.5 transform transition font-bold rounded-xl flex items-center justify-center space-x-3 text-white text-sm">
+                        <i class="fa-brands fa-google text-md"></i>
+                        <span>Continue with Google</span>
+                    </button>
+                    
+                    <button onclick="loginAsGuest()" class="w-full py-3 px-4 bg-gray-850 hover:bg-gray-800 border border-gray-700 active:translate-y-0.5 transform transition font-bold rounded-xl flex items-center justify-center space-x-3 text-white text-sm">
+                        <i class="fa-solid fa-user-secret text-md"></i>
+                        <span>Continue as Guest</span>
+                    </button>
+                </div>
+                
+                <button onclick="closeAuthGate()" class="mt-4 text-xs text-gray-500 hover:text-gray-400 underline">Browse Public Directories</button>
             </div>
         </div>
 
@@ -125,7 +134,7 @@
             </div>
             
             <div id="empty-leagues-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-500">No active leagues match your search parameters.</p>
+                <p class="text-xs text-gray-505">No active leagues match your search parameters.</p>
             </div>
         </section>
 
@@ -312,7 +321,7 @@
 
                 <!-- Step B: Select Lineups -->
                 <div id="scorer-lineup-panel" class="hidden p-4 bg-gray-955 border border-gray-800 rounded-xl space-y-3">
-                    <h4 class="text-xs font-bold uppercase tracking-wider">Select Opening Roles</h4>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-white">Select Opening Roles</h4>
                     <div class="space-y-2.5">
                         <div>
                             <label class="block text-[9px] text-gray-400 mb-1 font-bold">Striker Batsman</label>
@@ -407,6 +416,31 @@
                         <button onclick="document.getElementById('wicket-modal').classList.add('hidden')" class="w-full py-2 text-xs text-gray-400 hover:text-white underline text-center">Cancel</button>
                     </div>
                 </div>
+
+                <!-- Over Change Bowler Selection Modal (No consecutive overs constraint) -->
+                <div id="bowler-change-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center px-4">
+                    <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4">
+                        <h4 class="text-md font-black text-orange-500 uppercase tracking-wider">Select Next Bowler</h4>
+                        <p class="text-[9px] text-gray-400">Note: Immediate previous bowler cannot bowl consecutive overs.</p>
+                        <select id="select-next-bowler" class="w-full bg-gray-950 border border-gray-850 rounded p-2 text-xs text-white">
+                            <!-- Populated dynamically with non-consecutive bowling squad options -->
+                        </select>
+                        <button onclick="commitBowlerChange()" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-xs uppercase text-white">Start Over</button>
+                    </div>
+                </div>
+
+                <!-- Batsman Out New Selection Modal (Already dismissed batsman cannot bat again) -->
+                <div id="batsman-replacement-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center px-4">
+                    <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4">
+                        <h4 class="text-md font-black text-red-500 uppercase tracking-wider">Batsman Dismissed!</h4>
+                        <p class="text-[9px] text-gray-400">Choose incoming batsman. Dismissed players cannot bat again.</p>
+                        <select id="select-incoming-batsman" class="w-full bg-gray-950 border border-gray-855 rounded p-2 text-xs text-white">
+                            <!-- Populated with non-dismissed batting squad options -->
+                        </select>
+                        <button onclick="commitBatsmanReplacement()" class="w-full py-2 bg-red-655 hover:bg-red-700 font-bold text-xs uppercase text-white">Confirm Batsman</button>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -453,6 +487,10 @@
                         <i class="fa-brands fa-google"></i>
                         <span>Continue with Google</span>
                     </button>
+                    <button onclick="loginAsGuest()" id="btn-guest-login" class="w-full py-2.5 border border-gray-700 hover:bg-gray-850 font-bold rounded-xl text-xs text-white">
+                        <i class="fa-solid fa-user-secret"></i>
+                        <span>Continue as Guest</span>
+                    </button>
                     <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-855 hover:bg-gray-855 font-bold rounded-xl text-xs text-gray-400">Logout</button>
                 </div>
 
@@ -461,7 +499,7 @@
                     <h3 class="text-xs font-bold">Register as Cameraman</h3>
                     <p class="text-[10px] text-gray-400">Enter a 6-digit key generated by a tournament owner to start broadcasting.</p>
                     <div class="flex space-x-2">
-                        <input type="text" id="cameraman-code-input" maxlength="6" placeholder="000000" class="bg-gray-955 border border-gray-800 rounded-lg p-3 text-center text-lg font-mono tracking-widest focus:outline-none focus:border-orange-500 text-white w-full">
+                        <input type="text" id="cameraman-code-input" maxlength="6" placeholder="000000" class="bg-gray-950 border border-gray-800 rounded-lg p-3 text-center text-lg font-mono tracking-widest focus:outline-none focus:border-orange-500 text-white w-full">
                         <button onclick="registerAsCameraman()" class="px-5 bg-orange-600 hover:bg-orange-700 font-extrabold rounded-lg text-xs uppercase text-white">Link</button>
                     </div>
                 </div>
@@ -477,9 +515,9 @@
         </section>
 
         <!-- Dynamic Live Match Broadcast View Overlay (JioCinema / Hotstar scorecard styling & DVR & Views) -->
-        <section id="live-match-spectator-overlay" class="hidden fixed inset-0 bg-gray-955 z-50 overflow-y-auto">
+        <section id="live-match-spectator-overlay" class="hidden fixed inset-0 bg-gray-955 z-50 overflow-y-auto font-sans">
             <!-- Header bar inside live match view -->
-            <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10">
+            <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10 animate-fade-in">
                 <div class="flex items-center space-x-2">
                     <span class="bg-red-600 text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded text-white animate-pulse">LIVE</span>
                     <!-- Real-Time Viewer Count Pill -->
@@ -487,7 +525,7 @@
                         <i class="fa-solid fa-eye text-orange-500"></i>
                         <span id="overlay-live-views" class="font-bold">1</span>
                     </span>
-                    <h3 id="live-spectator-league-title" class="text-xs font-bold truncate max-w-[150px]">Elite League</h3>
+                    <h3 id="live-spectator-league-title" class="text-xs font-bold truncate max-w-[150px] text-white">Elite League</h3>
                 </div>
                 <div class="flex items-center space-x-3">
                     <button onclick="toggleVideoRotation()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-1">
@@ -538,9 +576,9 @@
                         <!-- Row 2: Scorecard Bug Banner -->
                         <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 text-white rounded px-2 py-1 flex items-center justify-between font-black shadow-lg border border-orange-500 gap-1 text-[11px]">
                             <div class="flex items-center space-x-1.5">
-                                <span id="overlay-teams-abbrev" class="tracking-wide text-[10px] bg-black/30 px-1.5 py-0.5 rounded">T1 vs T2</span>
+                                <span id="overlay-teams-abbrev" class="tracking-wide text-[10px] bg-black/30 px-1.5 py-0.5 rounded text-white">T1 vs T2</span>
                                 <span id="overlay-innings-score" class="text-xs border-l border-white/20 pl-1.5">0-0 <span class="text-[9px] font-semibold opacity-90">(0.0)</span></span>
-                                <span id="overlay-match-limit" class="text-[8px] opacity-80 font-normal">(5 Overs)</span>
+                                <span id="overlay-match-limit" class="text-[8px] opacity-80 font-normal text-white">(5 Overs)</span>
                             </div>
                             <!-- Current Over Delivery Log -->
                             <div class="flex items-center space-x-0.5" id="overlay-over-log">
@@ -551,7 +589,7 @@
                         <!-- Row 3: Live Run Rates & Targets -->
                         <div class="flex justify-between items-center text-[8px] uppercase tracking-wider font-extrabold text-orange-400 px-1">
                             <span id="overlay-run-rates">CRR: --</span>
-                            <span id="overlay-required-runs" class="text-white"></span>
+                            <span id="overlay-required-runs" class="text-white font-mono"></span>
                         </div>
 
                         <!-- Playback Controller Seek Bar (Rewind Option buttons) -->
@@ -592,7 +630,7 @@
 
                     <div class="p-4 flex-1 overflow-y-auto">
                         <!-- Scorecard Tab Pane -->
-                        <div id="live-panel-scorecard" class="space-y-4">
+                        <div id="live-panel-scorecard" class="space-y-4 animate-fade-in">
                             <div class="bg-gray-955 border border-gray-800 p-3 rounded-xl space-y-2">
                                 <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500">Batting</h4>
                                 <table class="w-full text-[11px] text-left">
@@ -601,6 +639,8 @@
                                             <th class="py-1">Batsman</th>
                                             <th class="py-1 text-center">R</th>
                                             <th class="py-1 text-center">B</th>
+                                            <th class="py-1 text-center">4s</th>
+                                            <th class="py-1 text-center">6s</th>
                                             <th class="py-1 text-center">SR</th>
                                         </tr>
                                     </thead>
@@ -617,6 +657,7 @@
                                         <tr class="border-b border-gray-800 text-gray-500 font-bold uppercase text-[9px]">
                                             <th class="py-1">Bowler</th>
                                             <th class="py-1 text-center">O</th>
+                                            <th class="py-1 text-center">D</th>
                                             <th class="py-1 text-center">R</th>
                                             <th class="py-1 text-center">W</th>
                                             <th class="py-1 text-center">ER</th>
@@ -630,7 +671,7 @@
                         </div>
 
                         <!-- Fixtures Tab Pane -->
-                        <div id="live-panel-fixtures" class="hidden space-y-4">
+                        <div id="live-panel-fixtures" class="hidden space-y-4 animate-fade-in">
                             <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500">Tournament Schedule</h4>
                             <div id="ipl-fixtures-container" class="space-y-3">
                                 <!-- Dynamic IPL Match Cards -->
@@ -638,16 +679,16 @@
                         </div>
 
                         <!-- Standings Tab Pane -->
-                        <div id="live-panel-standings" class="hidden space-y-3">
+                        <div id="live-panel-standings" class="hidden space-y-3 animate-fade-in">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-[11px] text-left">
                                     <thead>
                                         <tr class="border-b border-gray-800 text-gray-500 font-bold uppercase text-[9px]">
-                                            <th class="py-1.5">Team</th>
-                                            <th class="py-1.5 text-center">P</th>
-                                            <th class="py-1.5 text-center">W</th>
-                                            <th class="py-1.5 text-center">PTS</th>
-                                            <th class="py-1.5 text-center">NRR</th>
+                                            <th class="py-1.5 text-white">Team</th>
+                                            <th class="py-1.5 text-center text-white">P</th>
+                                            <th class="py-1.5 text-center text-white">W</th>
+                                            <th class="py-1.5 text-center text-white">PTS</th>
+                                            <th class="py-1.5 text-center text-white">NRR</th>
                                         </tr>
                                     </thead>
                                     <tbody id="live-table-standings">
@@ -658,48 +699,48 @@
                         </div>
 
                         <!-- Awards Tab Pane (Leaderboards with See All expand modal triggers) -->
-                        <div id="live-panel-awards" class="hidden space-y-3">
+                        <div id="live-panel-awards" class="hidden space-y-3 animate-fade-in">
                             <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500">Cap Leaders</h4>
                             <div class="space-y-2.5">
                                 <!-- Orange Cap Card (Interactive Click) -->
-                                <div onclick="openStatsLeaderboardModal('runs')" class="bg-amber-600/10 border border-amber-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-amber-500/40 transition">
+                                <div onclick="openStatsLeaderboardModal('runs')" class="bg-amber-600/10 border border-amber-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-amber-500/40 transition shadow">
                                     <div>
                                         <span class="bg-amber-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Orange Cap</span>
-                                        <h3 id="orange-cap-name" class="text-xs font-black mt-1">Awaiting Stats</h3>
+                                        <h3 id="orange-cap-name" class="text-xs font-black mt-1 text-white">Awaiting Stats</h3>
                                         <span class="text-[8px] text-orange-400 font-semibold uppercase tracking-wider">Click to view Top 10 Sequence</span>
                                     </div>
                                     <div class="text-right">
-                                        <span id="orange-cap-runs" class="text-lg font-black text-amber-500">0</span> <span class="text-[10px] text-gray-400">Runs</span>
+                                        <span id="orange-cap-runs" class="text-lg font-black text-amber-500 font-mono">0</span> <span class="text-[10px] text-gray-400">Runs</span>
                                     </div>
                                 </div>
 
                                 <!-- Purple Cap Card (Interactive Click) -->
-                                <div onclick="openStatsLeaderboardModal('wickets')" class="bg-fuchsia-600/10 border border-fuchsia-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-fuchsia-500/40 transition">
+                                <div onclick="openStatsLeaderboardModal('wickets')" class="bg-fuchsia-600/10 border border-fuchsia-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-fuchsia-500/40 transition shadow">
                                     <div>
                                         <span class="bg-fuchsia-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Purple Cap</span>
-                                        <h3 id="purple-cap-name" class="text-xs font-black mt-1">Awaiting Stats</h3>
+                                        <h3 id="purple-cap-name" class="text-xs font-black mt-1 text-white">Awaiting Stats</h3>
                                         <span class="text-[8px] text-fuchsia-400 font-semibold uppercase tracking-wider">Click to view Top 10 Sequence</span>
                                     </div>
                                     <div class="text-right">
-                                        <span id="purple-cap-wickets" class="text-lg font-black text-fuchsia-500">0</span> <span class="text-[10px] text-gray-400">Wickets</span>
+                                        <span id="purple-cap-wickets" class="text-lg font-black text-fuchsia-500 font-mono">0</span> <span class="text-[10px] text-gray-400">Wkts</span>
                                     </div>
                                 </div>
 
                                 <!-- MVP Card -->
-                                <div class="bg-emerald-600/10 border border-emerald-500/20 p-3 rounded-xl flex items-center justify-between">
+                                <div class="bg-emerald-600/10 border border-emerald-500/20 p-3 rounded-xl flex items-center justify-between shadow">
                                     <div>
                                         <span class="bg-emerald-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded uppercase">Tournament MVP</span>
-                                        <h3 id="mvp-name" class="text-xs font-black mt-1">Awaiting Stats</h3>
+                                        <h3 id="mvp-name" class="text-xs font-black mt-1 text-white">Awaiting Stats</h3>
                                     </div>
                                     <div class="text-right">
-                                        <span id="mvp-points" class="text-lg font-black text-emerald-500">0</span> <span class="text-[10px] text-gray-400">Pts</span>
+                                        <span id="mvp-points" class="text-lg font-black text-emerald-500 font-mono">0</span> <span class="text-[10px] text-gray-400">Pts</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Videos Tab Pane (Premium Thumbnails Grid - Verbatim details requested) -->
-                        <div id="live-panel-videos" class="hidden space-y-4">
+                        <!-- Videos Tab Pane (Premium Thumbnails Grid) -->
+                        <div id="live-panel-videos" class="hidden space-y-4 animate-fade-in">
                             <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500">Match Broadcast Archive (60 hrs)</h4>
                             <div id="videos-tab-grid" class="grid grid-cols-2 gap-3">
                                 <!-- Populated dynamically with exact same premium card layout! -->
@@ -726,14 +767,14 @@
                 </div>
 
                 <!-- List container -->
-                <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white" id="leaderboard-modal-list">
+                <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white" id="leaderboard-modal-list font-sans">
                     <!-- Sorted players list goes here -->
                 </div>
             </div>
         </div>
 
         <!-- Dynamic Live Cameraman Broadcaster View Overlay (Dedicated mobile fullscreen live video stream panel) -->
-        <section id="cameraman-live-overlay" class="hidden fixed inset-0 bg-gray-955 z-50 p-6 flex flex-col justify-between">
+        <section id="cameraman-live-overlay" class="hidden fixed inset-0 bg-gray-955 z-50 p-6 flex flex-col justify-between font-sans">
             <div class="flex justify-between items-center border-b border-gray-800 pb-4">
                 <div>
                     <span class="bg-green-600 text-[10px] font-black tracking-widest px-2 py-0.5 rounded text-white uppercase animate-pulse">Broadcasting Live</span>
@@ -920,8 +961,27 @@
                 });
         }
 
+        // Guest profile initialization
+        function loginAsGuest() {
+            const rand = Math.floor(1000 + Math.random() * 9000);
+            const guestUser = {
+                uid: `guest_${rand}_${Date.now()}`,
+                displayName: `Guest Scorer ${rand}`,
+                email: `guest${rand}@indiaplaycricket.com`,
+                photoURL: "https://img.icons8.com/color/150/cricket.png"
+            };
+            
+            // Set guest session inside sessionStorage
+            sessionStorage.setItem("guest_ipc_session", JSON.stringify(guestUser));
+            currentUser = guestUser;
+            closeAuthGate();
+            updateAuthUI();
+            fetchLeagues();
+        }
+
         // Logout
         function logout() {
+            sessionStorage.removeItem("guest_ipc_session");
             auth.signOut().then(() => {
                 switchTab('home');
             });
@@ -930,9 +990,16 @@
         function updateAuthUI() {
             const container = document.getElementById("auth-status-container");
             const btnLogin = document.getElementById("btn-login");
+            const btnGuestLogin = document.getElementById("btn-guest-login");
             const btnLogout = document.getElementById("btn-logout");
             const cameraBox = document.getElementById("camera-registration-box");
             const profileLeagues = document.getElementById("profile-leagues-container");
+
+            // Look up guest session if present
+            const guestSession = sessionStorage.getItem("guest_ipc_session");
+            if (guestSession) {
+                currentUser = JSON.parse(guestSession);
+            }
 
             if (currentUser) {
                 container.innerHTML = `
@@ -940,6 +1007,7 @@
                     <img src="${currentUser.photoURL || 'https://via.placeholder.com/150'}" class="w-5 h-5 rounded-full border border-orange-500">
                 `;
                 if (btnLogin) btnLogin.classList.add("hidden");
+                if (btnGuestLogin) btnGuestLogin.classList.add("hidden");
                 if (btnLogout) btnLogout.classList.remove("hidden");
                 if (cameraBox) cameraBox.classList.remove("hidden");
                 if (profileLeagues) profileLeagues.classList.remove("hidden");
@@ -952,6 +1020,7 @@
             } else {
                 container.innerHTML = `<button onclick="showAuthGate()" class="text-[10px] bg-orange-600 px-2 py-1 rounded font-bold text-white">Login</button>`;
                 if (btnLogin) btnLogin.classList.remove("hidden");
+                if (btnGuestLogin) btnGuestLogin.classList.remove("hidden");
                 if (btnLogout) btnLogout.classList.add("hidden");
                 if (cameraBox) cameraBox.classList.add("hidden");
                 if (profileLeagues) profileLeagues.classList.add("hidden");
@@ -1049,7 +1118,7 @@
             return new Date(matchTargetStr).getTime();
         }
 
-        // 7. Dynamic Team Input Matrix with Captain Designation radio button
+        // 7. Dynamic Team Input Matrix with Captain Designation radio button (Auto player name fallback added)
         function adjustTeamRosterInputs() {
             const teamCountInput = document.getElementById("league-teams-count");
             let count = parseInt(teamCountInput.value) || 4;
@@ -1065,14 +1134,14 @@
                 let playerInputsHTML = "";
                 for (let j = 1; j <= pCount; j++) {
                     playerInputsHTML += `
-                        <div class="grid grid-cols-12 gap-1.5 p-1.5 bg-gray-900/50 rounded border border-gray-800/80 items-center text-white">
+                        <div class="grid grid-cols-12 gap-1.5 p-1.5 bg-gray-900/50 rounded border border-gray-800/80 items-center text-white font-sans">
                             <div class="col-span-4">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Player ${j} Name</label>
-                                <input type="text" id="team-${i}-player-${j}-name" placeholder="Name" class="w-full bg-gray-955 border border-gray-850 rounded p-1 text-[10px] text-white">
+                                <input type="text" id="team-${i}-player-${j}-name" placeholder="Player ${j}" class="w-full bg-gray-950 border border-gray-850 rounded p-1 text-[10px] text-white">
                             </div>
                             <div class="col-span-3">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Role</label>
-                                <select id="team-${i}-player-${j}-role" class="w-full bg-gray-955 border border-gray-850 rounded p-1 text-[10px] text-white">
+                                <select id="team-${i}-player-${j}-role" class="w-full bg-gray-950 border border-gray-850 rounded p-1 text-[10px] text-white font-sans">
                                     <option value="Batsman">Batsman</option>
                                     <option value="Bowler">Bowler</option>
                                     <option value="All-Rounder">All-Rounder</option>
@@ -1263,7 +1332,7 @@
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
                     { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', round: 42 },
                     { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', round: 45 },
-                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', rounded: 47 }, { home: 'I', away: 'E', round: 48 },
+                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', round: 47 }, { home: 'I', away: 'E', round: 48 },
                     { home: 'J', away: 'F', round: 49 }, { home: 'I', away: 'G', round: 50 }, { home: 'J', away: 'H', round: 51 },
                     { home: 'D', away: 'A', round: 52 }, { home: 'C', away: 'B', round: 53 }, { home: 'H', away: 'E', round: 54 },
                     { home: 'G', away: 'F', round: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
@@ -1315,7 +1384,7 @@
             return compiledFixtures;
         }
 
-        // Prepopulate player stats on creation cleanly
+        // Prepopulate player stats on creation cleanly with automatic player name fallback
         function submitNewLeague() {
             const name = document.getElementById("league-name-input").value.trim();
             const teamCount = parseInt(document.getElementById("league-teams-count").value);
@@ -1330,27 +1399,23 @@
             const playerStats = {};
 
             for (let i = 1; i <= teamCount; i++) {
-                const tName = document.getElementById(`team-${i}-name`).value.trim();
+                const tName = document.getElementById(`team-${i}-name`).value.trim() || `Team ${i}`;
                 
-                if (!tName) {
-                    alert(`Team ${i} specification incomplete.`);
-                    return;
-                }
-
                 // Check designated captain radio values
                 const captainRadio = document.querySelector(`input[name="team-${i}-captain"]:checked`);
                 const captainIdx = captainRadio ? parseInt(captainRadio.value) : 1;
 
                 const playersList = [];
                 for (let j = 1; j <= playersCount; j++) {
-                    const pName = document.getElementById(`team-${i}-player-${j}-name`).value.trim();
-                    const pRole = document.getElementById(`team-${i}-player-${j}-role`).value;
-                    const pImg = document.getElementById(`team-${i}-player-${j}-img`).value.trim();
+                    const pNameInput = document.getElementById(`team-${i}-player-${j}-name`);
+                    const pName = pNameInput && pNameInput.value.trim() ? pNameInput.value.trim() : `Player ${j}`;
+                    
+                    const pRoleEl = document.getElementById(`team-${i}-player-${j}-role`);
+                    const pRole = pRoleEl ? pRoleEl.value : "Batsman";
+                    
+                    const pImgEl = document.getElementById(`team-${i}-player-${j}-img`);
+                    const pImg = pImgEl ? pImgEl.value.trim() : "";
 
-                    if (!pName) {
-                        alert(`Roster complete details required for Team ${i} Player ${j}.`);
-                        return;
-                    }
                     playersList.push({
                         name: pName,
                         role: pRole,
@@ -1812,7 +1877,35 @@
 
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                 if (data) {
+                    // Update current bowler match stat block
+                    const bowler = data.currentBowler;
+                    if (bowler) {
+                        data.bowlerStats = data.bowlerStats || {};
+                        if (!data.bowlerStats[bowler]) {
+                            data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+                        }
+                        data.bowlerStats[bowler].balls += 1;
+                        data.bowlerStats[bowler].runs += runs;
+                        if (runs === 0) data.bowlerStats[bowler].dots += 1;
+                        if (runs === 4) data.bowlerStats[bowler].fours += 1;
+                        if (runs === 6) data.bowlerStats[bowler].sixes += 1;
+                    }
+
+                    // Update striker batsman match stat block
+                    const striker = data.striker;
+                    if (striker) {
+                        data.batsmanStats = data.batsmanStats || {};
+                        if (!data.batsmanStats[striker]) {
+                            data.batsmanStats[striker] = { runs: 0, balls: 0, fours: 0, sixes: 0, status: "not out" };
+                        }
+                        data.batsmanStats[striker].balls += 1;
+                        data.batsmanStats[striker].runs += runs;
+                        if (runs === 4) data.batsmanStats[striker].fours += 1;
+                        if (runs === 6) data.batsmanStats[striker].sixes += 1;
+                    }
+
                     data.runs += runs;
+                    const prevOvers = data.overs;
                     data.overs = incrementOverBalls(data.overs);
                     data.overLog = data.overLog || [];
                     data.overLog.push(runs);
@@ -1822,6 +1915,13 @@
                         const temp = data.striker;
                         data.striker = data.nonStriker;
                         data.nonStriker = temp;
+                    }
+
+                    // Over finished bowler switch check (No consecutive overs constraint)
+                    const overCompleted = Math.floor(data.overs) > Math.floor(prevOvers);
+                    if (overCompleted) {
+                        data.previousBowler = data.currentBowler;
+                        data.needsBowlerChange = true;
                     }
 
                     // Automatic Inning Termination Check
@@ -1845,6 +1945,11 @@
                             return p;
                         });
                     }
+
+                    // Show bowler switch modal if flagged
+                    if (data.needsBowlerChange && data.active) {
+                        openBowlerChangeModal(data);
+                    }
                 }
             });
         }
@@ -1856,7 +1961,33 @@
                 const league = allLeagues[selectedScorerLeagueId];
                 db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                     if (data) {
+                        const bowler = data.currentBowler;
+                        if (bowler) {
+                            data.bowlerStats = data.bowlerStats || {};
+                            if (!data.bowlerStats[bowler]) {
+                                data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+                            }
+                            data.bowlerStats[bowler].balls += 1;
+                            data.bowlerStats[bowler].runs += parsed;
+                            if (parsed === 0) data.bowlerStats[bowler].dots += 1;
+                            if (parsed === 4) data.bowlerStats[bowler].fours += 1;
+                            if (parsed === 6) data.bowlerStats[bowler].sixes += 1;
+                        }
+
+                        const striker = data.striker;
+                        if (striker) {
+                            data.batsmanStats = data.batsmanStats || {};
+                            if (!data.batsmanStats[striker]) {
+                                data.batsmanStats[striker] = { runs: 0, balls: 0, fours: 0, sixes: 0, status: "not out" };
+                            }
+                            data.batsmanStats[striker].balls += 1;
+                            data.batsmanStats[striker].runs += parsed;
+                            if (parsed === 4) data.batsmanStats[striker].fours += 1;
+                            if (parsed === 6) data.batsmanStats[striker].sixes += 1;
+                        }
+
                         data.runs += parsed;
+                        const prevOvers = data.overs;
                         data.overs = incrementOverBalls(data.overs);
                         data.overLog = data.overLog || [];
                         data.overLog.push(parsed);
@@ -1866,6 +1997,12 @@
                             const temp = data.striker;
                             data.striker = data.nonStriker;
                             data.nonStriker = temp;
+                        }
+
+                        const overCompleted = Math.floor(data.overs) > Math.floor(prevOvers);
+                        if (overCompleted) {
+                            data.previousBowler = data.currentBowler;
+                            data.needsBowlerChange = true;
                         }
 
                         evaluateMatchProgress(data, league);
@@ -1882,6 +2019,10 @@
                                 return p;
                             });
                         }
+
+                        if (data.needsBowlerChange && data.active) {
+                            openBowlerChangeModal(data);
+                        }
                     }
                 });
             }
@@ -1891,6 +2032,15 @@
             const league = allLeagues[selectedScorerLeagueId];
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                 if (data) {
+                    const bowler = data.currentBowler;
+                    if (bowler) {
+                        data.bowlerStats = data.bowlerStats || {};
+                        if (!data.bowlerStats[bowler]) {
+                            data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+                        }
+                        data.bowlerStats[bowler].runs += 1; // Extra conceeded
+                    }
+
                     data.runs += 1;
                     data.extras += 1;
                     data.overLog = data.overLog || [];
@@ -1919,11 +2069,46 @@
 
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                 if (data) {
+                    const bowler = data.currentBowler;
+                    if (bowler) {
+                        data.bowlerStats = data.bowlerStats || {};
+                        if (!data.bowlerStats[bowler]) {
+                            data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+                        }
+                        data.bowlerStats[bowler].balls += 1;
+                        data.bowlerStats[bowler].wickets += 1;
+                    }
+
+                    const striker = data.striker;
+                    if (striker) {
+                        data.batsmanStats = data.batsmanStats || {};
+                        if (!data.batsmanStats[striker]) {
+                            data.batsmanStats[striker] = { runs: 0, balls: 0, fours: 0, sixes: 0, status: "not out" };
+                        }
+                        data.batsmanStats[striker].balls += 1;
+                        data.batsmanStats[striker].status = "out";
+
+                        data.dismissedBatsmen = data.dismissedBatsmen || [];
+                        data.dismissedBatsmen.push(striker);
+                    }
+
                     data.wickets += 1;
+                    const prevOvers = data.overs;
                     data.overs = incrementOverBalls(data.overs);
                     data.overLog = data.overLog || [];
                     data.overLog.push("W");
+
+                    const overCompleted = Math.floor(data.overs) > Math.floor(prevOvers);
+                    if (overCompleted) {
+                        data.previousBowler = data.currentBowler;
+                        data.needsBowlerChange = true;
+                    }
+
+                    // Flag replacement trigger if match is still active
                     evaluateMatchProgress(data, league);
+                    if (data.active) {
+                        data.needsBatsmanReplacement = true;
+                    }
                 }
                 return data;
             }, (error, committed, snapshot) => {
@@ -1941,12 +2126,94 @@
                         });
                     }
 
-                    // Check if match hasn't automatically ended, ask for incoming batsman
                     if (data.active) {
-                        promptNewBatsmanSelection();
+                        if (data.needsInning2Lineup) return;
+                        if (data.needsInning2Lineup === undefined || !data.needsInning2Lineup) {
+                            openBatsmanReplacementModal(data);
+                        }
                     }
                 }
             });
+        }
+
+        // Automatic Over bowler shift controller
+        function openBowlerChangeModal(liveMatchData) {
+            const league = allLeagues[selectedScorerLeagueId];
+            const bowlTeam = league.teams.find(t => t.name === liveMatchData.bowlingTeam);
+            const selectEl = document.getElementById("select-next-bowler");
+            if (!selectEl || !bowlTeam) return;
+
+            selectEl.innerHTML = "";
+            bowlTeam.roster.forEach(player => {
+                const pName = typeof player === 'string' ? player : player.name;
+                // Strict: Immediate previous bowler cannot bowl consecutive overs
+                if (pName !== liveMatchData.previousBowler) {
+                    selectEl.innerHTML += `<option value="${pName}">${pName}</option>`;
+                }
+            });
+
+            document.getElementById("bowler-change-modal").classList.remove("hidden");
+        }
+
+        function commitBowlerChange() {
+            const nextB = document.getElementById("select-next-bowler").value;
+            if (!nextB) return;
+
+            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).update({
+                currentBowler: nextB,
+                needsBowlerChange: false
+            }).then(() => {
+                document.getElementById("bowler-change-modal").classList.add("hidden");
+            });
+        }
+
+        // Automatic replacement batsman controller (Out batsman cannot bat again)
+        function openBatsmanReplacementModal(liveMatchData) {
+            const league = allLeagues[selectedScorerLeagueId];
+            const batTeam = league.teams.find(t => t.name === liveMatchData.battingTeam);
+            const selectEl = document.getElementById("select-incoming-batsman");
+            if (!selectEl || !batTeam) return;
+
+            selectEl.innerHTML = "";
+            const dismissedList = liveMatchData.dismissedBatsmen || [];
+
+            batTeam.roster.forEach(player => {
+                const pName = typeof player === 'string' ? player : player.name;
+                // Strict: Already dismissed batsman cannot play again, also current partner cannot be chosen
+                if (!dismissedBarsmanCheck(dismissedList = dismissedListSafe(d => d), pName) && pName !== liveMatchData.nonStriker) {
+                    // Wait, let's look up safety array cleanly
+                    const isOut = dismissedListSafe(liveMatchData).includes(pName);
+                    if (!isOut) {
+                        selectEl.innerHTML += `<option value="${pName}">${pName}</option>`;
+                    }
+                }
+            });
+
+            document.getElementById("batsman-replacement-modal").classList.remove("hidden");
+        }
+
+        function commitBatsmanReplacement() {
+            const incoming = document.getElementById("select-incoming-batsman").value;
+            if (!incoming) return;
+
+            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).update({
+                striker: incoming,
+                needsCompletionSave: false
+            }).then(() => {
+                document.getElementById("batsman-replacement-modal").classList.add("hidden");
+            });
+        }
+
+        function getDismissedBatsmen(liveMatchData) {
+            const list = [];
+            // Retrieve from batsmanStats
+            const stats = liveMatchData.batsmanStats || {};
+            Object.keys(stats).forEach(name => {
+                if (stats[name].status === "out") {
+                    list.push(name);
+                }
+            });
+            return list;
         }
 
         // Automatic Inning & Match termination evaluation (Cricket Rules)
@@ -1958,6 +2225,10 @@
             if (!data.inning) {
                 data.inning = 1;
             }
+
+            // Detect if over was completed on this ball
+            const overDec = overToDecimal(data.overs);
+            const isOverEnded = (overDec > 0) && (overDec % 1 === 0);
 
             if (data.inning === 1) {
                 const isAllOut = data.wickets >= maxWickets;
@@ -1978,6 +2249,8 @@
                     data.wickets = 0;
                     data.overs = 0.0;
                     data.overLog = [];
+                    data.previousBowler = "";
+                    data.dismissedBatsmen = [];
 
                     // Swap Batting/Bowling roles
                     const prevBatting = data.battingTeam;
@@ -1985,6 +2258,10 @@
                     data.bowlingTeam = prevBatting;
 
                     data.needsInning2Lineup = true; // Flag to lock scorer view to opening roles selector
+                } else {
+                    if (isOverEnded) {
+                        data.needsBowlerChange = true;
+                    }
                 }
             } else if (data.inning === 2) {
                 const target = data.targetRuns;
@@ -2002,6 +2279,10 @@
                         data.outcome = "MATCH TIED! SUPER OVER REQUIRED.";
                     } else {
                         data.outcome = `${data.bowlingTeam} won by ${target - 1 - data.runs} runs!`;
+                    }
+                } else {
+                    if (isOverEnded) {
+                        data.needsBowlerChange = true;
                     }
                 }
             }
@@ -2041,6 +2322,10 @@
                 autoAdvancePlayoffs(league.metadata.id, league);
                 exitScorerConsole();
             });
+        }
+
+        function dismissedListSafe(liveMatchData) {
+            return liveMatchData.dismissedBatsmen || [];
         }
 
         // Playoff Bracket promotions automation
@@ -2158,12 +2443,8 @@
             const league = allLeagues[selectedScorerLeagueId];
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).once('value', snapshot => {
                 const data = snapshot.val();
-                const battingTeam = league.teams.find(t => t.name === data.battingTeam);
-                const options = battingTeam.roster.map(p => typeof p === 'string' ? p : p.name);
-                const selected = prompt(`Choose incoming batsman from list:\n${options.join(", ")}`);
-                if (selected) {
-                    db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).update({ striker: selected });
-                }
+                if (data.needsInning2Lineup) return;
+                openBatsmanReplacementModal(data);
             });
         }
 
@@ -2453,7 +2734,7 @@
                         homeImgHTML = `<img src="${homeCaptain.image}" class="w-10 h-10 rounded-full object-cover border-2 border-orange-500 shadow-md">`;
                     } else {
                         homeImgHTML = `
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-600 to-amber-500 flex items-center justify-center font-black text-[10px] border-2 border-orange-500 text-white shadow-md">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-600 to-amber-500 flex items-center justify-center font-black text-[10px] border-2 border-orange-500 text-white shadow-md font-sans">
                                 ${generateShortName(match.homeTeam)}
                             </div>
                         `;
@@ -2464,7 +2745,7 @@
                         awayImgHTML = `<img src="${awayCaptain.image}" class="w-10 h-10 rounded-full object-cover border-2 border-green-500 shadow-md">`;
                     } else {
                         awayImgHTML = `
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center font-black text-[10px] border-2 border-green-500 text-white shadow-md">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center font-black text-[10px] border-2 border-green-500 text-white shadow-md font-sans">
                                 ${generateShortName(match.awayTeam)}
                             </div>
                         `;
@@ -2485,11 +2766,11 @@
                             <div class="bg-gray-900 px-2 py-0.5 flex justify-between items-center text-[7px] border-b border-gray-850">
                                 <span class="text-gray-400 font-bold uppercase tracking-wider">Round ${match.round}</span>
                                 ${winnerName ? `
-                                    <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider">
+                                    <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
                                         🏆 WINNER: ${generateShortName(winnerName)}
                                     </span>
                                 ` : `
-                                    <span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider">
+                                    <span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
                                         ${match.status}
                                     </span>
                                 `}
@@ -2501,17 +2782,17 @@
                                 <div class="flex flex-col items-center flex-1 text-center">
                                     ${homeImgHTML}
                                     <p class="text-[8px] font-black truncate max-w-[55px] text-white mt-1">${homeCaptain.name}</p>
-                                    <p class="text-[7px] text-orange-400 font-bold truncate max-w-[55px]">${generateShortName(match.homeTeam)}</p>
+                                    <p class="text-[7px] text-orange-400 font-bold truncate max-w-[55px] font-sans">${generateShortName(match.homeTeam)}</p>
                                 </div>
                                 
                                 <!-- VS Split -->
-                                <span class="text-[8px] font-black bg-gray-800 px-1 py-0.5 rounded text-gray-450 italic">VS</span>
+                                <span class="text-[8px] font-black bg-gray-800 px-1 py-0.5 rounded text-gray-455 italic">VS</span>
 
                                 <!-- Right Team -->
                                 <div class="flex flex-col items-center flex-1 text-center">
                                     ${awayImgHTML}
                                     <p class="text-[8px] font-black truncate max-w-[55px] text-white mt-1">${awayCaptain.name}</p>
-                                    <p class="text-[7px] text-green-400 font-bold truncate max-w-[55px]">${generateShortName(match.awayTeam)}</p>
+                                    <p class="text-[7px] text-green-400 font-bold truncate max-w-[55px] font-sans">${generateShortName(match.awayTeam)}</p>
                                 </div>
                             </div>
                         </div>
@@ -2581,6 +2862,11 @@
                     }
                 }
             });
+        }
+
+        // Helper to check if a player name is already inside the dismissed Safe array list
+        function dismissedBatsmanCheck(list, name) {
+            return list.includes(name);
         }
 
         // Live stats calculations and scoring sync logic
@@ -2667,7 +2953,7 @@
                 runsRateElement.textContent = `CRR: ${crr} ${data.inning === 2 ? `| RRR: ${rrr}` : ''}`;
             }
 
-            // Populate Tables safely
+            // Populate Tables safely with detailed, real bowler/batsman metric cards
             const bTable = document.getElementById("live-table-batting");
             const bowlTable = document.getElementById("live-table-bowling");
             if (bTable) bTable.innerHTML = "";
@@ -2684,18 +2970,34 @@
                     const isNonStriker = data.nonStriker === pName;
                     const statusSuffix = isStriker ? "<span class='text-orange-500 font-black'>*</span>" : (isNonStriker ? " (ns)" : "");
 
+                    // Detailed metrics retrieval
+                    const mStats = data.batsmanStats || {};
+                    const runs = mStats[pName] ? mStats[pName].runs : 0;
+                    const balls = mStats[pName] ? mStats[pName].balls : 0;
+                    const fours = mStats[pName] ? mStats[pName].fours : 0;
+                    const sixes = mStats[pName] ? mStats[pName].sixes : 0;
+                    const sr = balls > 0 ? ((runs / balls) * 100).toFixed(1) : "0.0";
+
+                    // Determine dismissal status safely
+                    let isOutLabel = "not out";
+                    if (mStats[pName] && mStats[pName].status === "out") {
+                        isOutLabel = "out";
+                    }
+
                     bTable.innerHTML += `
                         <tr class="border-b border-gray-800/50">
                             <td class="py-1.5 flex items-center space-x-1.5">
                                 <img src="${pImg}" class="w-5 h-5 rounded-full object-cover border border-gray-855" onerror="this.src='https://img.icons8.com/color/150/cricket.png'">
                                 <div>
-                                    <p class="font-bold text-[10px]">${pName}${statusSuffix}</p>
-                                    <p class="text-[8px] text-gray-500">${pRole}</p>
+                                    <p class="font-bold text-[10px] text-white">${pName}${statusSuffix}</p>
+                                    <p class="text-[8px] text-gray-500 font-sans uppercase">${pRole} &bull; <strong class="text-orange-400 font-mono">${isOutLabel}</strong></p>
                                 </div>
                             </td>
-                            <td class="py-1.5 text-center font-mono text-xs">${isStriker ? data.runs : 0}</td>
-                            <td class="py-1.5 text-center font-mono text-xs">${isStriker ? Math.round(overToDecimal(data.overs)*6) : 0}</td>
-                            <td class="py-1.5 text-center font-mono text-xs">${isStriker ? '100.0' : '0.0'}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-white font-bold">${runs}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-gray-400">${balls}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-gray-400">${fours}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-gray-400">${sixes}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-orange-500 font-bold">${sr}</td>
                         </tr>
                     `;
                 });
@@ -2710,19 +3012,30 @@
                     
                     const isBowler = data.currentBowler === pName;
 
+                    const mStats = data.bowlerStats || {};
+                    const bCount = mStats[pName] ? mStats[pName].balls : 0;
+                    const runs = mStats[pName] ? mStats[pName].runs : 0;
+                    const dots = mStats[pName] ? mStats[pName].dots : 0;
+                    const wickets = mStats[pName] ? mStats[pName].wickets : 0;
+                    
+                    // Ball to over fractional format
+                    const overs = (Math.floor(bCount / 6)) + "." + (bCount % 6);
+                    const er = bCount > 0 ? ((runs / bCount) * 6).toFixed(2) : "0.00";
+
                     bowlTable.innerHTML += `
                         <tr class="border-b border-gray-800/50">
                             <td class="py-1.5 flex items-center space-x-1.5">
                                 <img src="${pImg}" class="w-5 h-5 rounded-full object-cover border border-gray-855" onerror="this.src='https://img.icons8.com/color/150/cricket.png'">
                                 <div>
-                                    <p class="font-bold text-[10px]">${pName}</p>
-                                    <p class="text-[8px] text-gray-500">${pRole}</p>
+                                    <p class="font-bold text-[10px] text-white">${pName}</p>
+                                    <p class="text-[8px] text-gray-500 font-sans uppercase">${pRole}</p>
                                 </div>
                             </td>
-                            <td class="py-1.5 text-center font-mono text-xs">${isBowler ? data.overs : '0.0'}</td>
-                            <td class="py-1.5 text-center font-mono text-xs">${isBowler ? data.runs : 0}</td>
-                            <td class="py-1.5 text-center font-mono text-xs">${isBowler ? data.wickets : 0}</td>
-                            <td class="py-1.5 text-center font-mono text-xs">${isBowler ? '6.00' : '0.00'}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-white font-bold">${overs}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-gray-400">${dots}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-gray-400">${runs}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-green-500 font-bold">${wickets}</td>
+                            <td class="py-1.5 text-center font-mono text-xs text-orange-500 font-bold">${er}</td>
                         </tr>
                     `;
                 });
@@ -2751,7 +3064,7 @@
             // Purple Cap
             players.sort((a, b) => b.wickets - a.wickets);
             document.getElementById("purple-cap-name").textContent = players[0].name;
-            document.getElementById("purple-cap-wickets").textContent = players[0].wickets;
+            document.getElementById("purple-cap-runs").textContent = players[0].wickets;
 
             // MVP
             players.sort((a, b) => b.mvpPoints - a.mvpPoints);
