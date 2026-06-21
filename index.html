@@ -212,7 +212,7 @@
                         <!-- Date & Time Picker Controls with anytime toggle -->
                         <div class="space-y-3">
                             <div class="flex items-center space-x-2 pt-2 border-t border-gray-800">
-                                <input type="checkbox" id="anytime-checkbox" onchange="updateCalculatedLastDate()" class="accent-orange-500 h-4 w-4">
+                                <input type="checkbox" id="anytime-checkbox" onchange="updateCalculatedLastDate(); toggleAnytimeSchedulerVisibility();" class="accent-orange-500 h-4 w-4">
                                 <label for="anytime-checkbox" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest cursor-pointer select-none">Anytime Scheduling</label>
                             </div>
                             <div>
@@ -221,7 +221,7 @@
                             </div>
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Daily Start Time</label>
-                                <input type="time" id="match-start-time" value="18:00" class="w-full bg-gray-955 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
+                                <input type="time" id="match-start-time" value="15:00" class="w-full bg-gray-955 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
                             </div>
                         </div>
 
@@ -246,8 +246,8 @@
                             <!-- Populated in adjustTeamRosterInputs() -->
                         </div>
 
-                        <!-- Fixtures Scheduler List Container -->
-                        <div class="border border-gray-800 p-3 rounded-xl bg-gray-955 space-y-2">
+                        <!-- Fixtures Scheduler List Container (Shown only if Anytime Scheduling is Active) -->
+                        <div id="schedule-adjuster-card" class="border border-gray-800 p-3 rounded-xl bg-gray-955 space-y-2 hidden">
                             <h4 class="text-[10px] font-black text-orange-500 uppercase tracking-widest">Fixtures Match Scheduler</h4>
                             <p class="text-[8px] text-gray-400">Change dates/times for any match. Setting duplicate dates lets you play multiple matches per day!</p>
                             <div id="schedule-adjuster-inputs" class="space-y-2 max-h-[180px] overflow-y-auto pr-1">
@@ -256,7 +256,7 @@
                         </div>
 
                         <div class="pt-3 flex justify-between border-t border-gray-800">
-                            <button type="button" onclick="goToWizardStep(2)" class="px-5 py-2 border border-gray-800 hover:bg-gray-950 font-bold text-xs rounded-xl">Back</button>
+                            <button type="button" onclick="goToWizardStep(2)" class="px-5 py-2 border border-gray-800 hover:bg-gray-955 font-bold text-xs rounded-xl">Back</button>
                             <button type="button" onclick="submitNewLeague()" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 font-extrabold text-xs rounded-xl uppercase text-white">Compile League</button>
                         </div>
                     </div>
@@ -409,7 +409,7 @@
                     <p class="text-[9px] text-gray-400">Stream this match directly using this device's camera while scoring.</p>
                     <div class="flex space-x-2">
                         <button id="btn-start-direct-cam" onclick="startDirectScorerCam()" class="flex-1 py-2 bg-green-600 hover:bg-green-700 font-bold text-[10px] rounded-lg uppercase text-white">Start Camera</button>
-                        <button id="btn-stop-direct-cam" onclick="stopDirectScorerCam()" class="flex-1 py-2 bg-red-600 hover:bg-red-700 font-bold text-[10px] rounded-lg uppercase hidden text-white">Stop Camera</button>
+                        <button id="btn-stop-direct-cam" onclick="stopDirectScorerCam()" class="flex-1 py-2 bg-red-6 opacity-60 hover:bg-red-700 font-bold text-[10px] rounded-lg uppercase hidden text-white">Stop Camera</button>
                     </div>
                     <div id="direct-cam-preview-container" class="hidden relative aspect-video bg-black rounded-lg overflow-hidden border border-gray-800">
                         <video id="direct-cam-video" class="w-full h-full object-cover" autoplay playsinline muted></video>
@@ -621,17 +621,14 @@
                     </div>
                 </div>
 
-                <!-- Sponsored Marquee / Affiliate Banner Ad System -->
+                <!-- Sponsored Marquee / Affiliate Banner Ad System (Blank slot space is kept, banners render only when configured from backend) -->
                 <div id="affiliate-banner-container" class="bg-gray-900 border-b border-gray-800 p-2 overflow-hidden relative h-12 flex items-center justify-center">
-                    <a id="affiliate-banner-link" href="#" target="_blank" class="w-full h-full flex items-center justify-between px-3 bg-gradient-to-r from-orange-600/10 to-amber-600/10 border border-orange-500/20 rounded-lg hover:border-orange-500 transition duration-300">
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-orange-600 text-[8px] font-black uppercase px-1.5 py-0.5 rounded text-white tracking-widest animate-pulse">Ad</span>
-                            <span id="affiliate-banner-text" class="text-[10px] font-bold text-gray-200">Exclusive Cricket Gear up to 50% Off!</span>
+                    <a id="affiliate-banner-link" target="_blank" class="w-full h-full flex items-center justify-center px-3 border border-dashed border-gray-700 bg-gray-950/40 rounded-lg transition duration-300">
+                        <div id="affiliate-banner-text" class="text-[9px] font-bold text-gray-500 uppercase tracking-widest flex items-center space-x-2">
+                            <i class="fa-solid fa-rectangle-ad text-gray-600 text-sm"></i>
+                            <span>Sponsored Space (320x50 Banner Slot)</span>
                         </div>
-                        <span class="text-[9px] text-orange-400 font-extrabold flex items-center space-x-1">
-                            <span>Get Deal</span>
-                            <i class="fa-solid fa-external-link text-[8px]"></i>
-                        </span>
+                        <img id="affiliate-banner-img" class="hidden w-full h-full object-cover rounded-lg" alt="Sponsored Ad">
                     </a>
                 </div>
 
@@ -908,15 +905,7 @@
         let currentLeaderboardType = 'runs'; 
         let currentLeaderboardScope = 'top10'; 
 
-        // Sponsored Affiliate Ad fallbacks list
-        const fallbackAds = [
-            { text: "Play Dream11: Win up to ₹1 Crore Daily!", link: "https://www.dream11.com" },
-            { text: "My11Circle: Get ₹1500 Welcome Bonus!", link: "https://www.my11circle.com" },
-            { text: "Premium English Willow Cricket Bats - 30% Off!", link: "https://www.google.com" },
-            { text: "IPC Official Merchandise: Wear Your Team Colors!", link: "https://www.google.com" },
-            { text: "Join India Play Cricket Elite Scorer Club!", link: "https://www.google.com" }
-        ];
-        let currentAdIndex = 0;
+        // Sponsored Ad Rotation Tracker
         let adRotationTimer = null;
 
         // 3. Document Lifecycle Hook and Initializations
@@ -1149,7 +1138,7 @@
             const match = league.fixtures[matchIndex];
             if (!match) return 0;
             const fixDate = match.scheduledDate || league.metadata.startDate;
-            const fixTime = match.scheduledTime || league.metadata.startTime || "18:00";
+            const fixTime = match.scheduledTime || league.metadata.startTime || "15:00";
             const matchTargetStr = `${fixDate}T${fixTime}`;
             return new Date(matchTargetStr).getTime();
         }
@@ -1173,7 +1162,7 @@
                         <div class="grid grid-cols-12 gap-1.5 p-1.5 bg-gray-900/50 rounded border border-gray-800/80 items-center text-white font-sans">
                             <div class="col-span-4">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Player ${j} Name</label>
-                                <input type="text" id="team-${i}-player-${j}-name" placeholder="Player ${j}" class="w-full bg-gray-955 border border-gray-850 rounded p-1 text-[10px] text-white">
+                                <input type="text" id="team-${i}-player-${j}-name" placeholder="Player ${j}" class="w-full bg-gray-955 border border-gray-855 rounded p-1 text-[10px] text-white">
                             </div>
                             <div class="col-span-3">
                                 <label class="block text-[8px] text-gray-400 font-semibold">Role</label>
@@ -1210,12 +1199,52 @@
             }
         }
 
-        // Match Schedule Custom Adjustments Builder (Step 3)
+        // Dynamic Anytime toggle visibility controller
+        function toggleAnytimeSchedulerVisibility() {
+            const anytimeChecked = document.getElementById("anytime-checkbox").checked;
+            const adjusterCard = document.getElementById("schedule-adjuster-card");
+            if (adjusterCard) {
+                if (anytimeChecked) {
+                    adjusterCard.classList.remove("hidden");
+                    renderMatchScheduleAdjuster();
+                } else {
+                    adjusterCard.classList.add("hidden");
+                }
+            }
+        }
+
+        // Automatic cascading match dates scheduler
+        function cascadeScheduledDates(modifiedIndex) {
+            const teamCount = parseInt(document.getElementById("league-teams-count").value) || 4;
+            let totalMatches = 10;
+            if (teamCount === 2) totalMatches = 3;
+            else if (teamCount === 3) totalMatches = 6;
+            else if (teamCount === 4) totalMatches = 10;
+            else if (teamCount === 5) totalMatches = 14;
+            else if (teamCount === 6) totalMatches = 19;
+            else if (teamCount === 7) totalMatches = 25;
+            else if (teamCount === 8) totalMatches = 32;
+            else if (teamCount === 9) totalMatches = 40;
+            else if (teamCount === 10) totalMatches = 74;
+
+            for (let j = modifiedIndex + 1; j < totalMatches; j++) {
+                const prevDateStr = document.getElementById(`match-sched-date-${j-1}`).value;
+                if (prevDateStr) {
+                    const prevDate = new Date(prevDateStr);
+                    const nextDate = new Date(prevDate.getTime() + 24 * 60 * 60 * 1000);
+                    const yyyy = nextDate.getFullYear();
+                    const mm = String(nextDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(nextDate.getDate()).padStart(2, '0');
+                    document.getElementById(`match-sched-date-${j}`).value = `${yyyy}-${mm}-${dd}`;
+                }
+            }
+        }
+
+        // Match Schedule Custom Adjustments Builder (Step 3) - Defaulting each match time directly to 15:00 (3:00 PM)
         function renderMatchScheduleAdjuster() {
             const teamCount = parseInt(document.getElementById("league-teams-count").value) || 4;
             const startDateStr = document.getElementById("match-start-date").value || new Date().toISOString().split('T')[0];
-            const startTimeStr = document.getElementById("match-start-time").value || "18:00";
-            const anytimeChecked = document.getElementById("anytime-checkbox").checked;
+            const startTimeStr = document.getElementById("match-start-time").value || "15:00";
             
             const scheduleArea = document.getElementById("schedule-adjuster-inputs");
             if (!scheduleArea) return;
@@ -1235,7 +1264,6 @@
                 const mm = String(matchDate.getMonth() + 1).padStart(2, '0');
                 const dd = String(matchDate.getDate()).padStart(2, '0');
                 const dateVal = `${yyyy}-${mm}-${dd}`;
-                const timeVal = anytimeChecked ? "00:00" : startTimeStr;
                 
                 scheduleArea.innerHTML += `
                     <div class="grid grid-cols-12 gap-2 p-2 bg-gray-900 border border-gray-800 rounded items-center">
@@ -1245,11 +1273,11 @@
                         </div>
                         <div class="col-span-4">
                             <label class="block text-[7px] text-gray-400 uppercase">Match Date</label>
-                            <input type="date" id="match-sched-date-${index}" value="${dateVal}" class="w-full bg-gray-950 border border-gray-800 rounded p-1 text-[10px] text-white">
+                            <input type="date" id="match-sched-date-${index}" onchange="cascadeScheduledDates(${index})" value="${dateVal}" class="w-full bg-gray-950 border border-gray-800 rounded p-1 text-[10px] text-white">
                         </div>
                         <div class="col-span-4">
                             <label class="block text-[7px] text-gray-400 uppercase">Match Time</label>
-                            <input type="time" id="match-sched-time-${index}" value="${timeVal}" class="w-full bg-gray-950 border border-gray-800 rounded p-1 text-[10px] text-white">
+                            <input type="time" id="match-sched-time-${index}" value="${startTimeStr}" class="w-full bg-gray-955 border border-gray-800 rounded p-1 text-[10px] text-white">
                         </div>
                     </div>
                 `;
@@ -1266,6 +1294,7 @@
             }
             if (step === 3) {
                 renderMatchScheduleAdjuster();
+                toggleAnytimeSchedulerVisibility();
             }
             document.querySelectorAll(".wizard-pane").forEach(pane => pane.classList.add("hidden"));
             document.getElementById(`wizard-step-${step}`).classList.remove("hidden");
@@ -1405,7 +1434,7 @@
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 },
                     { home: 'G', away: 'H', round: 4 }, { home: 'I', away: 'J', round: 5 }, { home: 'A', away: 'C', round: 6 },
                     { home: 'B', away: 'D', round: 7 }, { home: 'E', away: 'G', round: 8 }, { home: 'F', away: 'H', round: 9 },
-                    { home: 'A', away: 'E', round: 10 }, { home: 'B', away: 'F', round: 11 }, { home: 'C', away: 'G', round: 12 },
+                    { home: 'A', away: 'E', round: 10 }, { home: 'B', away: 'F', round: 11 }, { home: 'C', away: 'G', relative: 12 },
                     { home: 'D', away: 'H', round: 13 }, { home: 'I', away: 'A', round: 14 }, { home: 'J', away: 'B', round: 15 },
                     { home: 'C', away: 'I', round: 16 }, { home: 'D', away: 'J', round: 17 }, { home: 'E', away: 'I', round: 18 },
                     { home: 'F', away: 'J', round: 19 }, { home: 'G', away: 'I', round: 20 }, { home: 'H', away: 'J', round: 21 },
@@ -1476,7 +1505,8 @@
             const oversLimit = document.getElementById("match-over-limit").value;
             const playersCount = parseInt(document.getElementById("players-per-team").value);
             const startDate = document.getElementById("match-start-date").value;
-            const startTime = document.getElementById("match-start-time").value;
+            const startTime = document.getElementById("match-start-time").value || "15:00";
+            const anytimeChecked = document.getElementById("anytime-checkbox").checked;
 
             const shortName = generateShortName(name);
 
@@ -1529,10 +1559,17 @@
                 const customDateInput = document.getElementById(`match-sched-date-${idx}`);
                 const customTimeInput = document.getElementById(`match-sched-time-${idx}`);
                 
+                // If Anytime Scheduling is OFF, we generate sequential dates and fix time cleanly
+                const sequentialDate = new Date(new Date(startDate).getTime() + idx * 24 * 60 * 60 * 1000);
+                const yyyy = sequentialDate.getFullYear();
+                const mm = String(sequentialDate.getMonth() + 1).padStart(2, '0');
+                const dd = String(sequentialDate.getDate()).padStart(2, '0');
+                const defaultSeqDate = `${yyyy}-${mm}-${dd}`;
+
                 return {
                     ...fix,
-                    scheduledDate: customDateInput ? customDateInput.value : (startDate || new Date().toISOString().split('T')[0]),
-                    scheduledTime: customTimeInput ? customTimeInput.value : (startTime || "18:00")
+                    scheduledDate: (anytimeChecked && customDateInput) ? customDateInput.value : defaultSeqDate,
+                    scheduledTime: (anytimeChecked && customTimeInput) ? customTimeInput.value : startTime
                 };
             });
 
@@ -1545,7 +1582,8 @@
                     oversLimit: oversLimit,
                     playersCount: playersCount,
                     startDate: startDate || new Date().toISOString().split('T')[0],
-                    startTime: startTime || "18:00",
+                    startTime: startTime,
+                    anytimeScheduled: anytimeChecked,
                     createdAt: Date.now()
                 },
                 teams: teams,
@@ -1841,7 +1879,7 @@
         function executeCoinFlip() {
             const coin = document.getElementById("toss-coin");
             const side = Math.random() < 0.5 ? "heads" : "tails";
-            coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-xs shadow-xl select-none";
+            coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none";
             
             if (side === "heads") {
                 coin.classList.add("animate-flip-heads");
@@ -2639,27 +2677,86 @@
 
             if (container) container.classList.add("hidden");
             if (startBtn) startBtn.classList.remove("hidden");
-            if (stopBtn) stopBtn.classList.add("hidden");
+            if (stopBtn) stopAd.classList.add("hidden");
 
             if (selectedScorerLeagueId) {
                 db.ref(`leagues/${selectedScorerLeagueId}/cameramen/scorer-direct`).remove();
             }
         }
 
-        // Sponsored Ad Rotation Tracker
+        // Sponsored Ad Rotation Tracker (Will parse valid start and end dates from RTDB once set by owner, defaults to safe placeholder slot space)
         function startAffiliateAdRotation() {
             db.ref('globalSettings/affiliateAds').on('value', snapshot => {
-                const ads = snapshot.val() || fallbackAds;
-                if (ads && ads.length > 0) {
-                    if (adRotationTimer) clearInterval(adRotationTimer);
-                    const updateAd = () => {
-                        const ad = ads[currentAdIndex];
-                        document.getElementById("affiliate-banner-text").textContent = ad.text;
-                        document.getElementById("affiliate-banner-link").href = ad.link;
-                        currentAdIndex = (currentAdIndex + 1) % ads.length;
-                    };
-                    updateAd();
-                    adRotationTimer = setInterval(updateAd, 4000);
+                const ads = snapshot.val();
+                const bannerImg = document.getElementById("affiliate-banner-img");
+                const bannerText = document.getElementById("affiliate-banner-text");
+                const bannerLink = document.getElementById("affiliate-banner-link");
+                
+                if (adRotationTimer) clearInterval(adRotationTimer);
+                
+                if (!ads || !Array.isArray(ads) || ads.length === 0) {
+                    if (bannerImg) bannerImg.classList.add("hidden");
+                    if (bannerText) {
+                        bannerText.classList.remove("hidden");
+                        bannerText.innerHTML = `
+                            <i class="fa-solid fa-rectangle-ad text-gray-600 text-sm"></i>
+                            <span>Sponsored Space (320x50 Banner Slot)</span>
+                        `;
+                    }
+                    if (bannerLink) {
+                        bannerLink.removeAttribute("href");
+                        bannerLink.style.cursor = "default";
+                    }
+                    return;
+                }
+                
+                // Parse date criteria cleanly to ensure active range is verified before displaying
+                const nowStr = new Date().toISOString().split('T')[0];
+                const activeAds = ads.filter(ad => {
+                    if (!ad.startDate || !ad.endDate) return false;
+                    return (nowStr >= ad.startDate && nowStr <= ad.endDate);
+                });
+                
+                if (activeAds.length === 0) {
+                    if (bannerImg) bannerImg.classList.add("hidden");
+                    if (bannerText) {
+                        bannerText.classList.remove("hidden");
+                        bannerText.innerHTML = `
+                            <i class="fa-solid fa-rectangle-ad text-gray-600 text-sm"></i>
+                            <span>Sponsored Space (320x50 Banner Slot)</span>
+                        `;
+                    }
+                    if (bannerLink) {
+                        bannerLink.removeAttribute("href");
+                        bannerLink.style.cursor = "default";
+                    }
+                    return;
+                }
+                
+                let currentActiveIndex = 0;
+                const updateActiveAd = () => {
+                    const ad = activeAds[currentActiveIndex];
+                    if (bannerImg && ad.imageUrl) {
+                        bannerImg.src = ad.imageUrl;
+                        bannerImg.classList.remove("hidden");
+                        if (bannerText) bannerText.classList.add("hidden");
+                    } else {
+                        if (bannerImg) bannerImg.classList.add("hidden");
+                        if (bannerText) {
+                            bannerText.classList.remove("hidden");
+                            bannerText.textContent = ad.text || "Click to Visit Sponsored Link";
+                        }
+                    }
+                    if (bannerLink) {
+                        bannerLink.href = ad.link || "#";
+                        bannerLink.style.cursor = "pointer";
+                    }
+                    currentActiveIndex = (currentActiveIndex + 1) % activeAds.length;
+                };
+                
+                updateActiveAd();
+                if (activeAds.length > 1) {
+                    adRotationTimer = setInterval(updateActiveAd, 4000);
                 }
             });
         }
@@ -2896,7 +2993,7 @@
                     } else if (match.status === "COMPLETED") {
                         clickAction = `playArchivedVideo('${league.metadata.id}', ${index})`;
                     } else {
-                        clickAction = `alert('This match has not started yet. Scheduled start time: ${match.scheduledDate || league.metadata.startDate} @ ${match.scheduledTime || league.metadata.startTime || "18:00"}')`;
+                        clickAction = `alert('This match has not started yet. Scheduled start time: ${match.scheduledDate || league.metadata.startDate} @ ${match.scheduledTime || league.metadata.startTime || "15:00"}')`;
                     }
 
                     htmlContent += `
@@ -3386,7 +3483,7 @@
             container.innerHTML = "";
 
             const startDateStr = league.metadata.startDate || new Date().toISOString().split('T')[0];
-            const startTimeStr = league.metadata.startTime || "18:00";
+            const startTimeStr = league.metadata.startTime || "15:00";
 
             if (league.fixtures) {
                 league.fixtures.forEach((match, index) => {
