@@ -218,6 +218,10 @@
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Match Start Date</label>
                                 <input type="date" id="match-start-date" onchange="updateCalculatedLastDate()" class="w-full bg-gray-955 border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white">
+                                <!-- Target Date Load Indicator banner -->
+                                <div id="target-date-load-banner" class="text-[9px] font-bold text-yellow-500 mt-1 hidden">
+                                    Note: 0 leagues are already scheduled to start on this date.
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Daily Start Time</label>
@@ -623,7 +627,7 @@
 
                 <!-- Sponsored Marquee / Affiliate Banner Ad System (Blank slot space is kept, banners render only when configured from backend) -->
                 <div id="affiliate-banner-container" class="bg-gray-900 border-b border-gray-800 p-2 overflow-hidden relative h-12 flex items-center justify-center">
-                    <a id="affiliate-banner-link" target="_blank" class="w-full h-full flex items-center justify-center px-3 border border-dashed border-gray-700 bg-gray-950/40 rounded-lg transition duration-300">
+                    <a id="affiliate-banner-link" target="_blank" class="w-full h-full flex items-center justify-center px-3 border border-dashed border-gray-700 bg-gray-955/40 rounded-lg transition duration-300">
                         <div id="affiliate-banner-text" class="text-[9px] font-bold text-gray-500 uppercase tracking-widest flex items-center space-x-2">
                             <i class="fa-solid fa-rectangle-ad text-gray-600 text-sm"></i>
                             <span>Sponsored Space (320x50 Banner Slot)</span>
@@ -1125,6 +1129,25 @@
                 const lastDate = calculateLeagueEndDate(startDateStr, totalMatches);
                 document.getElementById("calc-last-date").textContent = lastDate;
             }
+            
+            // Scheduled Date Load Calculation Banner sync
+            const banner = document.getElementById("target-date-load-banner");
+            if (banner && startDateStr) {
+                let countOnDate = 0;
+                Object.keys(allLeagues).forEach(key => {
+                    const lg = allLeagues[key];
+                    if (lg && lg.metadata && lg.metadata.startDate === startDateStr) {
+                        countOnDate++;
+                    }
+                });
+                if (countOnDate > 0) {
+                    banner.classList.remove("hidden");
+                    banner.textContent = `Note: ${countOnDate} league(s) already scheduled to start on this date.`;
+                } else {
+                    banner.classList.add("hidden");
+                }
+            }
+
             adjustTeamRosterInputs();
         }
 
@@ -1273,7 +1296,7 @@
                         </div>
                         <div class="col-span-4">
                             <label class="block text-[7px] text-gray-400 uppercase">Match Date</label>
-                            <input type="date" id="match-sched-date-${index}" onchange="cascadeScheduledDates(${index})" value="${dateVal}" class="w-full bg-gray-950 border border-gray-800 rounded p-1 text-[10px] text-white">
+                            <input type="date" id="match-sched-date-${index}" onchange="cascadeScheduledDates(${index})" value="${dateVal}" class="w-full bg-gray-955 border border-gray-800 rounded p-1 text-[10px] text-white">
                         </div>
                         <div class="col-span-4">
                             <label class="block text-[7px] text-gray-400 uppercase">Match Time</label>
@@ -1499,8 +1522,39 @@
         }
 
         // Prepopulate player stats on creation cleanly with automatic player name fallback
+        // Enforces complete form detail validation, duplicates protection & 20 active leagues max restriction
         function submitNewLeague() {
             const name = document.getElementById("league-name-input").value.trim();
+            if (!name) {
+                alert("Please fill in the League Name to proceed.");
+                return;
+            }
+
+            // Enforce spaces/capitalization ignored duplicates validation
+            const normNewName = name.replace(/\s+/g, '').toLowerCase();
+            let isDuplicate = false;
+            Object.keys(allLeagues).forEach(key => {
+                const league = allLeagues[key];
+                if (league && league.metadata && league.metadata.name) {
+                    const normExistingName = league.metadata.name.replace(/\s+/g, '').toLowerCase();
+                    if (normNewName === normExistingName) {
+                        isDuplicate = true;
+                    }
+                }
+            });
+
+            if (isDuplicate) {
+                alert("Error: A league with this name already exists (ignoring spacing and case)! Please provide a unique name.");
+                return;
+            }
+
+            // Enforce maximum 20 leagues constraint
+            const activeLeaguesCount = Object.keys(allLeagues).length;
+            if (activeLeaguesCount >= 20) {
+                alert("Maximum limit of 20 leagues has been reached in database! Please delete some created leagues first.");
+                return;
+            }
+
             const teamCount = parseInt(document.getElementById("league-teams-count").value);
             const oversLimit = document.getElementById("match-over-limit").value;
             const playersCount = parseInt(document.getElementById("players-per-team").value);
@@ -1508,13 +1562,23 @@
             const startTime = document.getElementById("match-start-time").value || "15:00";
             const anytimeChecked = document.getElementById("anytime-checkbox").checked;
 
-            const shortName = generateShortName(name);
+            if (!startDate) {
+                alert("Please set a valid Match Start Date.");
+                return;
+            }
 
+            const shortName = generateShortName(name);
             const teams = [];
             const playerStats = {};
 
+            // Rigorous roster field validation
             for (let i = 1; i <= teamCount; i++) {
-                const tName = document.getElementById(`team-${i}-name`).value.trim() || `Team ${i}`;
+                const tNameInput = document.getElementById(`team-${i}-name`);
+                const tName = tNameInput ? tNameInput.value.trim() : "";
+                if (!tName) {
+                    alert(`Roster Error: Please fill in the name of Team ${i}.`);
+                    return;
+                }
                 
                 // Check designated captain radio values
                 const captainRadio = document.querySelector(`input[name="team-${i}-captain"]:checked`);
@@ -1523,7 +1587,11 @@
                 const playersList = [];
                 for (let j = 1; j <= playersCount; j++) {
                     const pNameInput = document.getElementById(`team-${i}-player-${j}-name`);
-                    const pName = pNameInput && pNameInput.value.trim() ? pNameInput.value.trim() : `Player ${j}`;
+                    const pName = pNameInput ? pNameInput.value.trim() : "";
+                    if (!pName) {
+                        alert(`Roster Error: Please enter Player ${j}'s Name for ${tName}. All details are required.`);
+                        return;
+                    }
                     
                     const pRoleEl = document.getElementById(`team-${i}-player-${j}-role`);
                     const pRole = pRoleEl ? pRoleEl.value : "Batsman";
