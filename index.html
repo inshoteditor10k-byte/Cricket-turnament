@@ -490,10 +490,28 @@
                         <div class="space-y-1.5 text-xs text-white">
                             <button onclick="commitWicket('Bowled')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3">Bowled</button>
                             <button onclick="commitWicket('Caught')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3">Caught</button>
-                            <button onclick="commitWicket('LBW')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3">LBW</button>
+                            <button onclick="openLbwRunsModal()" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3">LBW</button>
                             <button onclick="commitWicket('Run Out')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3">Run Out</button>
                         </div>
                         <button onclick="document.getElementById('wicket-modal').classList.add('hidden')" class="w-full py-2 text-xs text-gray-400 hover:text-white underline text-center">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- LBW Runs Modal -->
+                <div id="lbw-runs-modal" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center px-4">
+                    <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4">
+                        <h4 class="text-md font-black text-orange-500 text-center uppercase tracking-wider">LBW Runs Selection</h4>
+                        <p class="text-[10px] text-gray-400 text-center">Select runs to score. Ball will NOT be counted & Free Hit will be awarded!</p>
+                        <div class="grid grid-cols-4 gap-1.5 text-xs text-white">
+                            <button onclick="commitLbwRuns(0)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center">0 Run</button>
+                            <button onclick="commitLbwRuns(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center">1 Run</button>
+                            <button onclick="commitLbwRuns(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center">2 Run</button>
+                            <button onclick="commitLbwRuns(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center">3 Run</button>
+                            <button onclick="commitLbwRuns(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-center col-span-2">4 Run</button>
+                            <button onclick="commitLbwRuns(5)" class="py-2.5 bg-gray-850 hover:bg-gray-800 border border-gray-750 font-bold rounded-lg text-center col-span-2">5 Run</button>
+                            <button onclick="commitLbwRuns(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-center col-span-4">6 Run</button>
+                        </div>
+                        <button onclick="document.getElementById('lbw-runs-modal').classList.add('hidden')" class="w-full py-2 text-xs text-gray-400 hover:text-white underline text-center">Cancel</button>
                     </div>
                 </div>
 
@@ -1423,14 +1441,14 @@
                     { home: 'E', away: 'C', round: 34 }, { home: 'F', away: 'D', round: 35 }, { home: 'G', away: 'B', round: 36 },
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
                     { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', round: 42 },
-                    { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', round: 45 },
+                    { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', rounded: 45 },
                     { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', round: 47 }, { home: 'I', away: 'E', round: 48 },
                     { home: 'J', away: 'F', round: 49 }, { home: 'I', away: 'G', round: 50 }, { home: 'J', away: 'H', round: 51 },
                     { home: 'D', away: 'A', round: 52 }, { home: 'C', away: 'B', round: 53 }, { home: 'H', away: 'E', round: 54 },
                     { home: 'G', away: 'F', round: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
                     { home: 'F', away: 'A', round: 58 }, { home: 'E', away: 'B', round: 59 }, { home: 'H', away: 'C', round: 60 },
                     { home: 'G', away: 'D', round: 61 }, { home: 'B', away: 'I', round: 62 }, { home: 'A', away: 'J', round: 63 },
-                    { home: 'C', away: 'E', round: 64 }, { home: 'D', away: 'F', round: 65 }, { home: 'B', away: 'G', rounded: 66 },
+                    { home: 'C', away: 'E', round: 64 }, { home: 'D', away: 'F', round: 65 }, { home: 'B', away: 'G', round: 66 },
                     { home: 'A', away: 'H', round: 67 }, { home: 'F', away: 'I', round: 68 }, { home: 'E', away: 'J', round: 69 },
                     { home: 'B', away: 'A', round: 70 }
                 ];
@@ -1872,7 +1890,7 @@
                 coin.classList.add("animate-flip-tails");
             }
 
-            // High-speed 0.05s response flip transition simulation completed in 50ms (or 350ms to let rapid spin play)
+            // High-speed 0.05s response flip transition simulation completed in 350ms
             setTimeout(() => {
                 const winner = document.getElementById("toss-winner-select").value;
                 const decision = document.getElementById("toss-decision-select").value;
@@ -2323,6 +2341,77 @@
             }
 
             modal.classList.remove("hidden");
+        }
+
+        // LBW Special Runs flow: hides wicket modal, opens runs modal
+        function openLbwRunsModal() {
+            document.getElementById("wicket-modal").classList.add("hidden");
+            document.getElementById("lbw-runs-modal").classList.remove("hidden");
+        }
+
+        // Commits custom runs for LBW, without counting the ball, and awards a Free Hit
+        function commitLbwRuns(runs) {
+            document.getElementById("lbw-runs-modal").classList.add("hidden");
+            const league = allLeagues[selectedScorerLeagueId];
+            if (!league) return;
+
+            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
+                if (data) {
+                    // Update bowler stats with LBW conceded runs, but do NOT increment balls bowled
+                    const bowler = data.currentBowler;
+                    if (bowler) {
+                        data.bowlerStats = data.bowlerStats || {};
+                        if (!data.bowlerStats[bowler]) {
+                            data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+                        }
+                        data.bowlerStats[bowler].runs += runs;
+                    }
+
+                    // Update striking batsman with runs, but do NOT increment balls faced
+                    const striker = data.striker;
+                    if (striker) {
+                        data.batsmanStats = data.batsmanStats || {};
+                        if (!data.batsmanStats[striker]) {
+                            data.batsmanStats[striker] = { runs: 0, balls: 0, fours: 0, sixes: 0, status: "not out" };
+                        }
+                        data.batsmanStats[striker].runs += runs;
+                        if (runs === 4) data.batsmanStats[striker].fours += 1;
+                        if (runs === 6) data.batsmanStats[striker].sixes += 1;
+                    }
+
+                    data.runs += runs;
+                    data.overLog = data.overLog || [];
+                    data.overLog.push(`Lbw+${runs}`);
+
+                    // Swap strike if scored runs are odd (1, 3, 5)
+                    if (runs === 1 || runs === 3 || runs === 5) {
+                        const temp = data.striker;
+                        data.striker = data.nonStriker;
+                        data.nonStriker = temp;
+                    }
+
+                    // Set free hit to true
+                    data.freeHit = true;
+
+                    let eventType = "freehit";
+                    let animText = `LBW + ${runs} RUNS! FREE HIT!`;
+                    if (runs === 4) {
+                        eventType = "four";
+                        animText = "LBW + FOUR! FREE HIT!";
+                    } else if (runs === 6) {
+                        eventType = "six";
+                        animText = "LBW + SIX! FREE HIT!";
+                    }
+
+                    data.lastEvent = { text: animText, type: eventType, timestamp: Date.now() };
+                    evaluateMatchProgress(data, league);
+                }
+                return data;
+            }, (error, committed, snapshot) => {
+                if (committed && snapshot.exists()) {
+                    triggerOverlayBroadcast(selectedScorerLeagueId, "LBW - FREE HIT!", `${runs} Runs Added`);
+                }
+            });
         }
 
         function commitWicket(type) {
@@ -3385,7 +3474,7 @@
             calculateDynamicStandings(league);
         }
 
-        // Dedicated Khatarnak TV Broadcast screen animation trigger overlay
+        // Dedicated TV Broadcast screen animation trigger overlay
         function triggerBroadcastFeedAnimation(text, type) {
             const overlay = document.getElementById("live-feed-animation-overlay");
             const card = document.getElementById("live-animation-card");
