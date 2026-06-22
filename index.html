@@ -109,6 +109,13 @@
             text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
             animation: pop-zoom 0.4s ease-out forwards;
         }
+        .glow-freehit {
+            background: linear-gradient(135deg, #facc15, #ca8a04);
+            box-shadow: 0 0 45px #facc15, 0 0 90px #ca8a04;
+            border: 3.5px solid #ffffff;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.9);
+            animation: pop-zoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
         .glow-default {
             background: linear-gradient(135deg, #f59e0b, #b45309);
             box-shadow: 0 0 25px #f59e0b;
@@ -174,7 +181,7 @@
                         <span>Continue with Google</span>
                     </button>
                     
-                    <button onclick="loginAsGuest()" class="w-full py-3 px-4 bg-gray-800 hover:bg-gray-850 border border-gray-700 active:translate-y-0.5 transform transition font-bold rounded-xl flex items-center justify-center space-x-3 text-white text-sm">
+                    <button onclick="loginAsGuest()" class="w-full py-3 px-4 bg-gray-850 hover:bg-gray-800 border border-gray-700 active:translate-y-0.5 transform transition font-bold rounded-xl flex items-center justify-center space-x-3 text-white text-sm">
                         <i class="fa-solid fa-user-secret text-md"></i>
                         <span>Continue as Guest</span>
                     </button>
@@ -415,7 +422,10 @@
                     <div class="bg-black p-3.5 border border-gray-800 rounded-xl space-y-3">
                         <div class="flex justify-between items-center">
                             <p class="text-[9px] text-gray-500 uppercase tracking-widest font-bold" id="scorer-inning-label">First Innings</p>
-                            <span id="super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[9px] px-2 py-0.5 rounded">SUPER OVER</span>
+                            <div class="flex space-x-1">
+                                <span id="scorer-free-hit-badge" class="hidden bg-yellow-400 text-black font-black text-[9px] px-2 py-0.5 rounded animate-pulse">FREE HIT</span>
+                                <span id="super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[9px] px-2 py-0.5 rounded">SUPER OVER</span>
+                            </div>
                         </div>
                         <p class="text-2xl font-black" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-400">(0.0)</span></p>
                         <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5">
@@ -447,7 +457,7 @@
                         </div>
                         <div class="grid grid-cols-3 gap-1.5">
                             <button onclick="scoreExtra('WD')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-orange-400">Wide (+1)</button>
-                            <button onclick="scoreExtra('NB')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-yellow-400">No Ball (+1)</button>
+                            <button onclick="scoreExtra('NB')" class="py-2.5 bg-gray-900 hover:bg-gray-850 border border-yellow-500/30 text-[10px] font-bold rounded-lg text-yellow-400">No Ball (+NB)</button>
                             <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-gray-400">Leg Bye</button>
                         </div>
                         <div class="grid grid-cols-1 gap-2">
@@ -507,7 +517,7 @@
                         <select id="select-incoming-batsman" class="w-full bg-black border border-gray-800 rounded p-2 text-xs text-white">
                             <!-- Populated with non-dismissed batting squad options -->
                         </select>
-                        <button onclick="commitBatsmanReplacement()" class="w-full py-2 bg-red-600 hover:bg-red-700 font-bold text-xs uppercase text-white">Confirm Batsman</button>
+                        <button onclick="commitBatsmanReplacement()" class="w-full py-2 bg-red-655 hover:bg-red-700 font-bold text-xs uppercase text-white">Confirm Batsman</button>
                     </div>
                 </div>
 
@@ -561,7 +571,7 @@
                         <i class="fa-solid fa-user-secret"></i>
                         <span>Continue as Guest</span>
                     </button>
-                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-800 font-bold rounded-xl text-xs text-gray-400">Logout</button>
+                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-850 font-bold rounded-xl text-xs text-gray-400">Logout</button>
                 </div>
 
                 <!-- Camera Key Registration Box -->
@@ -645,7 +655,8 @@
                                 <span id="overlay-active-batsman-2" class="text-gray-400">--</span>
                             </div>
                             <!-- Bowler Bug -->
-                            <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded">
+                            <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded flex items-center space-x-1.5">
+                                <span id="overlay-free-hit-badge" class="hidden bg-yellow-400 text-black font-black text-[8px] px-1.5 py-0.5 rounded animate-pulse">FREE HIT</span>
                                 <span id="overlay-active-bowler" class="text-gray-300">Bowler: --</span>
                             </div>
                         </div>
@@ -870,7 +881,7 @@
                 </div>
             </div>
 
-            <div class="text-center text-xs text-gray-500 space-y-1">
+            <div class="text-center text-xs text-gray-555 space-y-1">
                 <p class="text-orange-500 font-black">KEEP ACTIVE &bull; STAYS LIVE</p>
                 <p>Ensure device stays online. Keep active window open to process continuous signals.</p>
             </div>
@@ -1369,7 +1380,7 @@
                     { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', round: 10 }, { home: 'E', away: 'H', round: 11 }, { home: 'F', away: 'G', round: 12 },
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', rounded: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
-                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', round: 23 }, { home: 'D', away: 'F', round: 24 },
+                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', rounded: 23 }, { home: 'D', away: 'F', round: 24 },
                     { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
                 ];
                 playoffTemplates = [
@@ -1852,7 +1863,7 @@
         function executeCoinFlip() {
             const coin = document.getElementById("toss-coin");
             const side = Math.random() < 0.5 ? "heads" : "tails";
-            coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-xs shadow-xl select-none";
+            coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none";
             
             // Hyper-fast transition flip
             if (side === "heads") {
@@ -1891,6 +1902,7 @@
                     currentBowler: "",
                     overLog: [],
                     isSuperOver: false,
+                    freeHit: false, // Standard free hit initialized
                     inning: 1,
                     needsInning2Lineup: false,
                     needsCompletionSave: false,
@@ -1982,6 +1994,16 @@
                     document.getElementById("super-over-badge").classList.remove("hidden");
                 }
 
+                // Update Free Hit visual badge state on the scorer's dashboard instantly
+                const scorerFhBadge = document.getElementById("scorer-free-hit-badge");
+                if (scorerFhBadge) {
+                    if (data.freeHit) {
+                        scorerFhBadge.classList.remove("hidden");
+                    } else {
+                        scorerFhBadge.classList.add("hidden");
+                    }
+                }
+
                 // If first innings has finished automatically, load selection screen instantly (50ms transition effect)
                 if (data.needsInning2Lineup) {
                     setTimeout(() => {
@@ -2039,7 +2061,13 @@
                     const prevOvers = data.overs;
                     data.overs = incrementOverBalls(data.overs);
                     data.overLog = data.overLog || [];
-                    data.overLog.push(runs);
+                    
+                    // Display FREE HIT indicator on the overlog if delivery was legal but a free hit was active
+                    if (data.freeHit) {
+                        data.overLog.push(`${runs}(FH)`);
+                    } else {
+                        data.overLog.push(runs);
+                    }
 
                     // Strike Rotation: 1, 3, 5 runs rotates strike
                     if (runs === 1 || runs === 3 || runs === 5) {
@@ -2061,6 +2089,12 @@
                     if (runs === 0) { eventText = "DOT BALL"; eventType = "default"; }
                     else if (runs === 4) { eventText = "CRACKING 4!"; eventType = "four"; }
                     else if (runs === 6) { eventText = "MONSTER 6!"; eventType = "six"; }
+                    
+                    // Clear Free Hit status after a legal delivery is bowled
+                    if (data.freeHit) {
+                        data.freeHit = false;
+                    }
+
                     data.lastEvent = { text: eventText, type: eventType, timestamp: Date.now() };
 
                     // Automatic Inning Termination Check
@@ -2121,7 +2155,13 @@
                         const prevOvers = data.overs;
                         data.overs = incrementOverBalls(data.overs);
                         data.overLog = data.overLog || [];
-                        data.overLog.push(parsed);
+                        
+                        if (data.freeHit) {
+                            data.overLog.push(`${parsed}(FH)`);
+                            data.freeHit = false;
+                        } else {
+                            data.overLog.push(parsed);
+                        }
 
                         // Only rotate if explicitly 1, 3, 5 runs
                         if (parsed === 1 || parsed === 3 || parsed === 5) {
@@ -2154,40 +2194,135 @@
             }
         }
 
+        // Updated scoreExtra logic containing customized No Ball runs prompting mechanism & Free Hit awards
         function scoreExtra(type) {
             const league = allLeagues[selectedScorerLeagueId];
-            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
-                if (data) {
-                    const bowler = data.currentBowler;
-                    if (bowler) {
-                        data.bowlerStats = data.bowlerStats || {};
-                        if (!data.bowlerStats[bowler]) {
-                            data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+            if (!league) return;
+
+            if (type === 'NB') {
+                const runsInput = prompt("No Ball par batsman ne kitne runs banaye? (e.g. 0, 1, 2, 3, 4, 6):", "0");
+                let runsScored = parseInt(runsInput);
+                if (isNaN(runsScored) || runsScored < 0) runsScored = 0;
+
+                db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
+                    if (data) {
+                        const penalty = 1;
+                        const totalExtraRuns = penalty + runsScored;
+
+                        // Bowler charged with total extra runs
+                        const bowler = data.currentBowler;
+                        if (bowler) {
+                            data.bowlerStats = data.bowlerStats || {};
+                            if (!data.bowlerStats[bowler]) {
+                                data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+                            }
+                            data.bowlerStats[bowler].runs += totalExtraRuns;
                         }
-                        data.bowlerStats[bowler].runs += 1; // Extra conceeded
+
+                        // Striking batsman faces 1 ball & is credited with runsScored
+                        const striker = data.striker;
+                        if (striker) {
+                            data.batsmanStats = data.batsmanStats || {};
+                            if (!data.batsmanStats[striker]) {
+                                data.batsmanStats[striker] = { runs: 0, balls: 0, fours: 0, sixes: 0, status: "not out" };
+                            }
+                            data.batsmanStats[striker].balls += 1;
+                            data.batsmanStats[striker].runs += runsScored;
+                            if (runsScored === 4) data.batsmanStats[striker].fours += 1;
+                            if (runsScored === 6) data.batsmanStats[striker].sixes += 1;
+                        }
+
+                        data.runs += totalExtraRuns;
+                        data.extras += totalExtraRuns;
+                        data.overLog = data.overLog || [];
+                        data.overLog.push(`Nb+${runsScored}`);
+
+                        // Strike Rotation if batsman runsScored is odd (1, 3, 5)
+                        if (runsScored === 1 || runsScored === 3 || runsScored === 5) {
+                            const temp = data.striker;
+                            data.striker = data.nonStriker;
+                            data.nonStriker = temp;
+                        }
+
+                        // Activate Free Hit on next delivery
+                        data.freeHit = true;
+
+                        let eventType = "freehit";
+                        let animText = `NO BALL + ${runsScored} RUNS! FREE HIT!`;
+                        if (runsScored === 4) {
+                            eventType = "four";
+                            animText = "NO BALL + FOUR! FREE HIT!";
+                        } else if (runsScored === 6) {
+                            eventType = "six";
+                            animText = "NO BALL + SIX! FREE HIT!";
+                        }
+
+                        data.lastEvent = { text: animText, type: eventType, timestamp: Date.now() };
+                        evaluateMatchProgress(data, league);
                     }
+                    return data;
+                });
+            } else {
+                // Wide or Leg Bye
+                db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
+                    if (data) {
+                        const bowler = data.currentBowler;
+                        if (bowler) {
+                            data.bowlerStats = data.bowlerStats || {};
+                            if (!data.bowlerStats[bowler]) {
+                                data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+                            }
+                            data.bowlerStats[bowler].runs += 1;
+                        }
 
-                    data.runs += 1;
-                    data.extras += 1;
-                    data.overLog = data.overLog || [];
-                    
-                    let logType = "Ex";
-                    let eventText = "EXTRA";
-                    if (type === 'WD') { logType = "Wd"; eventText = "WIDE (+1)"; }
-                    else if (type === 'NB') { logType = "Nb"; eventText = "NO BALL (+1)"; }
-                    else if (type === 'BYE') { logType = "By"; eventText = "LEG BYE"; }
-                    data.overLog.push(logType);
+                        data.runs += 1;
+                        data.extras += 1;
+                        data.overLog = data.overLog || [];
+                        
+                        let eventText = "EXTRA";
+                        if (type === 'WD') {
+                            data.overLog.push("Wd");
+                            eventText = "WIDE (+1)";
+                        } else {
+                            data.overLog.push("Ex");
+                            eventText = "LEG BYE (+1)";
+                        }
 
-                    data.lastEvent = { text: eventText, type: "extra", timestamp: Date.now() };
-
-                    evaluateMatchProgress(data, league);
-                }
-                return data;
-            });
+                        data.lastEvent = { text: eventText, type: "extra", timestamp: Date.now() };
+                        evaluateMatchProgress(data, league);
+                    }
+                    return data;
+                });
+            }
         }
 
+        // Updated Wicket Modal launcher with standard Indian Cricket Free Hit rules (Only Run Out is valid)
         function openWicketModal() {
-            document.getElementById("wicket-modal").classList.remove("hidden");
+            const league = allLeagues[selectedScorerLeagueId];
+            const isFreeHit = league && league.liveMatch && league.liveMatch.freeHit;
+            
+            const modal = document.getElementById("wicket-modal");
+            const otherBtns = modal.querySelectorAll('button:not([onclick="commitWicket(\'Run Out\')"]):not([onclick*="classList.add"])');
+
+            if (isFreeHit) {
+                // Free Hit active: disable other dismissals (Bowled, Caught, LBW)
+                otherBtns.forEach(btn => btn.classList.add("opacity-30", "pointer-events-none"));
+                
+                let fhWarning = document.getElementById("wicket-modal-freehit-warning");
+                if (!fhWarning) {
+                    fhWarning = document.createElement("p");
+                    fhWarning.id = "wicket-modal-freehit-warning";
+                    fhWarning.className = "text-[10px] text-yellow-500 font-bold text-center uppercase tracking-wider mt-2";
+                    fhWarning.textContent = "⚠️ Free Hit Active: Only Run Out is valid!";
+                    modal.querySelector('.space-y-1.5').appendChild(fhWarning);
+                }
+            } else {
+                otherBtns.forEach(btn => btn.classList.remove("opacity-30", "pointer-events-none"));
+                const fhWarning = document.getElementById("wicket-modal-freehit-warning");
+                if (fhWarning) fhWarning.remove();
+            }
+
+            modal.classList.remove("hidden");
         }
 
         function commitWicket(type) {
@@ -2232,7 +2367,12 @@
                         data.needsBowlerChange = true;
                     }
 
-                    data.lastEvent = { text: "WICKET OUT!", type: "wicket", timestamp: Date.now() };
+                    data.lastEvent = { text: `WICKET! (${type})`, type: "wicket", timestamp: Date.now() };
+
+                    // Clear Free Hit status since a valid legal delivery (Run Out) was completed
+                    if (data.freeHit) {
+                        data.freeHit = false;
+                    }
 
                     // Flag replacement trigger if match is still active
                     evaluateMatchProgress(data, league);
@@ -2378,6 +2518,7 @@
                     data.overLog = [];
                     data.previousBowler = "";
                     data.dismissedBatsmen = [];
+                    data.freeHit = false; // Reset free hit status
 
                     // Swap Batting/Bowling roles
                     const prevBatting = data.battingTeam;
@@ -2514,8 +2655,12 @@
                         const team2 = score2.battingTeam;
 
                         if (standingsMap[team1] && standingsMap[team2]) {
+                            standingsMap[team1].played += 1;
+                            standingsMap[team2].played += 1;
+
                             standingsMap[team1].runsScored += score1.runs;
                             standingsMap[team2].runsScored += score2.runs;
+
                             standingsMap[team1].runsConceded += score2.runs;
                             standingsMap[team2].runsConceded += score1.runs;
 
@@ -2525,6 +2670,7 @@
 
                             standingsMap[team1].oversFaced += overFacedDecimal;
                             standingsMap[team2].oversBowled += overFacedDecimal;
+
                             standingsMap[team2].oversFaced += overBowledDecimal;
                             standingsMap[team1].oversBowled += overBowledDecimal;
 
@@ -3103,7 +3249,7 @@
                 if (data.overLog) {
                     data.overLog.slice(-6).forEach(log => {
                         overLogContainer.innerHTML += `
-                            <span class="w-4 h-4 bg-black/40 text-[8px] flex items-center justify-center rounded-full font-bold border border-white/10">${log}</span>
+                            <span class="w-auto h-4 px-1 bg-black/40 text-[8px] flex items-center justify-center rounded-full font-bold border border-white/10">${log}</span>
                         `;
                     });
                 }
@@ -3116,6 +3262,16 @@
             // Sync dynamic live viewers count in real-time
             const viewsElement = document.getElementById("overlay-live-views");
             if (viewsElement) viewsElement.textContent = data.viewerCount || 1;
+
+            // Sync dynamic "FREE HIT" badge for spectators in the JioCinema style bug banner
+            const spectatorFhBadge = document.getElementById("overlay-free-hit-badge");
+            if (spectatorFhBadge) {
+                if (data.freeHit) {
+                    spectatorFhBadge.classList.remove("hidden");
+                } else {
+                    spectatorFhBadge.classList.add("hidden");
+                }
+            }
 
             // Calculate Live Run Rates
             const overDec = overToDecimal(data.overs);
@@ -3237,7 +3393,7 @@
             if (!overlay || !textBox || !card) return;
 
             textBox.textContent = text;
-            textBox.className = "text-3xl font-extrabold px-6 py-3 rounded-full uppercase tracking-wider text-white shadow-2xl";
+            textBox.className = "text-2xl md:text-3xl font-extrabold px-6 py-3 rounded-full uppercase tracking-wider text-white shadow-2xl";
 
             if (type === 'six') {
                 textBox.classList.add("glow-six");
@@ -3247,6 +3403,8 @@
                 textBox.classList.add("glow-wicket");
             } else if (type === 'extra') {
                 textBox.classList.add("glow-extra");
+            } else if (type === 'freehit') {
+                textBox.classList.add("glow-freehit");
             } else {
                 textBox.classList.add("glow-default");
             }
