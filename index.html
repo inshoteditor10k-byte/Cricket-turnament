@@ -34,11 +34,12 @@
             0% { transform: rotateY(0); }
             100% { transform: rotateY(1980deg); }
         }
+        /* Optimized hyper-fast coin flip animation */
         .animate-flip-heads {
-            animation: flip-heads 3s ease-out forwards;
+            animation: flip-heads 0.3s ease-out forwards;
         }
         .animate-flip-tails {
-            animation: flip-tails 3s ease-out forwards;
+            animation: flip-tails 0.3s ease-out forwards;
         }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
@@ -77,6 +78,56 @@
         input:focus, select:focus {
             border-color: #ea580c !important; /* orange-600 */
             outline: none !important;
+        }
+
+        /* TV Broadcast Feed Animation Overlay styling inside the video container */
+        .glow-six {
+            background: linear-gradient(135deg, #10b981, #eab308);
+            box-shadow: 0 0 35px #10b981, 0 0 70px #eab308;
+            border: 3px solid #ffffff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+            animation: pop-zoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .glow-four {
+            background: linear-gradient(135deg, #f97316, #eab308);
+            box-shadow: 0 0 35px #f97316, 0 0 70px #eab308;
+            border: 3px solid #ffffff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+            animation: pop-zoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .glow-wicket {
+            background: linear-gradient(135deg, #ef4444, #7f1d1d);
+            box-shadow: 0 0 35px #ef4444, 0 0 70px #7f1d1d;
+            border: 3px solid #ffffff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+            animation: pop-spin 0.5s ease-out forwards;
+        }
+        .glow-extra {
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            box-shadow: 0 0 35px #8b5cf6, 0 0 70px #3b82f6;
+            border: 3px solid #ffffff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+            animation: pop-zoom 0.4s ease-out forwards;
+        }
+        .glow-default {
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+            box-shadow: 0 0 25px #f59e0b;
+            border: 2.5px solid #ffffff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+            animation: pop-bounce 0.4s ease-out forwards;
+        }
+        @keyframes pop-zoom {
+            0% { transform: scale(0.2); opacity: 0; }
+            100% { transform: scale(1.15); opacity: 1; }
+        }
+        @keyframes pop-spin {
+            0% { transform: scale(0.1) rotate(-180deg); opacity: 0; }
+            100% { transform: scale(1.15) rotate(0); opacity: 1; }
+        }
+        @keyframes pop-bounce {
+            0% { transform: translateY(40px); opacity: 0; }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
@@ -123,7 +174,7 @@
                         <span>Continue with Google</span>
                     </button>
                     
-                    <button onclick="loginAsGuest()" class="w-full py-3 px-4 bg-gray-800 hover:bg-gray-800 border border-gray-700 active:translate-y-0.5 transform transition font-bold rounded-xl flex items-center justify-center space-x-3 text-white text-sm">
+                    <button onclick="loginAsGuest()" class="w-full py-3 px-4 bg-gray-800 hover:bg-gray-850 border border-gray-700 active:translate-y-0.5 transform transition font-bold rounded-xl flex items-center justify-center space-x-3 text-white text-sm">
                         <i class="fa-solid fa-user-secret text-md"></i>
                         <span>Continue as Guest</span>
                     </button>
@@ -369,8 +420,8 @@
                         <p class="text-2xl font-black" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-400">(0.0)</span></p>
                         <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5">
                             <p class="text-gray-400 font-bold" id="scorer-metric-striker">Striker: --</p>
-                            <p class="text-gray-400" id="scorer-metric-nonstriker">Non-Striker: --</p>
-                            <p class="text-gray-400" id="scorer-metric-bowler">Bowler: --</p>
+                            <p class="text-gray-450" id="scorer-metric-nonstriker">Non-Striker: --</p>
+                            <p class="text-gray-450" id="scorer-metric-bowler">Bowler: --</p>
                         </div>
                     </div>
 
@@ -510,7 +561,7 @@
                         <i class="fa-solid fa-user-secret"></i>
                         <span>Continue as Guest</span>
                     </button>
-                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-800 font-bold rounded-xl text-xs text-gray-455">Logout</button>
+                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-800 font-bold rounded-xl text-xs text-gray-400">Logout</button>
                 </div>
 
                 <!-- Camera Key Registration Box -->
@@ -575,6 +626,13 @@
                         <h4 class="text-sm font-bold">Innings Not Yet In Progress</h4>
                         <p class="text-[10px] text-gray-400 max-w-xs">No camera streams are active. Displays match metadata and scoring updates below.</p>
                         <div id="match-countdown-string" class="text-xs font-mono text-orange-500"></div>
+                    </div>
+
+                    <!-- TV Broadcast Feed Animation Overlay Container (Center aligned inside video area, hides nothing) -->
+                    <div id="live-feed-animation-overlay" class="absolute inset-0 flex items-center justify-center pointer-events-none z-20 hidden">
+                        <div id="live-animation-card" class="text-center transform scale-0 transition-transform duration-300">
+                            <span id="live-animation-text" class="text-3xl font-extrabold px-6 py-3 rounded-full uppercase tracking-wider text-white shadow-2xl"></span>
+                        </div>
                     </div>
 
                     <!-- Dynamic TV Broadcast Graphic Overlay (Hotstar/Jio Style score scoreboard UI) -->
@@ -894,6 +952,9 @@
         // Cap modal filter toggle
         let currentLeaderboardType = 'runs'; 
         let currentLeaderboardScope = 'top10'; 
+        
+        // Keep track of the last processed event timestamp to avoid repeat animation loops
+        let lastSeenEventTimestamp = 0;
 
         // 3. Document Lifecycle Hook and Initializations
         document.addEventListener("DOMContentLoaded", () => {
@@ -1358,7 +1419,7 @@
                     { home: 'G', away: 'F', round: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
                     { home: 'F', away: 'A', round: 58 }, { home: 'E', away: 'B', round: 59 }, { home: 'H', away: 'C', round: 60 },
                     { home: 'G', away: 'D', round: 61 }, { home: 'B', away: 'I', round: 62 }, { home: 'A', away: 'J', round: 63 },
-                    { home: 'C', away: 'E', round: 64 }, { home: 'D', away: 'F', round: 65 }, { home: 'B', away: 'G', round: 66 },
+                    { home: 'C', away: 'E', round: 64 }, { home: 'D', away: 'F', round: 65 }, { home: 'B', away: 'G', rounded: 66 },
                     { home: 'A', away: 'H', round: 67 }, { home: 'F', away: 'I', round: 68 }, { home: 'E', away: 'J', round: 69 },
                     { home: 'B', away: 'A', round: 70 }
                 ];
@@ -1412,6 +1473,33 @@
             const playersCount = parseInt(document.getElementById("players-per-team").value);
             const startDate = document.getElementById("match-start-date").value;
             const startTime = document.getElementById("match-start-time").value;
+
+            // 1. Case-insensitive check / unique league name check
+            const nameLower = name.toLowerCase();
+            const duplicate = Object.values(allLeagues).some(l => l.metadata && l.metadata.name && l.metadata.name.toLowerCase() === nameLower);
+            if (duplicate) {
+                alert("Iss naam se league pehle se maujood hai! Kripya koi dusra anokha naam chunein.");
+                return;
+            }
+
+            // 2. Max 20 active/registered leagues guardrail check
+            const leagueKeys = Object.keys(allLeagues);
+            if (leagueKeys.length >= 20) {
+                let oldestCreatedAt = Date.now();
+                leagueKeys.forEach(k => {
+                    const l = allLeagues[k];
+                    if (l.metadata && l.metadata.createdAt) {
+                        if (l.metadata.createdAt < oldestCreatedAt) {
+                            oldestCreatedAt = l.metadata.createdAt;
+                        }
+                    }
+                });
+                const expirationTime = oldestCreatedAt + (10 * 24 * 3600 * 1000); // Purges after 10 days
+                const expDate = new Date(expirationTime);
+                const expDateStr = expDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                alert(`Maximum limit of 20 leagues reached! Aap nayi league ${expDateStr} ke baad create kar payenge jab purani league delete hogi.`);
+                return;
+            }
 
             const shortName = generateShortName(name);
 
@@ -1766,12 +1854,14 @@
             const side = Math.random() < 0.5 ? "heads" : "tails";
             coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-xs shadow-xl select-none";
             
+            // Hyper-fast transition flip
             if (side === "heads") {
                 coin.classList.add("animate-flip-heads");
             } else {
                 coin.classList.add("animate-flip-tails");
             }
 
+            // High-speed 0.05s response flip transition simulation completed in 50ms (or 350ms to let rapid spin play)
             setTimeout(() => {
                 const winner = document.getElementById("toss-winner-select").value;
                 const decision = document.getElementById("toss-decision-select").value;
@@ -1805,7 +1895,8 @@
                     needsInning2Lineup: false,
                     needsCompletionSave: false,
                     viewerCount: 1,
-                    tossResult: `${winner} won toss and elected to ${decision} first.`
+                    tossResult: `${winner} won toss and elected to ${decision} first.`,
+                    lastEvent: { text: "TOSS DONE", type: "default", timestamp: Date.now() }
                 };
 
                 db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).set(liveMatchData)
@@ -1816,7 +1907,7 @@
                         document.getElementById("scorer-lineup-panel").classList.remove("hidden");
                     });
 
-            }, 3000);
+            }, 350);
         }
 
         function setupLineupOptions(battingTeam, bowlingTeam) {
@@ -1891,14 +1982,16 @@
                     document.getElementById("super-over-badge").classList.remove("hidden");
                 }
 
-                // If first innings has finished automatically and needs inning 2 roster lineup, update Scorer UI immediately
+                // If first innings has finished automatically, load selection screen instantly (50ms transition effect)
                 if (data.needsInning2Lineup) {
-                    setupLineupOptions(data.battingTeam, data.bowlingTeam);
-                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
-                    document.getElementById("scorer-controls").classList.add("hidden");
+                    setTimeout(() => {
+                        setupLineupOptions(data.battingTeam, data.bowlingTeam);
+                        document.getElementById("scorer-lineup-panel").classList.remove("hidden");
+                        document.getElementById("scorer-controls").classList.add("hidden");
+                    }, 50);
                 }
 
-                // If match complete save is requested, trigger automatic outcome save
+                // If match complete save is requested, trigger automatic outcome save instantly
                 if (data.needsCompletionSave) {
                     const league = allLeagues[selectedScorerLeagueId];
                     db.ref(`leagues/${selectedScorerLeagueId}/liveMatch/active`).set(false).then(() => {
@@ -1962,6 +2055,14 @@
                         data.needsBowlerChange = true;
                     }
 
+                    // TV Screen Animation Event details broadcasted instantly
+                    let eventText = `${runs} RUNS`;
+                    let eventType = "default";
+                    if (runs === 0) { eventText = "DOT BALL"; eventType = "default"; }
+                    else if (runs === 4) { eventText = "CRACKING 4!"; eventType = "four"; }
+                    else if (runs === 6) { eventText = "MONSTER 6!"; eventType = "six"; }
+                    data.lastEvent = { text: eventText, type: eventType, timestamp: Date.now() };
+
                     // Automatic Inning Termination Check
                     evaluateMatchProgress(data, league);
                 }
@@ -1974,9 +2075,11 @@
                         triggerOverlayBroadcast(selectedScorerLeagueId, runs === 4 ? "SUPER FOUR!" : "MAXIMUM SIX!", `${runs} Runs Scored!`);
                     }
 
-                    // Show bowler switch modal if flagged
+                    // Show bowler switch modal inside 0.05 seconds (50ms transition speed)
                     if (data.needsBowlerChange && data.active) {
-                        openBowlerChangeModal(data);
+                        setTimeout(() => {
+                            openBowlerChangeModal(data);
+                        }, 50);
                     }
                 }
             });
@@ -2033,6 +2136,8 @@
                             data.needsBowlerChange = true;
                         }
 
+                        data.lastEvent = { text: `${parsed} RUNS`, type: "default", timestamp: Date.now() };
+
                         evaluateMatchProgress(data, league);
                     }
                     return data;
@@ -2040,7 +2145,9 @@
                     if (committed && snapshot.exists()) {
                         const data = snapshot.val();
                         if (data.needsBowlerChange && data.active) {
-                            openBowlerChangeModal(data);
+                            setTimeout(() => {
+                                openBowlerChangeModal(data);
+                            }, 50);
                         }
                     }
                 });
@@ -2064,13 +2171,15 @@
                     data.extras += 1;
                     data.overLog = data.overLog || [];
                     
-                    if (type === 'WD') {
-                        data.overLog.push("Wd");
-                    } else if (type === 'NB') {
-                        data.overLog.push("Nb");
-                    } else {
-                        data.overLog.push("Ex");
-                    }
+                    let logType = "Ex";
+                    let eventText = "EXTRA";
+                    if (type === 'WD') { logType = "Wd"; eventText = "WIDE (+1)"; }
+                    else if (type === 'NB') { logType = "Nb"; eventText = "NO BALL (+1)"; }
+                    else if (type === 'BYE') { logType = "By"; eventText = "LEG BYE"; }
+                    data.overLog.push(logType);
+
+                    data.lastEvent = { text: eventText, type: "extra", timestamp: Date.now() };
+
                     evaluateMatchProgress(data, league);
                 }
                 return data;
@@ -2123,6 +2232,8 @@
                         data.needsBowlerChange = true;
                     }
 
+                    data.lastEvent = { text: "WICKET OUT!", type: "wicket", timestamp: Date.now() };
+
                     // Flag replacement trigger if match is still active
                     evaluateMatchProgress(data, league);
                     if (data.active) {
@@ -2138,14 +2249,17 @@
                     if (data.active) {
                         if (data.needsInning2Lineup) return;
                         if (data.needsInning2Lineup === undefined || !data.needsInning2Lineup) {
-                            openBatsmanReplacementModal(data);
+                            // Instant 0.05 seconds replacement modal trigger (50ms delay)
+                            setTimeout(() => {
+                                openBatsmanReplacementModal(data);
+                            }, 50);
                         }
                     }
                 }
             });
         }
 
-        // Automatic Over bowler shift controller
+        // Automatic Over bowler shift controller with stats preview inside options lists
         function openBowlerChangeModal(liveMatchData) {
             const league = allLeagues[selectedScorerLeagueId];
             const bowlTeam = league.teams.find(t => t.name === liveMatchData.bowlingTeam);
@@ -2153,14 +2267,18 @@
             if (!selectEl || !bowlTeam) return;
 
             selectEl.innerHTML = "";
+            const bowlStats = liveMatchData.bowlerStats || {};
             bowlTeam.roster.forEach(player => {
                 const pName = typeof player === 'string' ? player : player.name;
                 // Strict: Immediate previous bowler cannot bowl consecutive overs
                 if (pName !== liveMatchData.previousBowler) {
-                    selectEl.innerHTML += `<option value="${pName}">${pName}</option>`;
+                    const stats = bowlStats[pName] || { balls: 0, runs: 0, wickets: 0 };
+                    const oversCount = Math.floor(stats.balls / 6) + "." + (stats.balls % 6);
+                    selectEl.innerHTML += `<option value="${pName}">${pName} (Overs: ${oversCount}, Runs: ${stats.runs}, Wkts: ${stats.wickets})</option>`;
                 }
             });
 
+            // Fast display trigger inside 0.05s (50ms)
             document.getElementById("bowler-change-modal").classList.remove("hidden");
         }
 
@@ -2176,7 +2294,7 @@
             });
         }
 
-        // Automatic replacement batsman controller (Out batsman cannot bat again)
+        // Automatic replacement batsman controller with current match stats preview inside selectors
         function openBatsmanReplacementModal(liveMatchData) {
             const league = allLeagues[selectedScorerLeagueId];
             const batTeam = league.teams.find(t => t.name === liveMatchData.battingTeam);
@@ -2185,16 +2303,19 @@
 
             selectEl.innerHTML = "";
             const dismissedList = liveMatchData.dismissedBatsmen || [];
+            const batsmanStats = liveMatchData.batsmanStats || {};
 
             batTeam.roster.forEach(player => {
                 const pName = typeof player === 'string' ? player : player.name;
                 // Strict: Already dismissed batsman cannot play again, also current partner cannot be chosen
                 const isOut = dismissedList.includes(pName);
                 if (!isOut && pName !== liveMatchData.nonStriker) {
-                    selectEl.innerHTML += `<option value="${pName}">${pName}</option>`;
+                    const stats = batsmanStats[pName] || { runs: 0, balls: 0 };
+                    selectEl.innerHTML += `<option value="${pName}">${pName} (Runs: ${stats.runs}, Balls: ${stats.balls})</option>`;
                 }
             });
 
+            // Fast display trigger inside 0.05s (50ms)
             document.getElementById("batsman-replacement-modal").classList.remove("hidden");
         }
 
@@ -2222,7 +2343,7 @@
             return list;
         }
 
-        // Automatic Inning & Match termination evaluation
+        // Automatic Inning & Match termination evaluation (Cricket Rules)
         function evaluateMatchProgress(data, league) {
             const oversLimit = parseFloat(data.oversLimit) || 5.0;
             const playersCount = parseInt(league.metadata.playersCount) || 11;
@@ -2276,7 +2397,7 @@
                 const isOversFinished = data.overs >= oversLimit;
 
                 if (isTargetReached || isAllOut || isOversFinished) {
-                    // Signal client that match is complete to trigger auto-finalization
+                    // Signal client that match is complete to trigger auto-finalization inside 0.05 seconds
                     data.needsCompletionSave = true;
 
                     if (isTargetReached) {
@@ -2408,11 +2529,17 @@
                             standingsMap[team1].oversBowled += overBowledDecimal;
 
                             if (score1.runs > score2.runs) {
+                                standingsMap[team1].won += 1;
                                 standingsMap[team1].points += 2;
+                                standingsMap[team2].lost += 1;
                             } else if (score2.runs > score1.runs) {
+                                standingsMap[team2].won += 1;
                                 standingsMap[team2].points += 2;
+                                standingsMap[team1].lost += 1;
                             } else {
+                                standingsMap[team1].tied += 1;
                                 standingsMap[team1].points += 1;
+                                standingsMap[team2].tied += 1;
                                 standingsMap[team2].points += 1;
                             }
                         }
@@ -2489,15 +2616,6 @@
                 if (data.needsInning2Lineup) return;
                 openBatsmanReplacementModal(data);
             });
-        }
-
-        // Decimal converter
-        function overToDecimal(overStrOrNum) {
-            const val = parseFloat(overStrOrNum);
-            if (isNaN(val)) return 0.0;
-            const overs = Math.floor(val);
-            const balls = Math.round((val - overs) * 10);
-            return overs + (balls / 6);
         }
 
         function incrementOverBalls(overNum) {
@@ -2957,6 +3075,15 @@
                 return;
             }
 
+            // Real-Time TV Broadcast overlay animation parser (0.05s update logic)
+            if (data.lastEvent && data.lastEvent.timestamp > lastSeenEventTimestamp) {
+                // Verify event occurred in last 5 seconds to skip stale loads
+                if (Date.now() - data.lastEvent.timestamp < 5000) {
+                    triggerBroadcastFeedAnimation(data.lastEvent.text, data.lastEvent.type);
+                }
+                lastSeenEventTimestamp = data.lastEvent.timestamp;
+            }
+
             // Active match ongoing, hide countdown fallback panel
             document.getElementById("live-countdown-panel").classList.add("hidden");
 
@@ -3100,6 +3227,40 @@
             }
 
             calculateDynamicStandings(league);
+        }
+
+        // Dedicated Khatarnak TV Broadcast screen animation trigger overlay
+        function triggerBroadcastFeedAnimation(text, type) {
+            const overlay = document.getElementById("live-feed-animation-overlay");
+            const card = document.getElementById("live-animation-card");
+            const textBox = document.getElementById("live-animation-text");
+            if (!overlay || !textBox || !card) return;
+
+            textBox.textContent = text;
+            textBox.className = "text-3xl font-extrabold px-6 py-3 rounded-full uppercase tracking-wider text-white shadow-2xl";
+
+            if (type === 'six') {
+                textBox.classList.add("glow-six");
+            } else if (type === 'four') {
+                textBox.classList.add("glow-four");
+            } else if (type === 'wicket') {
+                textBox.classList.add("glow-wicket");
+            } else if (type === 'extra') {
+                textBox.classList.add("glow-extra");
+            } else {
+                textBox.classList.add("glow-default");
+            }
+
+            overlay.classList.remove("hidden");
+            card.style.transform = "scale(1)";
+
+            // Auto-dismiss inside 1.8 seconds (well before any potential next delivery)
+            setTimeout(() => {
+                card.style.transform = "scale(0)";
+                setTimeout(() => {
+                    overlay.classList.add("hidden");
+                }, 300);
+            }, 1800);
         }
 
         // Leaderboards Calculation & Awards Tab Updating
@@ -3334,6 +3495,15 @@
             }
         }
 
+        // Net Run Rate Calculations
+        function overToDecimal(overStrOrNum) {
+            const val = parseFloat(overStrOrNum);
+            if (isNaN(val)) return 0.0;
+            const overs = Math.floor(val);
+            const balls = Math.round((val - overs) * 10);
+            return overs + (balls / 6);
+        }
+
         function calculateDynamicStandings(league) {
             const tbody = document.getElementById("live-table-standings");
             if (!tbody) return;
@@ -3486,6 +3656,7 @@
             }
         }
 
+        // Generate custom codes for cameras
         function generateCameraCode() {
             const assocLeague = document.getElementById("camera-association-select").value;
             if (!assocLeague) return;
