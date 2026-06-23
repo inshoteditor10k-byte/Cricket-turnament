@@ -107,7 +107,7 @@
             box-shadow: 0 0 35px #8b5cf6, 0 0 70px #3b82f6;
             border: 3px solid #ffffff;
             text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
-            animation: pop-zoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: pop-zoom 0.4s ease-out forwards;
         }
         .glow-freehit {
             background: linear-gradient(135deg, #facc15, #ca8a04);
@@ -169,7 +169,7 @@
         <!-- Auth Barrier Block (Shown when restricted views are accessed unauthenticated) -->
         <div id="auth-gate-modal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center px-4">
             <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-sm w-full text-center shadow-2xl">
-                <div class="w-16 h-16 mx-auto bg-orange-605/10 text-orange-500 rounded-full flex items-center justify-center text-3xl mb-4">
+                <div class="w-16 h-16 mx-auto bg-orange-600/10 text-orange-500 rounded-full flex items-center justify-center text-3xl mb-4">
                     <i class="fa-solid fa-lock"></i>
                 </div>
                 <h2 class="text-xl font-extrabold mb-2">Sign-In Required</h2>
@@ -461,7 +461,7 @@
                             <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-gray-400">Leg Bye</button>
                         </div>
                         <div class="grid grid-cols-1 gap-2">
-                            <button onclick="openWicketModal()" class="w-full py-2.5 bg-red-650 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase">Wicket</button>
+                            <button onclick="openWicketModal()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase">Wicket</button>
                         </div>
                     </div>
                 </div>
@@ -691,7 +691,6 @@
                             <!-- Bowler Bug -->
                             <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded flex items-center space-x-1.5">
                                 <span id="overlay-free-hit-badge" class="hidden bg-yellow-400 text-black font-black text-[8px] px-1.5 py-0.5 rounded animate-pulse">FREE HIT</span>
-                                <span id="overlay-super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[8px] px-1.5 py-0.5 rounded animate-pulse">SUPER OVER</span>
                                 <span id="overlay-active-bowler" class="text-gray-300">Bowler: --</span>
                             </div>
                         </div>
@@ -1158,109 +1157,6 @@
             }
         }
 
-        // Saved Leagues Local Management
-        function isLeagueSaved(leagueId) {
-            const saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
-            return saved.includes(leagueId);
-        }
-
-        function toggleSaveLeague(leagueId) {
-            let saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
-            if (saved.includes(leagueId)) {
-                saved = saved.filter(id => id !== leagueId);
-            } else {
-                saved.push(leagueId);
-            }
-            localStorage.setItem("ipc_saved_leagues", JSON.stringify(saved));
-            renderLeaguesList();
-            renderSavedLeaguesList();
-        }
-
-        function toggleSavedLeaguesView() {
-            const container = document.getElementById("saved-leagues-container");
-            const chevron = document.getElementById("saved-leagues-chevron");
-            if (container.classList.contains("hidden")) {
-                container.classList.remove("hidden");
-                chevron.classList.replace("fa-chevron-down", "fa-chevron-up");
-                renderSavedLeaguesList();
-            } else {
-                container.classList.add("hidden");
-                chevron.classList.replace("fa-chevron-up", "fa-chevron-down");
-            }
-        }
-
-        function renderSavedLeaguesList() {
-            const container = document.getElementById("saved-leagues-container");
-            if (!container) return;
-            container.innerHTML = "";
-
-            const savedIds = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
-            let count = 0;
-
-            savedIds.forEach(key => {
-                const league = allLeagues[key];
-                if (league && typeof league === 'object' && league.metadata) {
-                    count++;
-                    const activeLabel = (league.liveMatch && league.liveMatch.active) 
-                        ? `<span class="bg-red-600 px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse text-white">LIVE</span>` 
-                        : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
-
-                    const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
-                    const teamCount = league.teams ? league.teams.length : 0;
-                    const startDate = league.metadata ? (league.metadata.startDate || "N/A") : "N/A";
-                    const shortName = league.metadata ? (league.metadata.shortName || generateShortName(league.metadata.name)) : "IPC";
-                    const name = league.metadata ? (league.metadata.name || "Unnamed League") : "Unnamed League";
-
-                    let liveScoreHTML = "";
-                    if (league.liveMatch && league.liveMatch.active) {
-                        const lm = league.liveMatch;
-                        liveScoreHTML = `
-                            <div class="bg-black p-2.5 rounded-xl border border-red-500/20 my-2">
-                                <div class="flex justify-between items-center text-[10px] text-gray-400 font-semibold">
-                                    <span>🏏 ${lm.battingTeam}</span>
-                                    <span>vs ${lm.bowlingTeam}</span>
-                                </div>
-                                <div class="flex justify-between items-center mt-1">
-                                    <span class="text-xs font-black text-white">${lm.runs} - ${lm.wickets} <span class="text-[9px] text-gray-400">(${lm.overs})</span></span>
-                                    <span class="text-[9px] text-red-500 font-bold animate-pulse">LIVE NOW</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    container.innerHTML += `
-                        <div class="bg-gray-950 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition">
-                            <div class="flex items-center justify-between">
-                                ${activeLabel}
-                                <div class="flex items-center space-x-2">
-                                    <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2 py-0.5 rounded">
-                                        ${shortName}
-                                    </span>
-                                    <button onclick="event.stopPropagation(); toggleSaveLeague('${key}')" class="focus:outline-none">
-                                        <i class="fa-solid fa-bell text-yellow-500 text-sm cursor-pointer ml-2"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${name}</h3>
-                            ${liveScoreHTML}
-                            <div class="flex justify-between items-center text-[10px] text-gray-400">
-                                <span>Overs: ${oversLimit} | Teams: ${teamCount}</span>
-                                <span class="font-mono text-orange-400">${startDate}</span>
-                            </div>
-                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white">
-                                <span>View Broadcast</span>
-                                <i class="fa-solid fa-arrow-right text-xs"></i>
-                            </button>
-                        </div>
-                    `;
-                }
-            });
-
-            if (count === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No saved leagues found.</p>`;
-            }
-        }
-
         // 6. Search density sorting engine
         function handleSearch() {
             renderLeaguesList();
@@ -1562,7 +1458,8 @@
                     { home: 'F', away: 'A', round: 58 }, { home: 'E', away: 'B', round: 59 }, { home: 'H', away: 'C', round: 60 },
                     { home: 'G', away: 'D', round: 61 }, { home: 'B', away: 'I', round: 62 }, { home: 'A', away: 'J', round: 63 },
                     { home: 'C', away: 'E', round: 64 }, { home: 'D', away: 'F', round: 65 }, { home: 'B', away: 'G', round: 66 },
-                    { home: 'A', away: 'H', round: 67 }, { home: 'F', away: 'I', round: 68 }, { home: 'E', away: 'J', round: 70 }
+                    { home: 'A', away: 'H', round: 67 }, { home: 'F', away: 'I', round: 68 }, { home: 'E', away: 'J', round: 69 },
+                    { home: 'B', away: 'A', round: 70 }
                 ];
                 playoffTemplates = [
                     { type: 'QUALIFIER 1', homePlaceholder: 'Rank 1 Team', awayPlaceholder: 'Rank 2 Team', round: 71 },
@@ -1729,6 +1626,109 @@
                 .catch(err => alert("Transmission Error: " + err.message));
         }
 
+        // Saved Leagues Local Management
+        function isLeagueSaved(leagueId) {
+            const saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
+            return saved.includes(leagueId);
+        }
+
+        function toggleSaveLeague(leagueId) {
+            let saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
+            if (saved.includes(leagueId)) {
+                saved = saved.filter(id => id !== leagueId);
+            } else {
+                saved.push(leagueId);
+            }
+            localStorage.setItem("ipc_saved_leagues", JSON.stringify(saved));
+            renderLeaguesList();
+            renderSavedLeaguesList();
+        }
+
+        function toggleSavedLeaguesView() {
+            const container = document.getElementById("saved-leagues-container");
+            const chevron = document.getElementById("saved-leagues-chevron");
+            if (container.classList.contains("hidden")) {
+                container.classList.remove("hidden");
+                chevron.classList.replace("fa-chevron-down", "fa-chevron-up");
+                renderSavedLeaguesList();
+            } else {
+                container.classList.add("hidden");
+                chevron.classList.replace("fa-chevron-up", "fa-chevron-down");
+            }
+        }
+
+        function renderSavedLeaguesList() {
+            const container = document.getElementById("saved-leagues-container");
+            if (!container) return;
+            container.innerHTML = "";
+
+            const savedIds = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
+            let count = 0;
+
+            savedIds.forEach(key => {
+                const league = allLeagues[key];
+                if (league && typeof league === 'object' && league.metadata) {
+                    count++;
+                    const activeLabel = (league.liveMatch && league.liveMatch.active) 
+                        ? `<span class="bg-red-600 px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse text-white">LIVE</span>` 
+                        : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
+
+                    const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
+                    const teamCount = league.teams ? league.teams.length : 0;
+                    const startDate = league.metadata ? (league.metadata.startDate || "N/A") : "N/A";
+                    const shortName = league.metadata ? (league.metadata.shortName || generateShortName(league.metadata.name)) : "IPC";
+                    const name = league.metadata ? (league.metadata.name || "Unnamed League") : "Unnamed League";
+
+                    let liveScoreHTML = "";
+                    if (league.liveMatch && league.liveMatch.active) {
+                        const lm = league.liveMatch;
+                        liveScoreHTML = `
+                            <div class="bg-black p-2.5 rounded-xl border border-red-500/20 my-2">
+                                <div class="flex justify-between items-center text-[10px] text-gray-400 font-semibold">
+                                    <span>🏏 ${lm.battingTeam}</span>
+                                    <span>vs ${lm.bowlingTeam}</span>
+                                </div>
+                                <div class="flex justify-between items-center mt-1">
+                                    <span class="text-xs font-black text-white">${lm.runs} - ${lm.wickets} <span class="text-[9px] text-gray-400">(${lm.overs})</span></span>
+                                    <span class="text-[9px] text-red-500 font-bold animate-pulse">LIVE NOW</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    container.innerHTML += `
+                        <div class="bg-gray-950 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition">
+                            <div class="flex items-center justify-between">
+                                ${activeLabel}
+                                <div class="flex items-center space-x-2">
+                                    <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2 py-0.5 rounded">
+                                        ${shortName}
+                                    </span>
+                                    <button onclick="event.stopPropagation(); toggleSaveLeague('${key}')" class="focus:outline-none">
+                                        <i class="fa-solid fa-bell text-yellow-500 text-sm cursor-pointer ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${name}</h3>
+                            ${liveScoreHTML}
+                            <div class="flex justify-between items-center text-[10px] text-gray-400">
+                                <span>Overs: ${oversLimit} | Teams: ${teamCount}</span>
+                                <span class="font-mono text-orange-400">${startDate}</span>
+                            </div>
+                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white">
+                                <span>View Broadcast</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+
+            if (count === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No saved leagues found.</p>`;
+            }
+        }
+
         // 8. Dynamic Firebase State Listeners
         function fetchLeagues() {
             db.ref('leagues').on('value', snapshot => {
@@ -1783,15 +1783,9 @@
             items.forEach(item => {
                 const key = item.key;
                 const league = item.league;
-                
-                let activeLabel = `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
-                if (league.liveMatch && league.liveMatch.active) {
-                    if (league.liveMatch.isSuperOverPending || league.liveMatch.isSuperOver) {
-                        activeLabel = `<span class="bg-yellow-500 text-black px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse">SUPER OVER</span>`;
-                    } else {
-                        activeLabel = `<span class="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse">LIVE</span>`;
-                    }
-                }
+                const activeLabel = (league.liveMatch && league.liveMatch.active) 
+                    ? `<span class="bg-red-600 px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse text-white">LIVE</span>` 
+                    : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
 
                 const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
                 const teamCount = league.teams ? league.teams.length : 0;
@@ -1806,11 +1800,10 @@
                 let liveScoreHTML = "";
                 if (league.liveMatch && league.liveMatch.active) {
                     const lm = league.liveMatch;
-                    const suffix = lm.isSuperOver ? " (Super Over)" : "";
                     liveScoreHTML = `
                         <div class="bg-black p-2.5 rounded-xl border border-red-500/20 my-2">
                             <div class="flex justify-between items-center text-[10px] text-gray-400 font-semibold">
-                                <span>🏏 ${lm.battingTeam}${suffix}</span>
+                                <span>🏏 ${lm.battingTeam}</span>
                                 <span>vs ${lm.bowlingTeam}</span>
                             </div>
                             <div class="flex justify-between items-center mt-1">
@@ -1945,15 +1938,7 @@
 
                         if (!banner || !timer || !button) return;
 
-                        // Check if match is already live/active (Resume match state) [Accidental Exit Support]
-                        const isMatchActiveLive = league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedIdx;
-
-                        if (isMatchActiveLive) {
-                            banner.classList.add("hidden");
-                            button.removeAttribute("disabled");
-                            button.className = "w-full py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white animate-pulse";
-                            button.textContent = "RESUME ACTIVE MATCH";
-                        } else if (now < targetTime) {
+                        if (now < targetTime) {
                             // Match is scheduled for the future. LOCK Access completely.
                             banner.classList.remove("hidden");
                             button.setAttribute("disabled", "true");
@@ -1983,68 +1968,37 @@
         }
 
         function initiateMatchScoring(leagueId) {
-            const selectEl = document.getElementById(`match-select-${leagueId}`);
-            if (!selectEl) return;
-            const matchIndex = parseInt(selectEl.value);
-            if (isNaN(matchIndex)) return;
+            const matchIndex = document.getElementById(`match-select-${leagueId}`).value;
+            if (matchIndex === "" || matchIndex === null) return;
 
             const league = allLeagues[leagueId];
 
             selectedScorerLeagueId = leagueId;
-            selectedScorerMatchIndex = matchIndex;
+            selectedScorerMatchIndex = parseInt(matchIndex);
             const match = league.fixtures[selectedScorerMatchIndex];
 
             document.getElementById("scorer-match-teams").textContent = `${match.homeTeam} vs ${match.awayTeam}`;
             document.getElementById("scorer-console-view").classList.remove("hidden");
             document.getElementById("managed-leagues-container").classList.add("hidden");
 
-            // Check if this match is already active in liveMatch (Accidental exit / Resume condition)
-            if (league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedScorerMatchIndex) {
-                attachLiveScorerMetricsListener();
-                
-                const lm = league.liveMatch;
-                if (lm.isSuperOverPending) {
-                    document.getElementById("scorer-toss-panel").classList.add("hidden");
-                    document.getElementById("scorer-lineup-panel").classList.add("hidden");
-                    document.getElementById("scorer-controls").classList.add("hidden");
-                    document.getElementById("super-over-trigger-container").classList.remove("hidden");
-                } else if (!lm.striker || !lm.nonStriker || !lm.currentBowler || lm.needsInning2Lineup) {
-                    setupLineupOptions(lm.battingTeam, lm.bowlingTeam);
-                    document.getElementById("scorer-toss-panel").classList.add("hidden");
-                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
-                    document.getElementById("scorer-controls").classList.add("hidden");
-                    document.getElementById("super-over-trigger-container").classList.add("hidden");
-                } else {
-                    document.getElementById("scorer-toss-panel").classList.add("hidden");
-                    document.getElementById("scorer-lineup-panel").classList.add("hidden");
-                    document.getElementById("scorer-controls").classList.remove("hidden");
-                    document.getElementById("super-over-trigger-container").classList.add("hidden");
-                }
-            } else {
-                // Setup Toss Panel normally for fresh starts
-                const tossSelect = document.getElementById("toss-winner-select");
-                tossSelect.innerHTML = `
-                    <option value="${match.homeTeam}">${match.homeTeam}</option>
-                    <option value="${match.awayTeam}">${match.awayTeam}</option>
-                `;
+            // Setup Coin Toss Selection Items
+            const tossSelect = document.getElementById("toss-winner-select");
+            tossSelect.innerHTML = `
+                <option value="${match.homeTeam}">${match.homeTeam}</option>
+                <option value="${match.awayTeam}">${match.awayTeam}</option>
+            `;
 
-                document.getElementById("scorer-toss-panel").classList.remove("hidden");
-                document.getElementById("scorer-lineup-panel").classList.add("hidden");
-                document.getElementById("scorer-controls").classList.add("hidden");
-                document.getElementById("super-over-trigger-container").classList.add("hidden");
-                document.getElementById("super-over-badge").classList.add("hidden");
-            }
+            document.getElementById("scorer-toss-panel").classList.remove("hidden");
+            document.getElementById("scorer-lineup-panel").classList.add("hidden");
+            document.getElementById("scorer-controls").classList.add("hidden");
+            document.getElementById("super-over-trigger-container").classList.add("hidden");
+            document.getElementById("super-over-badge").classList.add("hidden");
         }
 
         function exitScorerConsole() {
             stopDirectScorerCam();
             document.getElementById("scorer-console-view").classList.add("hidden");
             document.getElementById("managed-leagues-container").classList.remove("hidden");
-            
-            // Detach scorers listeners if applicable
-            if (selectedScorerLeagueId) {
-                db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).off();
-            }
             selectedScorerLeagueId = null;
             selectedScorerMatchIndex = null;
         }
@@ -2061,7 +2015,7 @@
                 coin.classList.add("animate-flip-tails");
             }
 
-            // High-speed response flip transition completed in 350ms
+            // High-speed 0.05s response flip transition simulation completed in 350ms
             setTimeout(() => {
                 const winner = document.getElementById("toss-winner-select").value;
                 const decision = document.getElementById("toss-decision-select").value;
@@ -2091,7 +2045,6 @@
                     currentBowler: "",
                     overLog: [],
                     isSuperOver: false,
-                    isSuperOverPending: false,
                     freeHit: false, // Standard free hit initialized
                     inning: 1,
                     needsInning2Lineup: false,
@@ -2101,19 +2054,12 @@
                     lastEvent: { text: "TOSS DONE", type: "default", timestamp: Date.now() }
                 };
 
-                // Preserving Super Over state if tossing during super over
-                if (league.liveMatch && league.liveMatch.isSuperOver) {
-                    liveMatchData.isSuperOver = true;
-                    liveMatchData.oversLimit = 1.0;
-                }
-
                 db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).set(liveMatchData)
                     .then(() => {
                         db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}/status`).set("LIVE");
                         setupLineupOptions(battingFirst, bowlingFirst);
                         document.getElementById("scorer-toss-panel").classList.add("hidden");
                         document.getElementById("scorer-lineup-panel").classList.remove("hidden");
-                        attachLiveScorerMetricsListener();
                     });
 
             }, 350);
@@ -2165,21 +2111,14 @@
                 .then(() => {
                     document.getElementById("scorer-lineup-panel").classList.add("hidden");
                     document.getElementById("scorer-controls").classList.remove("hidden");
+                    attachLiveScorerMetricsListener();
                 });
         }
 
         function attachLiveScorerMetricsListener() {
-            // Detach previous listeners first to prevent duplicates
-            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).off();
-
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).on('value', snapshot => {
                 const data = snapshot.val();
-                
-                // Exit console automatically if live session was finished or invalidated
-                if (!data || !data.active) {
-                    exitScorerConsole();
-                    return;
-                }
+                if (!data) return;
 
                 document.getElementById("scorer-metric-score").innerHTML = `
                     ${data.runs} - ${data.wickets} <span class="text-sm font-medium text-gray-400">(${data.overs})</span>
@@ -2188,9 +2127,7 @@
                 document.getElementById("scorer-metric-nonstriker").textContent = `Non-Striker: ${data.nonStriker || '--'}`;
                 document.getElementById("scorer-metric-bowler").textContent = `Bowler: ${data.currentBowler || '--'}`;
                 
-                if (data.isSuperOver) {
-                    document.getElementById("scorer-inning-label").textContent = `Super Over (Inning ${data.inning})`;
-                } else if (data.inning === 2) {
+                if (data.inning === 2) {
                     document.getElementById("scorer-inning-label").textContent = `Second Innings (Target: ${data.targetRuns})`;
                 } else {
                     document.getElementById("scorer-inning-label").textContent = `First Innings`;
@@ -2198,8 +2135,6 @@
 
                 if (data.isSuperOver) {
                     document.getElementById("super-over-badge").classList.remove("hidden");
-                } else {
-                    document.getElementById("super-over-badge").classList.add("hidden");
                 }
 
                 // Update Free Hit visual badge state on the scorer's dashboard instantly
@@ -2210,15 +2145,6 @@
                     } else {
                         scorerFhBadge.classList.add("hidden");
                     }
-                }
-
-                // Trigger tie-breaker Super Over card if match ties [Draw case]
-                const soTriggerContainer = document.getElementById("super-over-trigger-container");
-                if (data.isSuperOverPending) {
-                    soTriggerContainer.classList.remove("hidden");
-                    document.getElementById("scorer-controls").classList.add("hidden");
-                } else {
-                    soTriggerContainer.classList.add("hidden");
                 }
 
                 // If first innings has finished automatically, load selection screen instantly (50ms transition effect)
@@ -2326,16 +2252,8 @@
                         triggerOverlayBroadcast(selectedScorerLeagueId, runs === 4 ? "SUPER FOUR!" : "MAXIMUM SIX!", `${runs} Runs Scored!`);
                     }
 
-                    // Trigger Tie Outcome Update to Database so fixtures, standings reflect "Tai" [Tied status]
-                    if (data.isSuperOverPending) {
-                        db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}`).update({
-                            outcome: "MATCH TIED! (Super Over Required)",
-                            status: "LIVE"
-                        });
-                    }
-
-                    // Show bowler switch modal inside 50ms transition speed
-                    if (data.needsBowlerChange && data.active && !data.isSuperOverPending) {
+                    // Show bowler switch modal inside 0.05 seconds (50ms transition speed)
+                    if (data.needsBowlerChange && data.active) {
                         setTimeout(() => {
                             openBowlerChangeModal(data);
                         }, 50);
@@ -2409,15 +2327,7 @@
                 }, (error, committed, snapshot) => {
                     if (committed && snapshot.exists()) {
                         const data = snapshot.val();
-                        
-                        if (data.isSuperOverPending) {
-                            db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}`).update({
-                                outcome: "MATCH TIED! (Super Over Required)",
-                                status: "LIVE"
-                            });
-                        }
-
-                        if (data.needsBowlerChange && data.active && !data.isSuperOverPending) {
+                        if (data.needsBowlerChange && data.active) {
                             setTimeout(() => {
                                 openBowlerChangeModal(data);
                             }, 50);
@@ -2427,7 +2337,7 @@
             }
         }
 
-        // Updated scoreExtra logic containing No Ball runs prompting mechanism & Free Hit awards
+        // Updated scoreExtra logic containing customized No Ball runs prompting mechanism & Free Hit awards
         function scoreExtra(type) {
             const league = allLeagues[selectedScorerLeagueId];
             if (!league) return;
@@ -2494,16 +2404,6 @@
                         evaluateMatchProgress(data, league);
                     }
                     return data;
-                }, (error, committed, snapshot) => {
-                    if (committed && snapshot.exists()) {
-                        const data = snapshot.val();
-                        if (data.isSuperOverPending) {
-                            db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}`).update({
-                                outcome: "MATCH TIED! (Super Over Required)",
-                                status: "LIVE"
-                            });
-                        }
-                    }
                 });
             } else {
                 // Wide or Leg Bye
@@ -2535,21 +2435,11 @@
                         evaluateMatchProgress(data, league);
                     }
                     return data;
-                }, (error, committed, snapshot) => {
-                    if (committed && snapshot.exists()) {
-                        const data = snapshot.val();
-                        if (data.isSuperOverPending) {
-                            db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}`).update({
-                                outcome: "MATCH TIED! (Super Over Required)",
-                                status: "LIVE"
-                            });
-                        }
-                    }
                 });
             }
         }
 
-        // Updated Wicket Modal launcher with Indian Cricket Free Hit rules (Only Run Out is valid)
+        // Updated Wicket Modal launcher with standard Indian Cricket Free Hit rules (Only Run Out is valid)
         function openWicketModal() {
             const league = allLeagues[selectedScorerLeagueId];
             const isFreeHit = league && league.liveMatch && league.liveMatch.freeHit;
@@ -2644,15 +2534,7 @@
                 return data;
             }, (error, committed, snapshot) => {
                 if (committed && snapshot.exists()) {
-                    const data = snapshot.val();
                     triggerOverlayBroadcast(selectedScorerLeagueId, "LBW - FREE HIT!", `${runs} Runs Added`);
-                    
-                    if (data.isSuperOverPending) {
-                        db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}`).update({
-                            outcome: "MATCH TIED! (Super Over Required)",
-                            status: "LIVE"
-                        });
-                    }
                 }
             });
         }
@@ -2708,7 +2590,7 @@
 
                     // Flag replacement trigger if match is still active
                     evaluateMatchProgress(data, league);
-                    if (data.active && !data.isSuperOverPending) {
+                    if (data.active) {
                         data.needsBatsmanReplacement = true;
                     }
                 }
@@ -2718,17 +2600,10 @@
                     const data = snapshot.val();
                     triggerOverlayBroadcast(selectedScorerLeagueId, "WICKET DISMISSAL!", type);
 
-                    if (data.isSuperOverPending) {
-                        db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}`).update({
-                            outcome: "MATCH TIED! (Super Over Required)",
-                            status: "LIVE"
-                        });
-                    }
-
-                    if (data.active && !data.isSuperOverPending) {
+                    if (data.active) {
                         if (data.needsInning2Lineup) return;
                         if (data.needsInning2Lineup === undefined || !data.needsInning2Lineup) {
-                            // Instant replacement modal trigger (50ms delay)
+                            // Instant 0.05 seconds replacement modal trigger (50ms delay)
                             setTimeout(() => {
                                 openBatsmanReplacementModal(data);
                             }, 50);
@@ -2757,7 +2632,7 @@
                 }
             });
 
-            // Fast display trigger inside 50ms
+            // Fast display trigger inside 0.05s (50ms)
             document.getElementById("bowler-change-modal").classList.remove("hidden");
         }
 
@@ -2794,7 +2669,7 @@
                 }
             });
 
-            // Fast display trigger inside 50ms
+            // Fast display trigger inside 0.05s (50ms)
             document.getElementById("batsman-replacement-modal").classList.remove("hidden");
         }
 
@@ -2822,12 +2697,11 @@
             return list;
         }
 
-        // Automatic Inning & Match termination evaluation (Cricket Rules with Super Over ties)
+        // Automatic Inning & Match termination evaluation (Cricket Rules)
         function evaluateMatchProgress(data, league) {
             const oversLimit = parseFloat(data.oversLimit) || 5.0;
             const playersCount = parseInt(league.metadata.playersCount) || 11;
-            // Standard Indian/ICC Super Over wickets limit is exactly 2 wickets (3 batsmen allowed)
-            const maxWickets = data.isSuperOver ? 2 : (playersCount - 1);
+            const maxWickets = playersCount - 1; 
 
             if (!data.inning) {
                 data.inning = 1;
@@ -2878,16 +2752,15 @@
                 const isOversFinished = data.overs >= oversLimit;
 
                 if (isTargetReached || isAllOut || isOversFinished) {
+                    // Signal client that match is complete to trigger auto-finalization inside 0.05 seconds
+                    data.needsCompletionSave = true;
+
                     if (isTargetReached) {
-                        data.needsCompletionSave = true;
-                        data.outcome = `${data.battingTeam} won ${data.isSuperOver ? 'in Super Over' : ''} by ${maxWickets - data.wickets} wickets!`;
+                        data.outcome = `${data.battingTeam} won by ${playersCount - 1 - data.wickets} wickets!`;
                     } else if (data.runs === target - 1) {
-                        // TIE: Activate Super Over pending flag instead of saving normal result!
-                        data.isSuperOverPending = true;
                         data.outcome = "MATCH TIED! SUPER OVER REQUIRED.";
                     } else {
-                        data.needsCompletionSave = true;
-                        data.outcome = `${data.bowlingTeam} won ${data.isSuperOver ? 'in Super Over' : ''} by ${target - 1 - data.runs} runs!`;
+                        data.outcome = `${data.bowlingTeam} won by ${target - 1 - data.runs} runs!`;
                     }
                 } else {
                     if (isOverEnded) {
@@ -2895,53 +2768,6 @@
                     }
                 }
             }
-        }
-
-        // Activates tie-breaker Super Over mode - Resets console to a fresh 1-over toss Panel
-        function activateSuperOverMode() {
-            const league = allLeagues[selectedScorerLeagueId];
-            if (!league) return;
-
-            const match = league.fixtures[selectedScorerMatchIndex];
-
-            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).update({
-                active: true,
-                isSuperOver: true,
-                isSuperOverPending: false,
-                inning: 1,
-                oversLimit: 1.0, // Strictly exactly 1 over for Super Over tiebreaker!
-                runs: 0,
-                wickets: 0,
-                overs: 0.0,
-                extras: 0,
-                striker: "",
-                nonStriker: "",
-                currentBowler: "",
-                overLog: [],
-                dismissedBatsmen: [],
-                freeHit: false,
-                needsInning2Lineup: false,
-                needsCompletionSave: false,
-                tossResult: "Super Over initiated. Perform a fresh toss!",
-                lastEvent: { text: "SUPER OVER INITIATED", type: "default", timestamp: Date.now() }
-            }).then(() => {
-                // Update live outcome in fixture list so spectators see "MATCH TIED"
-                db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}`).update({
-                    outcome: "MATCH TIED! (Super Over Required)",
-                    status: "LIVE"
-                });
-
-                // Present toss panel again for a fresh Super Over coin toss!
-                const tossSelect = document.getElementById("toss-winner-select");
-                tossSelect.innerHTML = `
-                    <option value="${match.homeTeam}">${match.homeTeam}</option>
-                    <option value="${match.awayTeam}">${match.awayTeam}</option>
-                `;
-                document.getElementById("scorer-toss-panel").classList.remove("hidden");
-                document.getElementById("scorer-lineup-panel").classList.add("hidden");
-                document.getElementById("scorer-controls").classList.add("hidden");
-                document.getElementById("super-over-trigger-container").classList.add("hidden");
-            });
         }
 
         function saveCompletedMatchOutcome(league, outcome, liveMatchData) {
@@ -3421,13 +3247,7 @@
                     let awayHasPic = awayCaptain.image && awayCaptain.image !== "https://img.icons8.com/color/150/cricket.png" && awayCaptain.image.trim() !== "";
 
                     let winnerName = "";
-                    let isTiedMatch = false;
-
-                    if (match.outcome && match.outcome.includes("TIED")) {
-                        isTiedMatch = true;
-                    }
-
-                    if (match.status === "COMPLETED" && !isTiedMatch) {
+                    if (match.status === "COMPLETED") {
                         const runs1 = match.scorecard && match.scorecard.inning1 ? match.scorecard.inning1.runs : 0;
                         const runs2 = match.scorecard && match.scorecard.inning2 ? match.scorecard.inning2.runs : 0;
                         
@@ -3473,29 +3293,20 @@
                         clickAction = `alert('This match has not started yet. Scheduled start time: ${league.metadata.startDate} @ ${league.metadata.startTime}')`;
                     }
 
-                    let badgeTextHTML = "";
-                    if (isAllOut || match.status === "LIVE") {
-                        if (match.outcome && match.outcome.includes("TIED")) {
-                            badgeTextHTML = `<span class="bg-yellow-500 text-black font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">🏆 MATCH TIED (Super Over Required)</span>`;
-                        } else {
-                            badgeTextHTML = `<span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">${match.status}</span>`;
-                        }
-                    } else if (winnerName) {
-                        badgeTextHTML = `
-                            <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
-                                🏆 WINNER: ${generateShortName(winnerName)}
-                            </span>
-                        `;
-                    } else {
-                        badgeTextHTML = `<span class="bg-gray-700 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">${match.status}</span>`;
-                    }
-
                     htmlContent += `
                         <div onclick="${clickAction}" class="bg-black border border-gray-800 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition duration-300 shadow-lg text-white">
                             <!-- Header ribbon -->
                             <div class="bg-gray-900 px-2 py-0.5 flex justify-between items-center text-[7px] border-b border-gray-800">
                                 <span class="text-gray-400 font-bold uppercase tracking-wider">Round ${match.round}</span>
-                                ${badgeTextHTML}
+                                ${winnerName ? `
+                                    <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
+                                        🏆 WINNER: ${generateShortName(winnerName)}
+                                    </span>
+                                ` : `
+                                    <span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
+                                        ${match.status}
+                                    </span>
+                                `}
                             </div>
 
                             <!-- Content split layout -->
@@ -3676,16 +3487,6 @@
                 }
             }
 
-            // Sync dynamic "SUPER OVER" badge for spectators
-            const spectatorSoBadge = document.getElementById("overlay-super-over-badge");
-            if (spectatorSoBadge) {
-                if (data.isSuperOver) {
-                    spectatorSoBadge.classList.remove("hidden");
-                } else {
-                    spectatorSoBadge.classList.add("hidden");
-                }
-            }
-
             // Calculate Live Run Rates
             const overDec = overToDecimal(data.overs);
             const crr = overDec > 0 ? (data.runs / overDec).toFixed(2) : "0.00";
@@ -3796,6 +3597,42 @@
             }
 
             calculateDynamicStandings(league);
+        }
+
+        // Dedicated TV Broadcast screen animation trigger overlay
+        function triggerBroadcastFeedAnimation(text, type) {
+            const overlay = document.getElementById("live-feed-animation-overlay");
+            const card = document.getElementById("live-animation-card");
+            const textBox = document.getElementById("live-animation-text");
+            if (!overlay || !textBox || !card) return;
+
+            textBox.textContent = text;
+            textBox.className = "text-2xl md:text-3xl font-extrabold px-6 py-3 rounded-full uppercase tracking-wider text-white shadow-2xl";
+
+            if (type === 'six') {
+                textBox.classList.add("glow-six");
+            } else if (type === 'four') {
+                textBox.classList.add("glow-four");
+            } else if (type === 'wicket') {
+                textBox.classList.add("glow-wicket");
+            } else if (type === 'extra') {
+                textBox.classList.add("glow-extra");
+            } else if (type === 'freehit') {
+                textBox.classList.add("glow-freehit");
+            } else {
+                textBox.classList.add("glow-default");
+            }
+
+            overlay.classList.remove("hidden");
+            card.style.transform = "scale(1)";
+
+            // Auto-dismiss inside 1.8 seconds (well before any potential next delivery)
+            setTimeout(() => {
+                card.style.transform = "scale(0)";
+                setTimeout(() => {
+                    overlay.classList.add("hidden");
+                }, 300);
+            }, 1800);
         }
 
         // Leaderboards Calculation & Awards Tab Updating
@@ -4006,18 +3843,8 @@
                     const dateStr = matchDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
                     
                     let badgeColor = "bg-gray-800 text-gray-300";
-                    let statusLabel = match.status;
-
-                    if (match.status === "LIVE") {
-                        badgeColor = "bg-red-650 text-white animate-pulse";
-                        if (league.liveMatch && league.liveMatch.isSuperOverPending) {
-                            badgeColor = "bg-yellow-500 text-black animate-pulse font-black";
-                            statusLabel = "MATCH TIED";
-                        }
-                    }
-                    if (match.status === "COMPLETED") {
-                        badgeColor = "bg-green-600 text-white";
-                    }
+                    if (match.status === "LIVE") badgeColor = "bg-red-600 text-white animate-pulse";
+                    if (match.status === "COMPLETED") badgeColor = "bg-green-600 text-white";
 
                     container.innerHTML += `
                         <div class="bg-black border border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs">
@@ -4029,10 +3856,10 @@
                                     <span>${generateShortName(match.awayTeam)}</span>
                                 </div>
                                 <p class="text-[9px] font-mono text-orange-400">${dateStr} @ ${startTimeStr}</p>
-                                ${match.outcome ? `<p class="text-[9px] text-green-500 font-semibold">${match.outcome}</p>` : ""}
+                                ${match.status === "COMPLETED" ? `<p class="text-[9px] text-green-500 font-semibold">${match.outcome || "Finished"}</p>` : ""}
                             </div>
                             <div>
-                                <span class="px-2 py-0.5 rounded text-[9px] font-black tracking-widest ${badgeColor}">${statusLabel}</span>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-black tracking-widest ${badgeColor}">${match.status}</span>
                             </div>
                         </div>
                     `;
@@ -4094,255 +3921,266 @@
                                     standings[team1].won += 1;
                                     standings[team1].points += 2;
                                     standings[team2].lost += 1;
-                                } else if (score2.runs > score1.runs) { standings[team2].won += 1; standings[team2].points += 2;
-standings[team1].lost += 1; } else { standings[team1].tied += 1;
-standings[team1].points += 1; standings[team2].tied += 1;
-standings[team2].points += 1; } } } } }); }
-
-        const list = Object.values(standings);
-        list.forEach(item => {
-            const nrrScored = item.oversFaced > 0 ? (item.runsScored / item.oversFaced) : 0;
-            const nrrConceded = item.oversBowled > 0 ? (item.runsConceded / item.oversBowled) : 0;
-            item.nrr = parseFloat((nrrScored - nrrConceded).toFixed(3));
-        });
-
-        list.sort((a, b) => {
-            if (b.points !== a.points) return b.points - a.points;
-            return b.nrr - a.nrr;
-        });
-
-        list.forEach(item => {
-            tbody.innerHTML += `
-                <tr class="border-b border-gray-800 text-[11px] text-white">
-                    <td class="py-2 font-bold">${generateShortName(item.name)}</td>
-                    <td class="text-center">${item.played}</td>
-                    <td class="text-center">${item.won}</td>
-                    <td class="text-center text-orange-500 font-extrabold">${item.points}</td>
-                    <td class="text-center font-mono ${item.nrr >= 0 ? 'text-green-500' : 'text-red-500'}">${item.nrr >= 0 ? '+' : ''}${item.nrr}</td>
-                </tr>
-            `;
-        });
-    }
-
-    // Profile section: managed leagues with direct delete functions
-    function renderProfileLeaguesList() {
-        const list = document.getElementById("profile-leagues-list");
-        if (!list) return;
-        list.innerHTML = "";
-
-        let count = 0;
-        Object.keys(allLeagues).forEach(key => {
-            const league = allLeagues[key];
-            if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
-                count++;
-                list.innerHTML += `
-                    <div class="flex items-center justify-between bg-black p-2.5 rounded-xl border border-gray-800">
-                        <div class="space-y-0.5 max-w-[200px]">
-                            <h4 class="text-xs font-bold text-white truncate">${league.metadata.name}</h4>
-                            <p class="text-[9px] text-gray-400">Short: ${league.metadata.shortName || generateShortName(league.metadata.name)}</p>
-                        </div>
-                        <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-650 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans">
-                            <i class="fa-solid fa-trash-can"></i>
-                            <span>Delete</span>
-                        </button>
-                    </div>
-                `;
-            }
-        });
-
-        if (count === 0) {
-            list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">No leagues created by you yet.</p>`;
-        }
-    }
-
-    function deleteLeagueByOwner(leagueId) {
-        const confirmation = confirm("Are you sure you want to delete this league entirely? This action is irreversible.");
-        if (confirmation) {
-            db.ref(`leagues/${leagueId}`).remove()
-                .then(() => {
-                    alert("League successfully deleted.");
-                    renderProfileLeaguesList();
-                    renderManagedLeagues();
-                })
-                .catch(err => {
-                    alert("Error deleting league: " + err.message);
+                                } else if (score2.runs > score1.runs) {
+                                    standings[team2].won += 1;
+                                    standings[team2].points += 2;
+                                    standings[team1].lost += 1;
+                                } else {
+                                    standings[team1].tied += 1;
+                                    standings[team1].points += 1;
+                                    standings[team2].tied += 1;
+                                    standings[team2].points += 1;
+                                }
+                            }
+                        }
+                    }
                 });
-        }
-    }
-
-    // 11. Share Camera Key Generators
-    function populateShareCameraDropdown() {
-        const select = document.getElementById("camera-association-select");
-        if (!select) return;
-        select.innerHTML = "";
-
-        let count = 0;
-        Object.keys(allLeagues).forEach(key => {
-            const league = allLeagues[key];
-            if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
-                count++;
-                select.innerHTML += `<option value="${key}">${league.metadata.name}</option>`;
             }
-        });
 
-        if (count > 0) {
-            fetchActiveCameramenCodes(select.value);
+            const list = Object.values(standings);
+            list.forEach(item => {
+                const nrrScored = item.oversFaced > 0 ? (item.runsScored / item.oversFaced) : 0;
+                const nrrConceded = item.oversBowled > 0 ? (item.runsConceded / item.oversBowled) : 0;
+                item.nrr = parseFloat((nrrScored - nrrConceded).toFixed(3));
+            });
+
+            list.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                return b.nrr - a.nrr;
+            });
+
+            list.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-800 text-[11px] text-white">
+                        <td class="py-2 font-bold">${generateShortName(item.name)}</td>
+                        <td class="text-center">${item.played}</td>
+                        <td class="text-center">${item.won}</td>
+                        <td class="text-center text-orange-500 font-extrabold">${item.points}</td>
+                        <td class="text-center font-mono ${item.nrr >= 0 ? 'text-green-500' : 'text-red-500'}">${item.nrr >= 0 ? '+' : ''}${item.nrr}</td>
+                    </tr>
+                `;
+            });
         }
-    }
 
-    // Generate custom codes for cameras
-    function generateCameraCode() {
-        const assocLeague = document.getElementById("camera-association-select").value;
-        if (!assocLeague) return;
+        // Profile section: managed leagues with direct delete functions
+        function renderProfileLeaguesList() {
+            const list = document.getElementById("profile-leagues-list");
+            if (!list) return;
+            list.innerHTML = "";
 
-        db.ref(`leagues/${assocLeague}/cameramen`).once('value', snapshot => {
-            const current = snapshot.val() || {};
-            const keys = Object.keys(current);
+            let count = 0;
+            Object.keys(allLeagues).forEach(key => {
+                const league = allLeagues[key];
+                if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
+                    count++;
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between bg-black p-2.5 rounded-xl border border-gray-800">
+                            <div class="space-y-0.5 max-w-[200px]">
+                                <h4 class="text-xs font-bold text-white truncate">${league.metadata.name}</h4>
+                                <p class="text-[9px] text-gray-400">Short: ${league.metadata.shortName || generateShortName(league.metadata.name)}</p>
+                            </div>
+                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-650 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span>Delete</span>
+                            </button>
+                        </div>
+                    `;
+                }
+            });
 
-            if (keys.length >= 5) {
-                alert("Maximum limit of 5 cameramen slots achieved.");
+            if (count === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">No leagues created by you yet.</p>`;
+            }
+        }
+
+        function deleteLeagueByOwner(leagueId) {
+            const confirmation = confirm("Are you sure you want to delete this league entirely? This action is irreversible.");
+            if (confirmation) {
+                db.ref(`leagues/${leagueId}`).remove()
+                    .then(() => {
+                        alert("League successfully deleted.");
+                        renderProfileLeaguesList();
+                        renderManagedLeagues();
+                    })
+                    .catch(err => {
+                        alert("Error deleting league: " + err.message);
+                    });
+            }
+        }
+
+        // 11. Share Camera Key Generators
+        function populateShareCameraDropdown() {
+            const select = document.getElementById("camera-association-select");
+            if (!select) return;
+            select.innerHTML = "";
+
+            let count = 0;
+            Object.keys(allLeagues).forEach(key => {
+                const league = allLeagues[key];
+                if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
+                    count++;
+                    select.innerHTML += `<option value="${key}">${league.metadata.name}</option>`;
+                }
+            });
+
+            if (count > 0) {
+                fetchActiveCameramenCodes(select.value);
+            }
+        }
+
+        // Generate custom codes for cameras
+        function generateCameraCode() {
+            const assocLeague = document.getElementById("camera-association-select").value;
+            if (!assocLeague) return;
+
+            db.ref(`leagues/${assocLeague}/cameramen`).once('value', snapshot => {
+                const current = snapshot.val() || {};
+                const keys = Object.keys(current);
+
+                if (keys.length >= 5) {
+                    alert("Maximum limit of 5 cameramen slots achieved.");
+                    return;
+                }
+
+                const code = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                db.ref(`leagues/${assocLeague}/cameramen/${code}`).set({
+                    active: false,
+                    assignedTo: "",
+                    generatedAt: Date.now()
+                }).then(() => {
+                    fetchActiveCameramenCodes(assocLeague);
+                });
+            });
+        }
+
+        function fetchActiveCameramenCodes(leagueId) {
+            db.ref(`leagues/${leagueId}/cameramen`).on('value', snapshot => {
+                const data = snapshot.val() || {};
+                const list = document.getElementById("codes-list");
+                const wrapper = document.getElementById("active-camera-codes");
+                
+                if (!list) return;
+                list.innerHTML = "";
+                const keys = Object.keys(data).filter(k => k !== "scorer-direct"); // Hide internal scoring cameras
+
+                if (keys.length > 0) {
+                    if (wrapper) wrapper.classList.remove("hidden");
+                } else {
+                    if (wrapper) wrapper.classList.add("hidden");
+                }
+
+                keys.forEach(key => {
+                    const status = data[key].active 
+                        ? `<span class="text-xs text-green-500 font-bold">Linked</span>` 
+                        : `<span class="text-xs text-yellow-500 font-semibold">Awaiting...</span>`;
+
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between bg-black p-2 rounded-lg border border-gray-800">
+                            <span class="font-mono text-sm tracking-wider text-orange-500 font-black">${key}</span>
+                            ${status}
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function registerAsCameraman() {
+            const code = document.getElementById("cameraman-code-input").value.trim();
+            if (code.length !== 6) {
+                alert("Please input a valid 6-digit code.");
                 return;
             }
 
-            const code = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            db.ref(`leagues/${assocLeague}/cameramen/${code}`).set({
-                active: false,
-                assignedTo: "",
-                generatedAt: Date.now()
-            }).then(() => {
-                fetchActiveCameramenCodes(assocLeague);
+            let found = false;
+            Object.keys(allLeagues).forEach(leagueId => {
+                const league = allLeagues[leagueId];
+                if (league.cameramen && league.cameramen[code]) {
+                    found = true;
+                    db.ref(`leagues/${leagueId}/cameramen/${code}`).update({
+                        active: true,
+                        assignedTo: currentUser.uid
+                    }).then(() => {
+                        currentCameramanKey = code;
+                        currentCameramanLeagueId = leagueId;
+                        initiateRemoteCameraBroadcast(leagueId, code);
+                    });
+                }
             });
-        });
-    }
 
-    function fetchActiveCameramenCodes(leagueId) {
-        db.ref(`leagues/${leagueId}/cameramen`).on('value', snapshot => {
-            const data = snapshot.val() || {};
-            const list = document.getElementById("codes-list");
-            const wrapper = document.getElementById("active-camera-codes");
-            
-            if (!list) return;
-            list.innerHTML = "";
-            const keys = Object.keys(data).filter(k => k !== "scorer-direct"); // Hide internal scoring cameras
-
-            if (keys.length > 0) {
-                if (wrapper) wrapper.classList.remove("hidden");
-            } else {
-                if (wrapper) wrapper.classList.add("hidden");
+            if (!found) {
+                alert("Verification code not registered or expired.");
             }
-
-            keys.forEach(key => {
-                const status = data[key].active 
-                    ? `<span class="text-xs text-green-500 font-bold">Linked</span>` 
-                    : `<span class="text-xs text-yellow-500 font-semibold">Awaiting...</span>`;
-
-                list.innerHTML += `
-                    <div class="flex items-center justify-between bg-black p-2 rounded-lg border border-gray-800">
-                        <span class="font-mono text-sm tracking-wider text-orange-500 font-black">${key}</span>
-                        ${status}
-                    </div>
-                `;
-            });
-        });
-    }
-
-    function registerAsCameraman() {
-        const code = document.getElementById("cameraman-code-input").value.trim();
-        if (code.length !== 6) {
-            alert("Please input a valid 6-digit code.");
-            return;
         }
 
-        let found = false;
-        Object.keys(allLeagues).forEach(leagueId => {
-            const league = allLeagues[leagueId];
-            if (league.cameramen && league.cameramen[code]) {
-                found = true;
-                db.ref(`leagues/${leagueId}/cameramen/${code}`).update({
-                    active: true,
-                    assignedTo: currentUser.uid
-                }).then(() => {
-                    currentCameramanKey = code;
-                    currentCameramanLeagueId = leagueId;
-                    initiateRemoteCameraBroadcast(leagueId, code);
+        // Dedicated Cameraman remote broadcaster UI Redirection
+        function initiateRemoteCameraBroadcast(leagueId, code) {
+            document.getElementById("cameraman-live-overlay").classList.remove("hidden");
+            document.getElementById("cameraman-assigned-title").textContent = `Linked Feed: ${code}`;
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+                .then(stream => {
+                    localCameraStream = stream;
+                    const preview = document.getElementById("cameraman-preview-video");
+                    preview.srcObject = stream;
+
+                    const canvas = document.getElementById("cameraman-capture-canvas");
+                    const ctx = canvas.getContext('2d');
+                    
+                    activeBroadcastInterval = setInterval(() => {
+                        if (preview.videoWidth > 0) {
+                            canvas.width = 320;
+                            canvas.height = 240;
+                            ctx.drawImage(preview, 0, 0, canvas.width, canvas.height);
+                            const frameBase64 = canvas.toDataURL('image/jpeg', 0.5);
+                            db.ref(`leagues/${leagueId}/cameramen/${code}/fallbackFrame`).set(frameBase64);
+                        }
+                    }, 200); 
+                })
+                .catch(err => {
+                    alert("Camera Acquisition Exception: " + err.message);
+                    stopBroadcasting();
+                });
+        }
+
+        function stopBroadcasting() {
+            if (activeBroadcastInterval) clearInterval(activeBroadcastInterval);
+            if (localCameraStream) {
+                localCameraStream.getTracks().forEach(track => track.stop());
+            }
+            if (currentCameramanKey && currentCameramanLeagueId) {
+                db.ref(`leagues/${currentCameramanLeagueId}/cameramen/${currentCameramanKey}`).update({
+                    active: false,
+                    assignedTo: ""
                 });
             }
-        });
-
-        if (!found) {
-            alert("Verification code not registered or expired.");
+            document.getElementById("cameraman-live-overlay").classList.add("hidden");
+            currentCameramanKey = null;
+            currentCameramanLeagueId = null;
         }
-    }
 
-    // Dedicated Cameraman remote broadcaster UI Redirection
-    function initiateRemoteCameraBroadcast(leagueId, code) {
-        document.getElementById("cameraman-live-overlay").classList.remove("hidden");
-        document.getElementById("cameraman-assigned-title").textContent = `Linked Feed: ${code}`;
+        // Global Overlays alert system
+        function triggerOverlayBroadcast(leagueId, heading, detail) {
+            db.ref(`leagues/${leagueId}/alertBroadcast`).set({
+                heading: heading,
+                detail: detail,
+                timestamp: Date.now()
+            });
+        }
 
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
-            .then(stream => {
-                localCameraStream = stream;
-                const preview = document.getElementById("cameraman-preview-video");
-                preview.srcObject = stream;
-
-                const canvas = document.getElementById("cameraman-capture-canvas");
-                const ctx = canvas.getContext('2d');
-                
-                activeBroadcastInterval = setInterval(() => {
-                    if (preview.videoWidth > 0) {
-                        canvas.width = 320;
-                        canvas.height = 240;
-                        ctx.drawImage(preview, 0, 0, canvas.width, canvas.height);
-                        const frameBase64 = canvas.toDataURL('image/jpeg', 0.5);
-                        db.ref(`leagues/${leagueId}/cameramen/${code}/fallbackFrame`).set(frameBase64);
+        // 12. Client-side Database Purging
+        function checkAutomatedDataPurging() {
+            Object.keys(allLeagues).forEach(key => {
+                const league = allLeagues[key];
+                if (league && league.metadata && league.metadata.createdAt) {
+                    const limitTime = 10 * 24 * 3600 * 1000; 
+                    if (Date.now() - league.metadata.createdAt > limitTime) {
+                        db.ref('leagues/' + key).remove()
+                            .then(() => console.log(`Purged expired session [${key}].`));
                     }
-                }, 200); 
-            })
-            .catch(err => {
-                alert("Camera Acquisition Exception: " + err.message);
-                stopBroadcasting();
-            });
-    }
-
-    function stopBroadcasting() {
-        if (activeBroadcastInterval) clearInterval(activeBroadcastInterval);
-        if (localCameraStream) {
-            localCameraStream.getTracks().forEach(track => track.stop());
-        }
-        if (currentCameramanKey && currentCameramanLeagueId) {
-            db.ref(`leagues/${currentCameramanLeagueId}/cameramen/${currentCameramanKey}`).update({
-                active: false,
-                assignedTo: ""
-            });
-        }
-        document.getElementById("cameraman-live-overlay").classList.add("hidden");
-        currentCameramanKey = null;
-        currentCameramanLeagueId = null;
-    }
-
-    // Global Overlays alert system
-    function triggerOverlayBroadcast(leagueId, heading, detail) {
-        db.ref(`leagues/${leagueId}/alertBroadcast`).set({
-            heading: heading,
-            detail: detail,
-            timestamp: Date.now()
-        });
-    }
-
-    // 12. Client-side Database Purging
-    function checkAutomatedDataPurging() {
-        Object.keys(allLeagues).forEach(key => {
-            const league = allLeagues[key];
-            if (league && league.metadata && league.metadata.createdAt) {
-                const limitTime = 10 * 24 * 3600 * 1000; 
-                if (Date.now() - league.metadata.createdAt > limitTime) {
-                    db.ref('leagues/' + key).remove()
-                        .then(() => console.log(`Purged expired session [${key}].`));
                 }
-            }
-        });
-    }
-</script>
+            });
+        }
+    </script>
 </body>
 </html>
