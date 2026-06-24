@@ -587,7 +587,7 @@
                         <i class="fa-brands fa-google"></i>
                         <span>Continue with Google</span>
                     </button>
-                    <button onclick="loginAsGuest()" id="btn-guest-login" class="w-full py-2.5 border border-gray-700 hover:bg-gray-800 font-bold rounded-xl text-xs text-white">
+                    <button onclick="loginAsGuest()" id="btn-guest-login" class="w-full py-2.5 border border-gray-700 hover:bg-gray-850 font-bold rounded-xl text-xs text-white">
                         <i class="fa-solid fa-user-secret"></i>
                         <span>Continue as Guest</span>
                     </button>
@@ -1213,7 +1213,6 @@
             adjustTeamRosterInputs();
         }
 
-        // Check if scorer console is locked/unlocked
         function checkMatchTimeLock(league) {
             return true;
         }
@@ -1226,7 +1225,6 @@
             const startTimeStr = league.metadata.startTime || "18:00";
             
             const startDate = new Date(startDateStr);
-            // Add (match.round - 1) days
             const matchDate = new Date(startDate.getTime() + (match.round - 1) * 24 * 60 * 60 * 1000);
             
             const year = matchDate.getFullYear();
@@ -1424,7 +1422,7 @@
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'F', away: 'I', round: 17 }, { home: 'A', away: 'F', round: 18 }, { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'H', round: 20 },
                     { home: 'D', away: 'I', round: 21 }, { home: 'E', away: 'H', round: 22 }, { home: 'A', away: 'G', round: 23 }, { home: 'B', away: 'H', round: 24 },
-                    { home: 'C', away: 'I', round: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
+                    { home: 'C', away: 'I', round: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', rounded: 27 }, { home: 'B', away: 'D', round: 28 },
                     { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', round: 32 },
                     { home: 'C', away: 'F', round: 33 }, { home: 'D', away: 'G', round: 34 }, { home: 'E', away: 'I', round: 35 }, { home: 'F', away: 'H', round: 36 }
                 ];
@@ -1938,7 +1936,15 @@
 
                         if (!banner || !timer || !button) return;
 
-                        if (now < targetTime) {
+                        const isMatchCurrentlyActive = league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedIdx;
+
+                        if (isMatchCurrentlyActive) {
+                            // Match is actively ongoing (can be seamlessly resumed)
+                            banner.classList.add("hidden");
+                            button.removeAttribute("disabled");
+                            button.className = "w-full py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white animate-pulse";
+                            button.textContent = "RESUME LIVE MATCH";
+                        } else if (now < targetTime) {
                             // Match is scheduled for the future. LOCK Access completely.
                             banner.classList.remove("hidden");
                             button.setAttribute("disabled", "true");
@@ -1981,18 +1987,36 @@
             document.getElementById("scorer-console-view").classList.remove("hidden");
             document.getElementById("managed-leagues-container").classList.add("hidden");
 
-            // Setup Coin Toss Selection Items
-            const tossSelect = document.getElementById("toss-winner-select");
-            tossSelect.innerHTML = `
-                <option value="${match.homeTeam}">${match.homeTeam}</option>
-                <option value="${match.awayTeam}">${match.awayTeam}</option>
-            `;
+            // Match Resume Feature (State Persistence)
+            // If the match state is already active in database, seamlessly restore the scorer view
+            if (league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedScorerMatchIndex) {
+                const lm = league.liveMatch;
+                if (!lm.striker || !lm.nonStriker || !lm.currentBowler) {
+                    setupLineupOptions(lm.battingTeam, lm.bowlingTeam);
+                    document.getElementById("scorer-toss-panel").classList.add("hidden");
+                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
+                    document.getElementById("scorer-controls").classList.add("hidden");
+                    document.getElementById("super-over-trigger-container").classList.add("hidden");
+                } else {
+                    document.getElementById("scorer-toss-panel").classList.add("hidden");
+                    document.getElementById("scorer-lineup-panel").classList.add("hidden");
+                    document.getElementById("scorer-controls").classList.remove("hidden");
+                    attachLiveScorerMetricsListener();
+                }
+            } else {
+                // Setup Coin Toss Selection Items
+                const tossSelect = document.getElementById("toss-winner-select");
+                tossSelect.innerHTML = `
+                    <option value="${match.homeTeam}">${match.homeTeam}</option>
+                    <option value="${match.awayTeam}">${match.awayTeam}</option>
+                `;
 
-            document.getElementById("scorer-toss-panel").classList.remove("hidden");
-            document.getElementById("scorer-lineup-panel").classList.add("hidden");
-            document.getElementById("scorer-controls").classList.add("hidden");
-            document.getElementById("super-over-trigger-container").classList.add("hidden");
-            document.getElementById("super-over-badge").classList.add("hidden");
+                document.getElementById("scorer-toss-panel").classList.remove("hidden");
+                document.getElementById("scorer-lineup-panel").classList.add("hidden");
+                document.getElementById("scorer-controls").classList.add("hidden");
+                document.getElementById("super-over-trigger-container").classList.add("hidden");
+                document.getElementById("super-over-badge").classList.add("hidden");
+            }
         }
 
         function exitScorerConsole() {
@@ -2015,7 +2039,7 @@
                 coin.classList.add("animate-flip-tails");
             }
 
-            // High-speed 0.05s response flip transition simulation completed in 350ms
+            // High-speed response flip transition simulation completed in 350ms
             setTimeout(() => {
                 const winner = document.getElementById("toss-winner-select").value;
                 const decision = document.getElementById("toss-decision-select").value;
@@ -2120,6 +2144,22 @@
                 const data = snapshot.val();
                 if (!data) return;
 
+                // AUTOMATIC WINNER EXIT
+                // Monitor active status. If decided/completed, automatically freeze matches and exit.
+                if (data.needsCompletionSave) {
+                    const league = allLeagues[selectedScorerLeagueId];
+                    db.ref(`leagues/${selectedScorerLeagueId}/liveMatch/active`).set(false).then(() => {
+                        saveCompletedMatchOutcome(league, data.outcome, data);
+                    });
+                    return;
+                }
+
+                if (data.active === false && !data.needsCompletionSave) {
+                    alert(`Match completed! Redirecting from Control Console. Result: ${data.outcome || "Finished"}`);
+                    exitScorerConsole();
+                    return;
+                }
+
                 document.getElementById("scorer-metric-score").innerHTML = `
                     ${data.runs} - ${data.wickets} <span class="text-sm font-medium text-gray-400">(${data.overs})</span>
                 `;
@@ -2135,9 +2175,10 @@
 
                 if (data.isSuperOver) {
                     document.getElementById("super-over-badge").classList.remove("hidden");
+                } else {
+                    document.getElementById("super-over-badge").classList.add("hidden");
                 }
 
-                // Update Free Hit visual badge state on the scorer's dashboard instantly
                 const scorerFhBadge = document.getElementById("scorer-free-hit-badge");
                 if (scorerFhBadge) {
                     if (data.freeHit) {
@@ -2147,21 +2188,21 @@
                     }
                 }
 
-                // If first innings has finished automatically, load selection screen instantly (50ms transition effect)
+                // Super Over UI Transition Display
+                if (data.needsSuperOverTrigger) {
+                    document.getElementById("super-over-trigger-container").classList.remove("hidden");
+                    document.getElementById("scorer-controls").classList.add("hidden");
+                } else {
+                    document.getElementById("super-over-trigger-container").classList.add("hidden");
+                }
+
+                // If first innings has finished automatically, load selection screen instantly
                 if (data.needsInning2Lineup) {
                     setTimeout(() => {
                         setupLineupOptions(data.battingTeam, data.bowlingTeam);
                         document.getElementById("scorer-lineup-panel").classList.remove("hidden");
                         document.getElementById("scorer-controls").classList.add("hidden");
                     }, 50);
-                }
-
-                // If match complete save is requested, trigger automatic outcome save instantly
-                if (data.needsCompletionSave) {
-                    const league = allLeagues[selectedScorerLeagueId];
-                    db.ref(`leagues/${selectedScorerLeagueId}/liveMatch/active`).set(false).then(() => {
-                        saveCompletedMatchOutcome(league, data.outcome, data);
-                    });
                 }
             });
         }
@@ -2205,7 +2246,6 @@
                     data.overs = incrementOverBalls(data.overs);
                     data.overLog = data.overLog || [];
                     
-                    // Display FREE HIT indicator on the overlog if delivery was legal but a free hit was active
                     if (data.freeHit) {
                         data.overLog.push(`${runs}(FH)`);
                     } else {
@@ -2226,14 +2266,12 @@
                         data.needsBowlerChange = true;
                     }
 
-                    // TV Screen Animation Event details broadcasted instantly
                     let eventText = `${runs} RUNS`;
                     let eventType = "default";
                     if (runs === 0) { eventText = "DOT BALL"; eventType = "default"; }
                     else if (runs === 4) { eventText = "CRACKING 4!"; eventType = "four"; }
                     else if (runs === 6) { eventText = "MONSTER 6!"; eventType = "six"; }
                     
-                    // Clear Free Hit status after a legal delivery is bowled
                     if (data.freeHit) {
                         data.freeHit = false;
                     }
@@ -2252,8 +2290,7 @@
                         triggerOverlayBroadcast(selectedScorerLeagueId, runs === 4 ? "SUPER FOUR!" : "MAXIMUM SIX!", `${runs} Runs Scored!`);
                     }
 
-                    // Show bowler switch modal inside 0.05 seconds (50ms transition speed)
-                    if (data.needsBowlerChange && data.active) {
+                    if (data.needsBowlerChange && data.active && !data.needsSuperOverTrigger && !data.needsInning2Lineup) {
                         setTimeout(() => {
                             openBowlerChangeModal(data);
                         }, 50);
@@ -2306,7 +2343,6 @@
                             data.overLog.push(parsed);
                         }
 
-                        // Only rotate if explicitly 1, 3, 5 runs
                         if (parsed === 1 || parsed === 3 || parsed === 5) {
                             const temp = data.striker;
                             data.striker = data.nonStriker;
@@ -2327,7 +2363,7 @@
                 }, (error, committed, snapshot) => {
                     if (committed && snapshot.exists()) {
                         const data = snapshot.val();
-                        if (data.needsBowlerChange && data.active) {
+                        if (data.needsBowlerChange && data.active && !data.needsSuperOverTrigger && !data.needsInning2Lineup) {
                             setTimeout(() => {
                                 openBowlerChangeModal(data);
                             }, 50);
@@ -2352,7 +2388,6 @@
                         const penalty = 1;
                         const totalExtraRuns = penalty + runsScored;
 
-                        // Bowler charged with total extra runs
                         const bowler = data.currentBowler;
                         if (bowler) {
                             data.bowlerStats = data.bowlerStats || {};
@@ -2362,7 +2397,6 @@
                             data.bowlerStats[bowler].runs += totalExtraRuns;
                         }
 
-                        // Striking batsman faces 1 ball & is credited with runsScored
                         const striker = data.striker;
                         if (striker) {
                             data.batsmanStats = data.batsmanStats || {};
@@ -2380,14 +2414,12 @@
                         data.overLog = data.overLog || [];
                         data.overLog.push(`Nb+${runsScored}`);
 
-                        // Strike Rotation if batsman runsScored is odd (1, 3, 5)
                         if (runsScored === 1 || runsScored === 3 || runsScored === 5) {
                             const temp = data.striker;
                             data.striker = data.nonStriker;
                             data.nonStriker = temp;
                         }
 
-                        // Activate Free Hit on next delivery
                         data.freeHit = true;
 
                         let eventType = "freehit";
@@ -2406,7 +2438,6 @@
                     return data;
                 });
             } else {
-                // Wide or Leg Bye
                 db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                     if (data) {
                         const bowler = data.currentBowler;
@@ -2439,7 +2470,7 @@
             }
         }
 
-        // Updated Wicket Modal launcher with standard Indian Cricket Free Hit rules (Only Run Out is valid)
+        // Updated Wicket Modal launcher with standard Indian Cricket Free Hit rules
         function openWicketModal() {
             const league = allLeagues[selectedScorerLeagueId];
             const isFreeHit = league && league.liveMatch && league.liveMatch.freeHit;
@@ -2448,7 +2479,6 @@
             const otherBtns = modal.querySelectorAll('button:not([onclick="commitWicket(\'Run Out\')"]):not([onclick*="classList.add"])');
 
             if (isFreeHit) {
-                // Free Hit active: disable other dismissals (Bowled, Caught, LBW, Hit Wicket, Stumped Out)
                 otherBtns.forEach(btn => btn.classList.add("opacity-30", "pointer-events-none"));
                 
                 let fhWarning = document.getElementById("wicket-modal-freehit-warning");
@@ -2482,7 +2512,6 @@
 
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
                 if (data) {
-                    // Update bowler stats with LBW conceded runs, but do NOT increment balls bowled
                     const bowler = data.currentBowler;
                     if (bowler) {
                         data.bowlerStats = data.bowlerStats || {};
@@ -2492,7 +2521,6 @@
                         data.bowlerStats[bowler].runs += runs;
                     }
 
-                    // Update striking batsman with runs, but do NOT increment balls faced
                     const striker = data.striker;
                     if (striker) {
                         data.batsmanStats = data.batsmanStats || {};
@@ -2508,14 +2536,12 @@
                     data.overLog = data.overLog || [];
                     data.overLog.push(`Lbw+${runs}`);
 
-                    // Swap strike if scored runs are odd (1, 3, 5)
                     if (runs === 1 || runs === 3 || runs === 5) {
                         const temp = data.striker;
                         data.striker = data.nonStriker;
                         data.nonStriker = temp;
                     }
 
-                    // Set free hit to true
                     data.freeHit = true;
 
                     let eventType = "freehit";
@@ -2583,14 +2609,12 @@
 
                     data.lastEvent = { text: `WICKET! (${type})`, type: "wicket", timestamp: Date.now() };
 
-                    // Clear Free Hit status since a valid legal delivery was completed
                     if (data.freeHit) {
                         data.freeHit = false;
                     }
 
-                    // Flag replacement trigger if match is still active
                     evaluateMatchProgress(data, league);
-                    if (data.active) {
+                    if (data.active && !data.needsSuperOverTrigger && !data.needsInning2Lineup) {
                         data.needsBatsmanReplacement = true;
                     }
                 }
@@ -2600,14 +2624,11 @@
                     const data = snapshot.val();
                     triggerOverlayBroadcast(selectedScorerLeagueId, "WICKET DISMISSAL!", type);
 
-                    if (data.active) {
+                    if (data.active && !data.needsSuperOverTrigger) {
                         if (data.needsInning2Lineup) return;
-                        if (data.needsInning2Lineup === undefined || !data.needsInning2Lineup) {
-                            // Instant 0.05 seconds replacement modal trigger (50ms delay)
-                            setTimeout(() => {
-                                openBatsmanReplacementModal(data);
-                            }, 50);
-                        }
+                        setTimeout(() => {
+                            openBatsmanReplacementModal(data);
+                        }, 50);
                     }
                 }
             });
@@ -2624,7 +2645,6 @@
             const bowlStats = liveMatchData.bowlerStats || {};
             bowlTeam.roster.forEach(player => {
                 const pName = typeof player === 'string' ? player : player.name;
-                // Strict: Immediate previous bowler cannot bowl consecutive overs
                 if (pName !== liveMatchData.previousBowler) {
                     const stats = bowlStats[pName] || { balls: 0, runs: 0, wickets: 0 };
                     const oversCount = Math.floor(stats.balls / 6) + "." + (stats.balls % 6);
@@ -2632,7 +2652,6 @@
                 }
             });
 
-            // Fast display trigger inside 0.05s (50ms)
             document.getElementById("bowler-change-modal").classList.remove("hidden");
         }
 
@@ -2661,7 +2680,6 @@
 
             batTeam.roster.forEach(player => {
                 const pName = typeof player === 'string' ? player : player.name;
-                // Strict: Already dismissed batsman cannot play again, also current partner cannot be chosen
                 const isOut = dismissedList.includes(pName);
                 if (!isOut && pName !== liveMatchData.nonStriker) {
                     const stats = batsmanStats[pName] || { runs: 0, balls: 0 };
@@ -2669,7 +2687,6 @@
                 }
             });
 
-            // Fast display trigger inside 0.05s (50ms)
             document.getElementById("batsman-replacement-modal").classList.remove("hidden");
         }
 
@@ -2687,7 +2704,6 @@
 
         function getDismissedBatsmen(liveMatchData) {
             const list = [];
-            // Retrieve from batsmanStats
             const stats = liveMatchData.batsmanStats || {};
             Object.keys(stats).forEach(name => {
                 if (stats[name].status === "out") {
@@ -2697,17 +2713,17 @@
             return list;
         }
 
-        // Automatic Inning & Match termination evaluation (Cricket Rules)
+        // Automatic Inning & Match termination evaluation (Cricket Rules) with Super Over checks
         function evaluateMatchProgress(data, league) {
-            const oversLimit = parseFloat(data.oversLimit) || 5.0;
+            const oversLimit = parseFloat(data.isSuperOver ? 1.0 : data.oversLimit) || 5.0;
             const playersCount = parseInt(league.metadata.playersCount) || 11;
-            const maxWickets = playersCount - 1; 
+            // Standard ICC Super Over limit is strictly 2 wickets (3 batsman max), otherwise regular wicket rules apply
+            const maxWickets = data.isSuperOver ? Math.min(2, playersCount - 1) : playersCount - 1; 
 
             if (!data.inning) {
                 data.inning = 1;
             }
 
-            // Detect if over was completed on this ball
             const overDec = overToDecimal(data.overs);
             const isOverEnded = (overDec > 0) && (overDec % 1 === 0);
 
@@ -2716,30 +2732,27 @@
                 const isOversFinished = data.overs >= oversLimit;
 
                 if (isAllOut || isOversFinished) {
-                    // Set flags to trigger client-side opening lineups screen cleanly
                     data.inning = 2;
                     data.inning1Runs = data.runs;
                     data.inning1Wickets = data.wickets;
                     data.inning1Overs = data.overs;
-                    data.inning1BattingTeam = data.battingTeam; // Track exact first innings batting team
-                    data.inning2BattingTeam = data.bowlingTeam; // Track exact second innings batting team
+                    data.inning1BattingTeam = data.battingTeam; 
+                    data.inning2BattingTeam = data.bowlingTeam; 
                     data.targetRuns = data.runs + 1;
 
-                    // Reset variables for Inning 2
                     data.runs = 0;
                     data.wickets = 0;
                     data.overs = 0.0;
                     data.overLog = [];
                     data.previousBowler = "";
                     data.dismissedBatsmen = [];
-                    data.freeHit = false; // Reset free hit status
+                    data.freeHit = false;
 
-                    // Swap Batting/Bowling roles
                     const prevBatting = data.battingTeam;
                     data.battingTeam = data.bowlingTeam;
                     data.bowlingTeam = prevBatting;
 
-                    data.needsInning2Lineup = true; // Flag to lock scorer view to opening roles selector
+                    data.needsInning2Lineup = true; 
                 } else {
                     if (isOverEnded) {
                         data.needsBowlerChange = true;
@@ -2752,15 +2765,21 @@
                 const isOversFinished = data.overs >= oversLimit;
 
                 if (isTargetReached || isAllOut || isOversFinished) {
-                    // Signal client that match is complete to trigger auto-finalization inside 0.05 seconds
-                    data.needsCompletionSave = true;
-
                     if (isTargetReached) {
-                        data.outcome = `${data.battingTeam} won by ${playersCount - 1 - data.wickets} wickets!`;
+                        data.needsCompletionSave = true;
+                        data.outcome = data.isSuperOver 
+                            ? `[SUPER OVER] ${data.battingTeam} won!` 
+                            : `${data.battingTeam} won by ${playersCount - 1 - data.wickets} wickets!`;
                     } else if (data.runs === target - 1) {
+                        // MATCH TIE & SUPER OVER LOGIC (Cricket Rules)
                         data.outcome = "MATCH TIED! SUPER OVER REQUIRED.";
+                        data.needsSuperOverTrigger = true;
+                        data.isSuperOver = true;
                     } else {
-                        data.outcome = `${data.bowlingTeam} won by ${target - 1 - data.runs} runs!`;
+                        data.needsCompletionSave = true;
+                        data.outcome = data.isSuperOver 
+                            ? `[SUPER OVER] ${data.bowlingTeam} won!` 
+                            : `${data.bowlingTeam} won by ${target - 1 - data.runs} runs!`;
                     }
                 } else {
                     if (isOverEnded) {
@@ -2768,6 +2787,56 @@
                     }
                 }
             }
+        }
+
+        // Activates the Super Over protocol resets
+        function activateSuperOverMode() {
+            if (!selectedScorerLeagueId) return;
+            const league = allLeagues[selectedScorerLeagueId];
+            if (!league) return;
+
+            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
+                if (data) {
+                    const superOverBattingFirst = data.battingTeam; 
+                    const superOverBowlingFirst = data.bowlingTeam;
+
+                    data.isSuperOver = true;
+                    data.inning = 1;
+                    data.runs = 0;
+                    data.wickets = 0;
+                    data.overs = 0.0;
+                    data.extras = 0;
+                    data.oversLimit = 1.0; // Strictly 1 over Super Over
+                    data.battingTeam = superOverBattingFirst;
+                    data.bowlingTeam = superOverBowlingFirst;
+                    data.striker = "";
+                    data.nonStriker = "";
+                    data.currentBowler = "";
+                    data.overLog = [];
+                    data.freeHit = false;
+                    data.batsmanStats = {};
+                    data.bowlerStats = {};
+                    data.dismissedBatsmen = [];
+                    
+                    data.needsInning2Lineup = false;
+                    data.needsBatsmanReplacement = false;
+                    data.needsBowlerChange = false;
+                    data.needsSuperOverTrigger = false;
+                    data.needsCompletionSave = false;
+                    
+                    data.outcome = "SUPER OVER IN PROGRESS";
+                    data.lastEvent = { text: "SUPER OVER STARTED", type: "freehit", timestamp: Date.now() };
+                }
+                return data;
+            }, (error, committed, snapshot) => {
+                if (committed && snapshot.exists()) {
+                    const data = snapshot.val();
+                    setupLineupOptions(data.battingTeam, data.bowlingTeam);
+                    document.getElementById("super-over-trigger-container").classList.add("hidden");
+                    document.getElementById("scorer-controls").classList.add("hidden");
+                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
+                }
+            });
         }
 
         function saveCompletedMatchOutcome(league, outcome, liveMatchData) {
@@ -2793,7 +2862,6 @@
                 battingTeam: liveMatchData.inning2BattingTeam || liveMatchData.teams.away
             };
 
-            // Update tournament-wide playerStats with this match's final stats
             const updatedPlayerStats = {};
             if (league.playerStats) {
                 Object.keys(league.playerStats).forEach(pName => {
@@ -2835,7 +2903,6 @@
                     inning2: inning2Data
                 }
             }).then(() => {
-                // Save updated tournament playerStats
                 db.ref(`leagues/${league.metadata.id}/playerStats`).set(updatedPlayerStats).then(() => {
                     autoAdvancePlayoffs(league.metadata.id, league);
                     exitScorerConsole();
@@ -2854,7 +2921,6 @@
             const groupCompleted = fixtures.filter(f => f.type === 'GROUP').every(f => f.status === 'COMPLETED');
             if (!groupCompleted) return; 
 
-            // Temporary standings calculation
             const standingsMap = {};
             league.teams.forEach(t => {
                 standingsMap[t.name] = { name: t.name, points: 0, runsScored: 0, oversFaced: 0.0, runsConceded: 0, oversBowled: 0.0 };
@@ -3063,10 +3129,8 @@
             currentlySelectedLeagueId = leagueId;
             document.getElementById("live-match-spectator-overlay").classList.remove("hidden");
             
-            // Force reset the active tab to Scorecard!
             switchLiveTab('scorecard');
             
-            // Increment dynamic live viewer count in Firebase Rtdb safely
             db.ref(`leagues/${leagueId}/liveMatch/viewerCount`).transaction(c => (c || 0) + 1);
 
             db.ref(`leagues/${leagueId}/alertBroadcast`).on('value', snapshot => {
@@ -3076,7 +3140,6 @@
                 }
             });
 
-            // Trigger full real-time load of live scoreboard metrics & tabs immediately
             if (allLeagues[leagueId]) {
                 syncLiveViewerState(allLeagues[leagueId]);
             }
@@ -3087,7 +3150,6 @@
 
         function closeLiveSpectatorOverlay() {
             if (currentlySelectedLeagueId) {
-                // Decrement live viewer count cleanly
                 db.ref(`leagues/${currentlySelectedLeagueId}/liveMatch/viewerCount`).transaction(c => Math.max(0, (c || 1) - 1));
             }
             document.getElementById("live-match-spectator-overlay").classList.add("hidden");
@@ -3247,11 +3309,19 @@
                     let awayHasPic = awayCaptain.image && awayCaptain.image !== "https://img.icons8.com/color/150/cricket.png" && awayCaptain.image.trim() !== "";
 
                     let winnerName = "";
+                    let isTiedActive = false;
+
+                    // Match Tie Display Updates
+                    if (league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === index) {
+                        if (league.liveMatch.needsSuperOverTrigger) {
+                            isTiedActive = true;
+                        }
+                    }
+
                     if (match.status === "COMPLETED") {
                         const runs1 = match.scorecard && match.scorecard.inning1 ? match.scorecard.inning1.runs : 0;
                         const runs2 = match.scorecard && match.scorecard.inning2 ? match.scorecard.inning2.runs : 0;
                         
-                        // Winner Calculation logic using actual first/second inning batting teams
                         if (runs1 > runs2) {
                             winnerName = match.scorecard && match.scorecard.inning1 ? match.scorecard.inning1.battingTeam : match.homeTeam;
                         } else if (runs2 > runs1) {
@@ -3261,7 +3331,6 @@
                         }
                     }
 
-                    // Render fallbacks or custom image URL
                     let homeImgHTML = "";
                     if (homeHasPic) {
                         homeImgHTML = `<img src="${homeCaptain.image}" class="w-10 h-10 rounded-full object-cover border-2 border-orange-500 shadow-md">`;
@@ -3293,20 +3362,33 @@
                         clickAction = `alert('This match has not started yet. Scheduled start time: ${league.metadata.startDate} @ ${league.metadata.startTime}')`;
                     }
 
+                    let statusRibbon = "";
+                    if (isTiedActive) {
+                        statusRibbon = `<span class="bg-yellow-500 text-black font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans animate-pulse">Match TIE</span>`;
+                    } else if (winnerName) {
+                        statusRibbon = winnerName === "Tie" ? `
+                            <span class="bg-yellow-500 text-black font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
+                                Match TIE
+                            </span>
+                        ` : `
+                            <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
+                                🏆 WINNER: ${generateShortName(winnerName)}
+                            </span>
+                        `;
+                    } else {
+                        statusRibbon = `
+                            <span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
+                                ${match.status}
+                            </span>
+                        `;
+                    }
+
                     htmlContent += `
                         <div onclick="${clickAction}" class="bg-black border border-gray-800 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition duration-300 shadow-lg text-white">
                             <!-- Header ribbon -->
                             <div class="bg-gray-900 px-2 py-0.5 flex justify-between items-center text-[7px] border-b border-gray-800">
                                 <span class="text-gray-400 font-bold uppercase tracking-wider">Round ${match.round}</span>
-                                ${winnerName ? `
-                                    <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
-                                        🏆 WINNER: ${generateShortName(winnerName)}
-                                    </span>
-                                ` : `
-                                    <span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
-                                        ${match.status}
-                                    </span>
-                                `}
+                                ${statusRibbon}
                             </div>
 
                             <!-- Content split layout -->
@@ -3341,11 +3423,9 @@
             const league = allLeagues[leagueId];
             if (!league) return;
 
-            // Open the spectator overlay first
             currentlySelectedLeagueId = leagueId;
             document.getElementById("live-match-spectator-overlay").classList.remove("hidden");
 
-            // Hide countdown panel explicitly to allow playback rendering
             const countdown = document.getElementById("live-countdown-panel");
             const img = document.getElementById("live-camera-img");
             if (countdown) countdown.classList.add("hidden");
@@ -3357,14 +3437,13 @@
                 frameBuffer = archive.frames;
                 rewindIndex = 0;
                 
-                // Start playback timer
                 if (rewindTimer) clearInterval(rewindTimer);
                 rewindTimer = setInterval(() => {
                     if (rewindIndex < frameBuffer.length) {
                         if (img) img.src = frameBuffer[rewindIndex].src;
                         rewindIndex++;
                     } else {
-                        rewindIndex = 0; // Loop playback!
+                        rewindIndex = 0; 
                     }
                 }, 200);
                 
@@ -3419,13 +3498,11 @@
             const reqRunsElement = document.getElementById("overlay-required-runs");
 
             if (!data || !data.active) {
-                // No active match, show countdown/fallback pane
                 document.getElementById("live-countdown-panel").classList.remove("hidden");
                 if (matchCountdownStr) matchCountdownStr.textContent = "League Schedule Match Pending";
                 if (abbrevElement) abbrevElement.textContent = "No Live Match";
                 if (scoreElement) scoreElement.textContent = "0 - 0 (0.0)";
                 
-                // Calculate and populate standings & fallbacks even if no active match
                 calculateDynamicStandings(league);
                 
                 const bTable = document.getElementById("live-table-batting");
@@ -3435,28 +3512,30 @@
                 return;
             }
 
-            // Real-Time TV Broadcast overlay animation parser (0.05s update logic)
             if (data.lastEvent && data.lastEvent.timestamp > lastSeenEventTimestamp) {
-                // Verify event occurred in last 5 seconds to skip stale loads
                 if (Date.now() - data.lastEvent.timestamp < 5000) {
                     triggerBroadcastFeedAnimation(data.lastEvent.text, data.lastEvent.type);
                 }
                 lastSeenEventTimestamp = data.lastEvent.timestamp;
             }
 
-            // Active match ongoing, hide countdown fallback panel
             document.getElementById("live-countdown-panel").classList.add("hidden");
 
-            if (matchCountdownStr) matchCountdownStr.textContent = `LIVE: ${data.battingTeam} is batting`;
-            if (abbrevElement) abbrevElement.textContent = `${generateShortName(data.teams.home)} VS ${generateShortName(data.teams.away)}`;
-            
-            if (scoreElement) {
-                scoreElement.innerHTML = `
-                    ${data.runs}-${data.wickets} <span class="text-[10px] font-semibold opacity-90">(${data.overs})</span>
-                `;
+            // Super Over Live Feed Indicator
+            if (data.needsSuperOverTrigger) {
+                if (matchCountdownStr) matchCountdownStr.textContent = "MATCH TIED! SUPER OVER INITIATION PENDING";
+                if (scoreElement) scoreElement.innerHTML = `MATCH TIED!`;
+            } else {
+                if (matchCountdownStr) matchCountdownStr.textContent = data.isSuperOver ? `LIVE SUPER OVER: ${data.battingTeam} is batting` : `LIVE: ${data.battingTeam} is batting`;
+                if (scoreElement) {
+                    scoreElement.innerHTML = `
+                        ${data.runs}-${data.wickets} <span class="text-[10px] font-semibold opacity-90">(${data.overs})</span> ${data.isSuperOver ? '<span class="text-[8px] bg-yellow-500 text-black px-1 rounded ml-1 font-bold">SO</span>' : ''}
+                    `;
+                }
             }
 
-            if (limitElement) limitElement.textContent = `(${data.oversLimit} Overs Limit)`;
+            if (abbrevElement) abbrevElement.textContent = `${generateShortName(data.teams.home)} VS ${generateShortName(data.teams.away)}`;
+            if (limitElement) limitElement.textContent = data.isSuperOver ? `(1 Over Limit)` : `(${data.oversLimit} Overs Limit)`;
 
             if (overLogContainer) {
                 overLogContainer.innerHTML = "";
@@ -3473,11 +3552,9 @@
             if (activeBat2) activeBat2.textContent = `${data.nonStriker || '--'}`;
             if (activeBowl) activeBowl.textContent = `🎳 ${data.currentBowler || '--'}`;
 
-            // Sync dynamic live viewers count in real-time
             const viewsElement = document.getElementById("overlay-live-views");
             if (viewsElement) viewsElement.textContent = data.viewerCount || 1;
 
-            // Sync dynamic "FREE HIT" badge for spectators in the JioCinema style bug banner
             const spectatorFhBadge = document.getElementById("overlay-free-hit-badge");
             if (spectatorFhBadge) {
                 if (data.freeHit) {
@@ -3487,12 +3564,11 @@
                 }
             }
 
-            // Calculate Live Run Rates
             const overDec = overToDecimal(data.overs);
             const crr = overDec > 0 ? (data.runs / overDec).toFixed(2) : "0.00";
             let rrr = "--";
             if (data.inning === 2 && data.targetRuns) {
-                const limit = parseFloat(data.oversLimit) || 5.0;
+                const limit = parseFloat(data.isSuperOver ? 1.0 : data.oversLimit) || 5.0;
                 const remainingOvers = limit - overDec;
                 const remainingRuns = data.targetRuns - data.runs;
                 if (remainingOvers > 0) {
@@ -3508,7 +3584,6 @@
                 runsRateElement.textContent = `CRR: ${crr} ${data.inning === 2 ? `| RRR: ${rrr}` : ''}`;
             }
 
-            // Populate Tables safely
             const bTable = document.getElementById("live-table-batting");
             const bowlTable = document.getElementById("live-table-bowling");
             if (bTable) bTable.innerHTML = "";
@@ -3525,7 +3600,6 @@
                     const isNonStriker = data.nonStriker === pName;
                     const statusSuffix = isStriker ? "<span class='text-orange-500 font-black'>*</span>" : (isNonStriker ? " (ns)" : "");
 
-                    // Detailed metrics retrieval
                     const mStats = data.batsmanStats || {};
                     const runs = mStats[pName] ? mStats[pName].runs : 0;
                     const balls = mStats[pName] ? mStats[pName].balls : 0;
@@ -3533,7 +3607,6 @@
                     const sixes = mStats[pName] ? mStats[pName].sixes : 0;
                     const sr = balls > 0 ? ((runs / balls) * 100).toFixed(1) : "0.0";
 
-                    // Determine dismissal status safely
                     let isOutLabel = "not out";
                     if (mStats[pName] && mStats[pName].status === "out") {
                         isOutLabel = "out";
@@ -3573,7 +3646,6 @@
                     const dots = mStats[pName] ? mStats[pName].dots : 0;
                     const wickets = mStats[pName] ? mStats[pName].wickets : 0;
                     
-                    // Ball to over fractional format
                     const overs = (Math.floor(bCount / 6)) + "." + (bCount % 6);
                     const er = bCount > 0 ? ((runs / bCount) * 6).toFixed(2) : "0.00";
 
@@ -3626,7 +3698,6 @@
             overlay.classList.remove("hidden");
             card.style.transform = "scale(1)";
 
-            // Auto-dismiss inside 1.8 seconds (well before any potential next delivery)
             setTimeout(() => {
                 card.style.transform = "scale(0)";
                 setTimeout(() => {
@@ -3639,7 +3710,6 @@
         function updateCapLeaders(league) {
             const stats = {};
             
-            // 1. Initialize with tournament-wide playerStats
             if (league.playerStats) {
                 Object.keys(league.playerStats).forEach(pName => {
                     const p = league.playerStats[pName];
@@ -3651,7 +3721,6 @@
                 });
             }
             
-            // 2. If there is an active live match, merge live match stats
             if (league.liveMatch && league.liveMatch.active) {
                 const lm = league.liveMatch;
                 if (lm.batsmanStats) {
@@ -3679,7 +3748,6 @@
 
             if (players.length === 0) return;
 
-            // Orange Cap sorting sequence (Runs)
             const orangePlayers = [...players].sort((a, b) => b.runs - a.runs || a.name.localeCompare(b.name));
             if (orangePlayers.length > 0 && orangePlayers[0].runs > 0) {
                 document.getElementById("orange-cap-name").textContent = orangePlayers[0].name;
@@ -3689,7 +3757,6 @@
                 document.getElementById("orange-cap-runs").textContent = "0";
             }
 
-            // Purple Cap sorting sequence (Wickets)
             const purplePlayers = [...players].sort((a, b) => b.wickets - a.wickets || a.name.localeCompare(b.name));
             if (purplePlayers.length > 0 && purplePlayers[0].wickets > 0) {
                 document.getElementById("purple-cap-name").textContent = purplePlayers[0].name;
@@ -3699,7 +3766,6 @@
                 document.getElementById("purple-cap-wickets").textContent = "0";
             }
 
-            // MVP sorting sequence (Points)
             const mvpPlayers = [...players].sort((a, b) => b.mvpPoints - a.mvpPoints || a.name.localeCompare(b.name));
             if (mvpPlayers.length > 0 && mvpPlayers[0].mvpPoints > 0) {
                 document.getElementById("mvp-name").textContent = mvpPlayers[0].name;
@@ -3750,7 +3816,6 @@
 
             const stats = {};
             
-            // 1. Initialize with tournament-wide playerStats
             if (league.playerStats) {
                 Object.keys(league.playerStats).forEach(pName => {
                     const p = league.playerStats[pName];
@@ -3762,7 +3827,6 @@
                 });
             }
             
-            // 2. If there is an active live match, merge live match stats
             if (league.liveMatch && league.liveMatch.active) {
                 const lm = league.liveMatch;
                 if (lm.batsmanStats) {
@@ -3788,7 +3852,6 @@
                 mvpPoints: stats[name].mvpPoints || 0
             }));
 
-            // Filter out players with zero stats
             let filteredPlayers = [];
             if (currentLeaderboardType === 'runs') {
                 document.getElementById("leaderboard-modal-title").textContent = "Orange Cap Leaderboard";
@@ -3843,8 +3906,19 @@
                     const dateStr = matchDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
                     
                     let badgeColor = "bg-gray-800 text-gray-300";
-                    if (match.status === "LIVE") badgeColor = "bg-red-600 text-white animate-pulse";
-                    if (match.status === "COMPLETED") badgeColor = "bg-green-600 text-white";
+                    let displayStatus = match.status;
+                    let displayOutcome = match.outcome || "";
+
+                    if (match.status === "LIVE") {
+                        badgeColor = "bg-red-600 text-white animate-pulse";
+                        if (league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === index && league.liveMatch.needsSuperOverTrigger) {
+                            displayStatus = "Match TIE";
+                            badgeColor = "bg-yellow-500 text-black font-black animate-pulse";
+                        }
+                    }
+                    if (match.status === "COMPLETED") {
+                        badgeColor = "bg-green-600 text-white";
+                    }
 
                     container.innerHTML += `
                         <div class="bg-black border border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs">
@@ -3856,10 +3930,10 @@
                                     <span>${generateShortName(match.awayTeam)}</span>
                                 </div>
                                 <p class="text-[9px] font-mono text-orange-400">${dateStr} @ ${startTimeStr}</p>
-                                ${match.status === "COMPLETED" ? `<p class="text-[9px] text-green-500 font-semibold">${match.outcome || "Finished"}</p>` : ""}
+                                ${match.status === "COMPLETED" || displayStatus === "Match TIE" ? `<p class="text-[9px] text-yellow-500 font-semibold">${displayOutcome || "Tie Breaker Playoff Activated"}</p>` : ""}
                             </div>
                             <div>
-                                <span class="px-2 py-0.5 rounded text-[9px] font-black tracking-widest ${badgeColor}">${match.status}</span>
+                                <span class="px-2 py-0.5 rounded text-[9px] font-black tracking-widest ${badgeColor}">${displayStatus}</span>
                             </div>
                         </div>
                     `;
@@ -3883,7 +3957,7 @@
 
             const standings = {};
             league.teams.forEach(t => {
-                standings[t.name] = { name: t.name, played: 0, won: 0, lost: 0, tied: 0, points: 0, runsScored: 0, oversFaced: 0.0, runsConceded: 0, oversBowled: 0.0 };
+                standings[t.name] = {name: t.name, played: 0, won: 0, lost: 0, tied: 0, points: 0, runsScored: 0, oversFaced: 0.0, runsConceded: 0, oversBowled: 0.0 };
             });
 
             if (league.fixtures) {
