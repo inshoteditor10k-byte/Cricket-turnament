@@ -1157,6 +1157,109 @@
             }
         }
 
+        // Saved Leagues Local Management
+        function isLeagueSaved(leagueId) {
+            const saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
+            return saved.includes(leagueId);
+        }
+
+        function toggleSaveLeague(leagueId) {
+            let saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
+            if (saved.includes(leagueId)) {
+                saved = saved.filter(id => id !== leagueId);
+            } else {
+                saved.push(leagueId);
+            }
+            localStorage.setItem("ipc_saved_leagues", JSON.stringify(saved));
+            renderLeaguesList();
+            renderSavedLeaguesList();
+        }
+
+        function toggleSavedLeaguesView() {
+            const container = document.getElementById("saved-leagues-container");
+            const chevron = document.getElementById("saved-leagues-chevron");
+            if (container.classList.contains("hidden")) {
+                container.classList.remove("hidden");
+                chevron.classList.replace("fa-chevron-down", "fa-chevron-up");
+                renderSavedLeaguesList();
+            } else {
+                container.classList.add("hidden");
+                chevron.classList.replace("fa-chevron-up", "fa-chevron-down");
+            }
+        }
+
+        function renderSavedLeaguesList() {
+            const container = document.getElementById("saved-leagues-container");
+            if (!container) return;
+            container.innerHTML = "";
+
+            const savedIds = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
+            let count = 0;
+
+            savedIds.forEach(key => {
+                const league = allLeagues[key];
+                if (league && typeof league === 'object' && league.metadata) {
+                    count++;
+                    const activeLabel = (league.liveMatch && league.liveMatch.active) 
+                        ? `<span class="bg-red-600 px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse text-white">LIVE</span>` 
+                        : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
+
+                    const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
+                    const teamCount = league.teams ? league.teams.length : 0;
+                    const startDate = league.metadata ? (league.metadata.startDate || "N/A") : "N/A";
+                    const shortName = league.metadata ? (league.metadata.shortName || generateShortName(league.metadata.name)) : "IPC";
+                    const name = league.metadata ? (league.metadata.name || "Unnamed League") : "Unnamed League";
+
+                    let liveScoreHTML = "";
+                    if (league.liveMatch && league.liveMatch.active) {
+                        const lm = league.liveMatch;
+                        liveScoreHTML = `
+                            <div class="bg-black p-2.5 rounded-xl border border-red-500/20 my-2">
+                                <div class="flex justify-between items-center text-[10px] text-gray-400 font-semibold">
+                                    <span>🏏 ${lm.battingTeam}</span>
+                                    <span>vs ${lm.bowlingTeam}</span>
+                                </div>
+                                <div class="flex justify-between items-center mt-1">
+                                    <span class="text-xs font-black text-white">${lm.runs} - ${lm.wickets} <span class="text-[9px] text-gray-400">(${lm.overs})</span></span>
+                                    <span class="text-[9px] text-red-500 font-bold animate-pulse">LIVE NOW</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    container.innerHTML += `
+                        <div class="bg-gray-950 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition">
+                            <div class="flex items-center justify-between">
+                                ${activeLabel}
+                                <div class="flex items-center space-x-2">
+                                    <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2 py-0.5 rounded">
+                                        ${shortName}
+                                    </span>
+                                    <button onclick="event.stopPropagation(); toggleSaveLeague('${key}')" class="focus:outline-none">
+                                        <i class="fa-solid fa-bell text-yellow-500 text-sm cursor-pointer ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${name}</h3>
+                            ${liveScoreHTML}
+                            <div class="flex justify-between items-center text-[10px] text-gray-400">
+                                <span>Overs: ${oversLimit} | Teams: ${teamCount}</span>
+                                <span class="font-mono text-orange-400">${startDate}</span>
+                            </div>
+                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white">
+                                <span>View Broadcast</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+
+            if (count === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No saved leagues found.</p>`;
+            }
+        }
+
         // 6. Search density sorting engine
         function handleSearch() {
             renderLeaguesList();
@@ -1626,109 +1729,6 @@
                 .catch(err => alert("Transmission Error: " + err.message));
         }
 
-        // Saved Leagues Local Management
-        function isLeagueSaved(leagueId) {
-            const saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
-            return saved.includes(leagueId);
-        }
-
-        function toggleSaveLeague(leagueId) {
-            let saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
-            if (saved.includes(leagueId)) {
-                saved = saved.filter(id => id !== leagueId);
-            } else {
-                saved.push(leagueId);
-            }
-            localStorage.setItem("ipc_saved_leagues", JSON.stringify(saved));
-            renderLeaguesList();
-            renderSavedLeaguesList();
-        }
-
-        function toggleSavedLeaguesView() {
-            const container = document.getElementById("saved-leagues-container");
-            const chevron = document.getElementById("saved-leagues-chevron");
-            if (container.classList.contains("hidden")) {
-                container.classList.remove("hidden");
-                chevron.classList.replace("fa-chevron-down", "fa-chevron-up");
-                renderSavedLeaguesList();
-            } else {
-                container.classList.add("hidden");
-                chevron.classList.replace("fa-chevron-up", "fa-chevron-down");
-            }
-        }
-
-        function renderSavedLeaguesList() {
-            const container = document.getElementById("saved-leagues-container");
-            if (!container) return;
-            container.innerHTML = "";
-
-            const savedIds = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
-            let count = 0;
-
-            savedIds.forEach(key => {
-                const league = allLeagues[key];
-                if (league && typeof league === 'object' && league.metadata) {
-                    count++;
-                    const activeLabel = (league.liveMatch && league.liveMatch.active) 
-                        ? `<span class="bg-red-600 px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse text-white">LIVE</span>` 
-                        : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
-
-                    const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
-                    const teamCount = league.teams ? league.teams.length : 0;
-                    const startDate = league.metadata ? (league.metadata.startDate || "N/A") : "N/A";
-                    const shortName = league.metadata ? (league.metadata.shortName || generateShortName(league.metadata.name)) : "IPC";
-                    const name = league.metadata ? (league.metadata.name || "Unnamed League") : "Unnamed League";
-
-                    let liveScoreHTML = "";
-                    if (league.liveMatch && league.liveMatch.active) {
-                        const lm = league.liveMatch;
-                        liveScoreHTML = `
-                            <div class="bg-black p-2.5 rounded-xl border border-red-500/20 my-2">
-                                <div class="flex justify-between items-center text-[10px] text-gray-400 font-semibold">
-                                    <span>🏏 ${lm.battingTeam}</span>
-                                    <span>vs ${lm.bowlingTeam}</span>
-                                </div>
-                                <div class="flex justify-between items-center mt-1">
-                                    <span class="text-xs font-black text-white">${lm.runs} - ${lm.wickets} <span class="text-[9px] text-gray-400">(${lm.overs})</span></span>
-                                    <span class="text-[9px] text-red-500 font-bold animate-pulse">LIVE NOW</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    container.innerHTML += `
-                        <div class="bg-gray-950 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition">
-                            <div class="flex items-center justify-between">
-                                ${activeLabel}
-                                <div class="flex items-center space-x-2">
-                                    <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2 py-0.5 rounded">
-                                        ${shortName}
-                                    </span>
-                                    <button onclick="event.stopPropagation(); toggleSaveLeague('${key}')" class="focus:outline-none">
-                                        <i class="fa-solid fa-bell text-yellow-500 text-sm cursor-pointer ml-2"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${name}</h3>
-                            ${liveScoreHTML}
-                            <div class="flex justify-between items-center text-[10px] text-gray-400">
-                                <span>Overs: ${oversLimit} | Teams: ${teamCount}</span>
-                                <span class="font-mono text-orange-400">${startDate}</span>
-                            </div>
-                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white">
-                                <span>View Broadcast</span>
-                                <i class="fa-solid fa-arrow-right text-xs"></i>
-                            </button>
-                        </div>
-                    `;
-                }
-            });
-
-            if (count === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No saved leagues found.</p>`;
-            }
-        }
-
         // 8. Dynamic Firebase State Listeners
         function fetchLeagues() {
             db.ref('leagues').on('value', snapshot => {
@@ -1741,9 +1741,9 @@
                 if (currentUser) {
                     renderProfileLeaguesList();
                 }
-                // Render saved leagues list if currently displayed
-                const savedContainer = document.getElementById("saved-leagues-container");
-                if (savedContainer && !savedContainer.classList.contains("hidden")) {
+                // Render saved leagues if container is open
+                const container = document.getElementById("saved-leagues-container");
+                if (container && !container.classList.contains("hidden")) {
                     renderSavedLeaguesList();
                 }
                 purgeExpiredArchivedVideos();
@@ -1808,7 +1808,7 @@
                             </div>
                             <div class="flex justify-between items-center mt-1">
                                 <span class="text-xs font-black text-white">${lm.runs} - ${lm.wickets} <span class="text-[9px] text-gray-400">(${lm.overs})</span></span>
-                                <span class="text-[9px] text-red-500 font-bold animate-pulse">LIVE NOW</span>
+                                <span class="text-[9px] text-red-500 font-bold animate-pulse">${lm.isSuperOver ? "SUPER OVER" : "LIVE NOW"}</span>
                             </div>
                         </div>
                     `;
@@ -1855,17 +1855,35 @@
                 if (league && typeof league === 'object' && league.metadata && league.metadata.ownerId === currentUser.uid) {
                     count++;
                     
+                    const isActiveLive = league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex !== null;
+
                     let optionsHTML = "";
                     if (league.fixtures) {
                         league.fixtures.forEach((fix, index) => {
                             if (fix.status !== "COMPLETED") {
-                                optionsHTML += `<option value="${index}">Round ${fix.round}: ${fix.homeTeam} vs ${fix.awayTeam}</option>`;
+                                const isSelected = (isActiveLive && league.liveMatch.matchIndex === index) ? "selected" : "";
+                                optionsHTML += `<option value="${index}" ${isSelected}>Round ${fix.round}: ${fix.homeTeam} vs ${fix.awayTeam}</option>`;
                             }
                         });
                     }
 
                     const roundsCount = league.fixtures ? Math.max(...league.fixtures.map(f => f.round)) : 1;
                     const autoEndDate = calculateLeagueEndDate(league.metadata.startDate, roundsCount);
+
+                    let buttonHTML = "";
+                    if (isActiveLive) {
+                        buttonHTML = `
+                            <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="w-full py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white">
+                                Resume Live Match (Round ${league.fixtures[league.liveMatch.matchIndex].round})
+                            </button>
+                        `;
+                    } else {
+                        buttonHTML = `
+                            <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white" ${!optionsHTML ? 'disabled' : ''}>
+                                Open Scorer Console
+                            </button>
+                        `;
+                    }
 
                     container.innerHTML += `
                         <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3" id="managed-league-card-${key}">
@@ -1894,9 +1912,7 @@
                                     <p class="text-[9px] text-red-500 font-black uppercase tracking-widest">Awaiting scheduled start time</p>
                                     <p id="countdown-timer-${key}" class="text-xs font-mono font-bold text-white mt-0.5">--:--:--</p>
                                 </div>
-                                <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white" ${!optionsHTML ? 'disabled' : ''}>
-                                    Open Scorer Console
-                                </button>
+                                ${buttonHTML}
                             </div>
                         </div>
                     `;
@@ -1938,7 +1954,10 @@
 
                         if (!banner || !timer || !button) return;
 
-                        if (now < targetTime) {
+                        // If the match is already active in firebase, bypass schedule lock checks completely!
+                        const isActiveLive = league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedIdx;
+
+                        if (now < targetTime && !isActiveLive) {
                             // Match is scheduled for the future. LOCK Access completely.
                             banner.classList.remove("hidden");
                             button.setAttribute("disabled", "true");
@@ -1953,11 +1972,16 @@
 
                             timer.textContent = `${days > 0 ? `${days}d ` : ""}${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
                         } else {
-                            // Match start time has successfully passed. Unlock scorer!
+                            // Match start time has passed or it's already active. Unlock scorer!
                             banner.classList.add("hidden");
                             button.removeAttribute("disabled");
-                            button.className = "w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white";
-                            button.textContent = "START LIVE / Open Console";
+                            if (isActiveLive) {
+                                button.className = "w-full py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white";
+                                button.textContent = `Resume Live Match (Round ${match.round})`;
+                            } else {
+                                button.className = "w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white";
+                                button.textContent = "START LIVE / Open Console";
+                            }
                         }
                     }
                 });
@@ -1972,7 +1996,6 @@
             if (matchIndex === "" || matchIndex === null) return;
 
             const league = allLeagues[leagueId];
-
             selectedScorerLeagueId = leagueId;
             selectedScorerMatchIndex = parseInt(matchIndex);
             const match = league.fixtures[selectedScorerMatchIndex];
@@ -1981,18 +2004,43 @@
             document.getElementById("scorer-console-view").classList.remove("hidden");
             document.getElementById("managed-leagues-container").classList.add("hidden");
 
-            // Setup Coin Toss Selection Items
-            const tossSelect = document.getElementById("toss-winner-select");
-            tossSelect.innerHTML = `
-                <option value="${match.homeTeam}">${match.homeTeam}</option>
-                <option value="${match.awayTeam}">${match.awayTeam}</option>
-            `;
+            // Check if this match is already active in firebase
+            const lm = league.liveMatch;
+            if (lm && lm.active && lm.matchIndex === selectedScorerMatchIndex) {
+                // Yes, resume it seamlessly!
+                if (lm.needsSuperOverTrigger) {
+                    // Tied and awaiting super over activation
+                    document.getElementById("scorer-toss-panel").classList.add("hidden");
+                    document.getElementById("scorer-lineup-panel").classList.add("hidden");
+                    document.getElementById("scorer-controls").classList.remove("hidden");
+                    attachLiveScorerMetricsListener();
+                } else if (lm.striker && lm.nonStriker && lm.currentBowler) {
+                    // Lineups are already selected, jump straight to the event controller
+                    document.getElementById("scorer-toss-panel").classList.add("hidden");
+                    document.getElementById("scorer-lineup-panel").classList.add("hidden");
+                    document.getElementById("scorer-controls").classList.remove("hidden");
+                    attachLiveScorerMetricsListener();
+                } else {
+                    // Awaiting lineup selection
+                    setupLineupOptions(lm.battingTeam, lm.bowlingTeam);
+                    document.getElementById("scorer-toss-panel").classList.add("hidden");
+                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
+                    document.getElementById("scorer-controls").classList.add("hidden");
+                }
+            } else {
+                // No active match running, or it's a different match. Start fresh!
+                const tossSelect = document.getElementById("toss-winner-select");
+                tossSelect.innerHTML = `
+                    <option value="${match.homeTeam}">${match.homeTeam}</option>
+                    <option value="${match.awayTeam}">${match.awayTeam}</option>
+                `;
 
-            document.getElementById("scorer-toss-panel").classList.remove("hidden");
-            document.getElementById("scorer-lineup-panel").classList.add("hidden");
-            document.getElementById("scorer-controls").classList.add("hidden");
-            document.getElementById("super-over-trigger-container").classList.add("hidden");
-            document.getElementById("super-over-badge").classList.add("hidden");
+                document.getElementById("scorer-toss-panel").classList.remove("hidden");
+                document.getElementById("scorer-lineup-panel").classList.add("hidden");
+                document.getElementById("scorer-controls").classList.add("hidden");
+                document.getElementById("super-over-trigger-container").classList.add("hidden");
+                document.getElementById("super-over-badge").classList.add("hidden");
+            }
         }
 
         function exitScorerConsole() {
@@ -2029,6 +2077,9 @@
                 const battingFirst = (decision === 'bat') ? teamA : teamB;
                 const bowlingFirst = (decision === 'bat') ? teamB : teamA;
 
+                // Check if it's already flagged as Super Over
+                const isSO = league.liveMatch && league.liveMatch.isSuperOver;
+
                 const liveMatchData = {
                     active: true,
                     matchIndex: selectedScorerMatchIndex,
@@ -2039,19 +2090,19 @@
                     wickets: 0,
                     overs: 0.0,
                     extras: 0,
-                    oversLimit: league.metadata.oversLimit,
+                    oversLimit: isSO ? 1 : league.metadata.oversLimit,
                     striker: "",
                     nonStriker: "",
                     currentBowler: "",
                     overLog: [],
-                    isSuperOver: false,
+                    isSuperOver: isSO ? true : false,
                     freeHit: false, // Standard free hit initialized
                     inning: 1,
                     needsInning2Lineup: false,
                     needsCompletionSave: false,
                     viewerCount: 1,
                     tossResult: `${winner} won toss and elected to ${decision} first.`,
-                    lastEvent: { text: "TOSS DONE", type: "default", timestamp: Date.now() }
+                    lastEvent: { text: isSO ? "SUPER OVER START" : "TOSS DONE", type: "default", timestamp: Date.now() }
                 };
 
                 db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).set(liveMatchData)
@@ -2120,6 +2171,12 @@
                 const data = snapshot.val();
                 if (!data) return;
 
+                // Match Winner Exit Rule: Jaise hi koi match winner decide ho jayega, toh automatic Control Console se bahar ho jayenge
+                if (data.active === false && !document.getElementById("scorer-controls").classList.contains("hidden")) {
+                    exitScorerConsole();
+                    return;
+                }
+
                 document.getElementById("scorer-metric-score").innerHTML = `
                     ${data.runs} - ${data.wickets} <span class="text-sm font-medium text-gray-400">(${data.overs})</span>
                 `;
@@ -2135,6 +2192,16 @@
 
                 if (data.isSuperOver) {
                     document.getElementById("super-over-badge").classList.remove("hidden");
+                } else {
+                    document.getElementById("super-over-badge").classList.add("hidden");
+                }
+
+                // Super Over Activation Card trigger check
+                if (data.needsSuperOverTrigger) {
+                    document.getElementById("super-over-trigger-container").classList.remove("hidden");
+                    document.getElementById("scorer-controls").classList.add("hidden");
+                } else {
+                    document.getElementById("super-over-trigger-container").classList.add("hidden");
                 }
 
                 // Update Free Hit visual badge state on the scorer's dashboard instantly
@@ -2253,7 +2320,7 @@
                     }
 
                     // Show bowler switch modal inside 0.05 seconds (50ms transition speed)
-                    if (data.needsBowlerChange && data.active) {
+                    if (data.needsBowlerChange && data.active && !data.needsSuperOverTrigger) {
                         setTimeout(() => {
                             openBowlerChangeModal(data);
                         }, 50);
@@ -2327,7 +2394,7 @@
                 }, (error, committed, snapshot) => {
                     if (committed && snapshot.exists()) {
                         const data = snapshot.val();
-                        if (data.needsBowlerChange && data.active) {
+                        if (data.needsBowlerChange && data.active && !data.needsSuperOverTrigger) {
                             setTimeout(() => {
                                 openBowlerChangeModal(data);
                             }, 50);
@@ -2752,14 +2819,15 @@
                 const isOversFinished = data.overs >= oversLimit;
 
                 if (isTargetReached || isAllOut || isOversFinished) {
-                    // Signal client that match is complete to trigger auto-finalization inside 0.05 seconds
-                    data.needsCompletionSave = true;
-
                     if (isTargetReached) {
+                        data.needsCompletionSave = true;
                         data.outcome = `${data.battingTeam} won by ${playersCount - 1 - data.wickets} wickets!`;
                     } else if (data.runs === target - 1) {
-                        data.outcome = "MATCH TIED! SUPER OVER REQUIRED.";
+                        // TIE MATCH detected! Display "Match TIE" and trigger Super Over toss sequence
+                        data.outcome = "Match TIE";
+                        data.needsSuperOverTrigger = true;
                     } else {
+                        data.needsCompletionSave = true;
                         data.outcome = `${data.bowlingTeam} won by ${target - 1 - data.runs} runs!`;
                     }
                 } else {
@@ -2768,6 +2836,43 @@
                     }
                 }
             }
+        }
+
+        // Activates Super Over setup in Scorer Console, resets scores and forces 1 over limit
+        function activateSuperOverMode() {
+            const league = allLeagues[selectedScorerLeagueId];
+            const match = league.fixtures[selectedScorerMatchIndex];
+
+            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).update({
+                runs: 0,
+                wickets: 0,
+                overs: 0.0,
+                extras: 0,
+                overLog: [],
+                previousBowler: "",
+                dismissedBatsmen: [],
+                freeHit: false,
+                isSuperOver: true,
+                oversLimit: 1, // Super over is strictly exactly 1 over limit
+                inning: 1,
+                needsInning2Lineup: false,
+                needsCompletionSave: false,
+                needsSuperOverTrigger: false, // Reset tie block state
+                outcome: "Match TIE", // Display "Match TIE" as the ongoing fixture outcome
+                tossResult: "Super Over Toss",
+                lastEvent: { text: "SUPER OVER TOSS", type: "default", timestamp: Date.now() }
+            }).then(() => {
+                // Return to coin toss panel again so batting first/bowling first roles can be selected
+                const tossSelect = document.getElementById("toss-winner-select");
+                tossSelect.innerHTML = `
+                    <option value="${match.homeTeam}">${match.homeTeam}</option>
+                    <option value="${match.awayTeam}">${match.awayTeam}</option>
+                `;
+                document.getElementById("scorer-toss-panel").classList.remove("hidden");
+                document.getElementById("scorer-lineup-panel").classList.add("hidden");
+                document.getElementById("scorer-controls").classList.add("hidden");
+                document.getElementById("super-over-trigger-container").classList.add("hidden");
+            });
         }
 
         function saveCompletedMatchOutcome(league, outcome, liveMatchData) {
@@ -2857,7 +2962,7 @@
             // Temporary standings calculation
             const standingsMap = {};
             league.teams.forEach(t => {
-                standingsMap[t.name] = { name: t.name, points: 0, runsScored: 0, oversFaced: 0.0, runsConceded: 0, oversBowled: 0.0 };
+                standingsMap[t.name] = { name: t.name, played: 0, won: 0, lost: 0, tied: 0, points: 0, runsScored: 0, oversFaced: 0.0, runsConceded: 0, oversBowled: 0.0 };
             });
 
             fixtures.forEach(match => {
@@ -3293,20 +3398,34 @@
                         clickAction = `alert('This match has not started yet. Scheduled start time: ${league.metadata.startDate} @ ${league.metadata.startTime}')`;
                     }
 
+                    // TIE Rules display integration: Displays Match TIE on completed draws or active super over draws
+                    let outcomeLabelHTML = "";
+                    if (winnerName === "Tie" || (match.status === "LIVE" && league.liveMatch && league.liveMatch.outcome === "Match TIE")) {
+                        outcomeLabelHTML = `
+                            <span class="bg-yellow-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
+                                Match TIE
+                            </span>
+                        `;
+                    } else if (winnerName) {
+                        outcomeLabelHTML = `
+                            <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
+                                🏆 WINNER: ${generateShortName(winnerName)}
+                            </span>
+                        `;
+                    } else {
+                        outcomeLabelHTML = `
+                            <span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
+                                ${match.status}
+                            </span>
+                        `;
+                    }
+
                     htmlContent += `
                         <div onclick="${clickAction}" class="bg-black border border-gray-800 rounded-xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition duration-300 shadow-lg text-white">
                             <!-- Header ribbon -->
                             <div class="bg-gray-900 px-2 py-0.5 flex justify-between items-center text-[7px] border-b border-gray-800">
                                 <span class="text-gray-400 font-bold uppercase tracking-wider">Round ${match.round}</span>
-                                ${winnerName ? `
-                                    <span class="bg-green-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
-                                        🏆 WINNER: ${generateShortName(winnerName)}
-                                    </span>
-                                ` : `
-                                    <span class="bg-blue-600 text-white font-black px-1 rounded text-[7px] uppercase tracking-wider font-sans">
-                                        ${match.status}
-                                    </span>
-                                `}
+                                ${outcomeLabelHTML}
                             </div>
 
                             <!-- Content split layout -->
@@ -3846,6 +3965,14 @@
                     if (match.status === "LIVE") badgeColor = "bg-red-600 text-white animate-pulse";
                     if (match.status === "COMPLETED") badgeColor = "bg-green-600 text-white";
 
+                    // Tie Rules Display: Displays "Match TIE" in fixture list until super over determines a winner
+                    let finalOutcomeText = match.outcome;
+                    if (match.status === "LIVE" && league.liveMatch && league.liveMatch.outcome === "Match TIE") {
+                        finalOutcomeText = "Match TIE (Super Over in progress)";
+                    } else if (match.status === "COMPLETED" && match.scorecard && match.scorecard.inning1.runs === match.scorecard.inning2.runs && !match.outcome.includes("won")) {
+                        finalOutcomeText = "Match TIE";
+                    }
+
                     container.innerHTML += `
                         <div class="bg-black border border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs">
                             <div class="flex-1 space-y-1">
@@ -3856,7 +3983,7 @@
                                     <span>${generateShortName(match.awayTeam)}</span>
                                 </div>
                                 <p class="text-[9px] font-mono text-orange-400">${dateStr} @ ${startTimeStr}</p>
-                                ${match.status === "COMPLETED" ? `<p class="text-[9px] text-green-500 font-semibold">${match.outcome || "Finished"}</p>` : ""}
+                                ${match.status === "COMPLETED" || (match.status === "LIVE" && league.liveMatch && league.liveMatch.outcome === "Match TIE") ? `<p class="text-[9px] text-yellow-500 font-semibold">${finalOutcomeText || "Match TIE"}</p>` : ""}
                             </div>
                             <div>
                                 <span class="px-2 py-0.5 rounded text-[9px] font-black tracking-widest ${badgeColor}">${match.status}</span>
