@@ -490,7 +490,7 @@
                         <div class="space-y-1.5 text-xs text-white font-semibold">
                             <button onclick="commitWicket('Bowled')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3 transition">Bowled</button>
                             <button onclick="commitWicket('Caught')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3 transition">Caught</button>
-                            <button onclick="openLbwRunsModal()" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3 transition">LBW</button>
+                            <button onclick="commitWicket('LBW')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3 transition">LBW</button>
                             <button onclick="commitWicket('Run Out')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3 transition">Run Out</button>
                             <button onclick="commitWicket('Hit Wicket')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3 transition">Hit Wicket</button>
                             <button onclick="commitWicket('Stumped Out')" class="w-full py-2 bg-gray-800 hover:bg-gray-700 font-semibold rounded-lg text-left px-3 transition">Stumped Out</button>
@@ -499,25 +499,7 @@
                     </div>
                 </div>
 
-                <!-- LBW Runs Modal -->
-                <div id="lbw-runs-modal" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center px-4">
-                    <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl">
-                        <h4 class="text-md font-black text-orange-500 text-center uppercase tracking-wider">LBW RUNS SELECTION</h4>
-                        <p class="text-[10px] text-gray-400 text-center font-semibold">Select runs to score. Ball will NOT be counted & Free Hit will be awarded!</p>
-                        <div class="grid grid-cols-4 gap-1.5 text-xs text-white">
-                            <button onclick="commitLbwRuns(0)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition">0 Run</button>
-                            <button onclick="commitLbwRuns(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition">1 Run</button>
-                            <button onclick="commitLbwRuns(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition">2 Run</button>
-                            <button onclick="commitLbwRuns(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition">3 Run</button>
-                            <button onclick="commitLbwRuns(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-center col-span-2 transition shadow">4 Run</button>
-                            <button onclick="commitLbwRuns(5)" class="py-2.5 bg-gray-850 hover:bg-gray-800 border border-gray-750 font-bold rounded-lg text-center col-span-2 transition font-bold">5 Run</button>
-                            <button onclick="commitLbwRuns(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-center col-span-4 transition shadow">6 Run</button>
-                        </div>
-                        <button onclick="document.getElementById('lbw-runs-modal').classList.add('hidden')" class="w-full py-2 text-xs text-gray-400 hover:text-white underline text-center font-bold">Cancel</button>
-                    </div>
-                </div>
-
-                <!-- No Ball Runs Picker Popup (Beautiful modal interface instead of prompt alert) -->
+                <!-- No Ball Runs Picker Popup -->
                 <div id="no-ball-runs-modal" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center px-4">
                     <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl">
                         <h4 class="text-md font-black text-yellow-500 text-center uppercase tracking-wider">No Ball Runs Selection</h4>
@@ -1358,7 +1340,7 @@
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 },
                     { home: 'A', away: 'C', round: 4 }, { home: 'B', away: 'E', round: 5 }, { home: 'D', away: 'F', round: 6 },
                     { home: 'A', away: 'D', round: 7 }, { home: 'B', away: 'F', round: 8 }, { home: 'C', away: 'E', round: 9 },
-                    { home: 'A', away: 'E', round: 10 }, { home: 'B', away: 'D', round: 11 }, { home: 'C', away: 'F', round: 12 },
+                    { home: 'A', away: 'E', round: 10 }, { home: 'B', away: 'D', rounded: 11 }, { home: 'C', away: 'F', round: 12 },
                     { home: 'A', away: 'F', round: 13 }, { home: 'B', away: 'C', round: 14 }, { home: 'D', away: 'E', round: 15 }
                 ];
                 playoffTemplates = [
@@ -1429,7 +1411,7 @@
                     { home: 'A', away: 'D', round: 22 }, { home: 'B', away: 'C', round: 23 }, { home: 'E', away: 'H', round: 24 },
                     { home: 'F', away: 'G', round: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', round: 27 },
                     { home: 'A', away: 'F', round: 28 }, { home: 'B', away: 'E', round: 29 }, { home: 'C', away: 'H', round: 30 },
-                    { home: 'D', away: 'G', round: 31 }, { home: 'I', away: 'B', round: 32 }, { home: 'J', away: 'A', round: 33 },
+                    { home: 'D', away: 'G', round: 31 }, { home: 'I', away: 'B', rounded: 32 }, { home: 'J', away: 'A', round: 33 },
                     { home: 'E', away: 'C', round: 34 }, { home: 'F', away: 'D', round: 35 }, { home: 'G', away: 'B', round: 36 },
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
                     { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', round: 42 },
@@ -1699,7 +1681,7 @@
                                 <span class="font-semibold">Overs: ${oversLimit} | Teams: ${teamCount}</span>
                                 <span class="font-mono text-orange-400 font-bold">${startDate}</span>
                             </div>
-                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-850 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow">
+                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow">
                                 <span>View Broadcast</span>
                                 <i class="fa-solid fa-arrow-right text-xs"></i>
                             </button>
@@ -2465,6 +2447,114 @@
                     evaluateMatchProgress(data, league);
                 }
                 return data;
+            });
+        }
+
+        // Safer and robust implementation of Wicket Modal launcher with Free Hit active check
+        function openWicketModal() {
+            const league = allLeagues[selectedScorerLeagueId];
+            const isFreeHit = league && league.liveMatch && league.liveMatch.freeHit;
+            
+            const modal = document.getElementById("wicket-modal");
+            const buttons = modal.querySelectorAll(".space-y-1.5 button");
+
+            buttons.forEach(btn => {
+                const clickAttr = btn.getAttribute("onclick") || "";
+                // Only Run Out is valid on Free Hit
+                const isRunOut = clickAttr.includes("Run Out");
+                
+                if (isFreeHit) {
+                    if (!isRunOut) {
+                        btn.classList.add("opacity-30", "pointer-events-none");
+                    } else {
+                        btn.classList.remove("opacity-30", "pointer-events-none");
+                    }
+                } else {
+                    btn.classList.remove("opacity-30", "pointer-events-none");
+                }
+            });
+
+            // Handle warning message elements
+            let fhWarning = document.getElementById("wicket-modal-freehit-warning");
+            if (isFreeHit) {
+                if (!fhWarning) {
+                    fhWarning = document.createElement("p");
+                    fhWarning.id = "wicket-modal-freehit-warning";
+                    fhWarning.className = "text-[10px] text-yellow-500 font-bold text-center uppercase tracking-wider mt-2";
+                    fhWarning.textContent = "⚠️ Free Hit Active: Only Run Out is valid!";
+                    modal.querySelector('.space-y-1.5').appendChild(fhWarning);
+                }
+            } else {
+                if (fhWarning) fhWarning.remove();
+            }
+
+            modal.classList.remove("hidden");
+        }
+
+        // LBW Special Runs flow: hides wicket modal, opens runs modal
+        function openLbwRunsModal() {
+            document.getElementById("wicket-modal").classList.add("hidden");
+            document.getElementById("lbw-runs-modal").classList.remove("hidden");
+        }
+
+        // Commits custom runs for LBW, without counting the ball, and awards a Free Hit
+        function commitLbwRuns(runs) {
+            document.getElementById("lbw-runs-modal").classList.add("hidden");
+            const league = allLeagues[selectedScorerLeagueId];
+            if (!league) return;
+
+            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
+                if (data) {
+                    const bowler = data.currentBowler;
+                    if (bowler) {
+                        data.bowlerStats = data.bowlerStats || {};
+                        if (!data.bowlerStats[bowler]) {
+                            data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
+                        }
+                        data.bowlerStats[bowler].runs += runs;
+                    }
+
+                    const striker = data.striker;
+                    if (striker) {
+                        data.batsmanStats = data.batsmanStats || {};
+                        if (!data.batsmanStats[striker]) {
+                            data.batsmanStats[striker] = { runs: 0, balls: 0, fours: 0, sixes: 0, status: "not out" };
+                        }
+                        data.batsmanStats[striker].runs += runs;
+                        if (runs === 4) data.batsmanStats[striker].fours += 1;
+                        if (runs === 6) data.batsmanStats[striker].sixes += 1;
+                    }
+
+                    data.runs += runs;
+                    data.overLog = data.overLog || [];
+                    data.overLog.push(`Lbw+${runs}`);
+
+                    if (runs === 1 || runs === 3 || runs === 5) {
+                        const temp = data.striker;
+                        data.striker = data.nonStriker;
+                        data.nonStriker = temp;
+                    }
+
+                    data.freeHit = true;
+
+                    let eventType = "freehit";
+                    let animText = `LBW + ${runs} RUNS! FREE HIT!`;
+                    if (runs === 4) {
+                        eventType = "four";
+                        animText = "LBW + FOUR! FREE HIT!";
+                    } else if (runs === 6) {
+                        eventType = "six";
+                        animText = "LBW + SIX! FREE HIT!";
+                    }
+
+                    data.lastEvent = { text: animText, type: eventType, timestamp: Date.now() };
+                    evaluateMatchProgress(data, league);
+                }
+                return data;
+            }, (error, committed, snapshot) => {
+                if (committed && snapshot.exists()) {
+                    triggerOverlayBroadcast(selectedScorerLeagueId, "LBW - FREE HIT!", `${runs} Runs Added`);
+                }
             });
         }
 
