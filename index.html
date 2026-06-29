@@ -107,7 +107,7 @@
             box-shadow: 0 0 35px #8b5cf6, 0 0 70px #3b82f6;
             border: 3px solid #ffffff;
             text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
-            animation: pop-zoom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: pop-zoom 0.4s ease-out forwards;
         }
         .glow-freehit {
             background: linear-gradient(135deg, #facc15, #ca8a04);
@@ -148,75 +148,75 @@
                 India Play Cricket
             </h1>
         </div>
-        <div id="auth-status-container" class="flex items-center space-x-2 text-sm text-gray-400 font-sans">
+        <div id="auth-status-container" class="flex items-center space-x-2 text-sm text-gray-400">
             <!-- Dynamic Authentication Indicator -->
         </div>
     </header>
 
     <!-- Global Broadcast Alert Notification overlay -->
     <div id="overlay-anim" class="hidden fixed inset-0 flex items-center justify-center bg-black/80 z-50 pointer-events-none transition-all duration-300">
-        <div class="text-center font-sans">
-            <h1 id="overlay-text" class="text-6xl font-black text-yellow-400 tracking-wider uppercase animate-bounce drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] font-sans">
+        <div class="text-center">
+            <h1 id="overlay-text" class="text-6xl font-black text-yellow-400 tracking-wider uppercase animate-bounce drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
                 OUT!
             </h1>
-            <p id="overlay-sub" class="text-xl mt-4 font-semibold text-white tracking-widest uppercase font-sans"></p>
+            <p id="overlay-sub" class="text-xl mt-4 font-semibold text-white tracking-widest uppercase"></p>
         </div>
     </div>
 
     <!-- Main Content Shell -->
-    <main class="px-4 py-4 font-sans">
+    <main class="px-4 py-4">
 
         <!-- Tab 1: Home Directory & Active Matches -->
         <section id="tab-home" class="tab-panel space-y-4">
             <div class="space-y-1">
-                <h2 class="text-xl font-black tracking-tight font-sans">Tournament Directory</h2>
-                <p class="text-xs text-gray-400 font-sans">Search and spectate active round-robin leagues in real-time.</p>
+                <h2 class="text-xl font-black tracking-tight">Tournament Directory</h2>
+                <p class="text-xs text-gray-400">Search and spectate active round-robin leagues in real-time.</p>
             </div>
             
-            <div class="relative w-full font-sans">
+            <div class="relative w-full">
                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                     <i class="fa-solid fa-search text-xs"></i>
                 </span>
-                <input type="text" id="search-bar" oninput="handleSearch()" placeholder="Search leagues (e.g. IPL)..." class="w-full bg-black border border-gray-800 rounded-xl py-2.5 pl-9 pr-4 text-xs focus:outline-none focus:border-orange-500 transition text-white font-semibold font-sans">
+                <input type="text" id="search-bar" oninput="handleSearch()" placeholder="Search leagues (e.g. IPL)..." class="w-full bg-black border border-gray-800 rounded-xl py-2.5 pl-9 pr-4 text-xs focus:outline-none focus:border-orange-500 transition text-white font-semibold">
             </div>
 
             <!-- League Lists Grid (Mobile Stacked Card Feed) -->
-            <div id="leagues-grid" class="space-y-4 font-sans">
+            <div id="leagues-grid" class="space-y-4">
                 <!-- Programmatically populated matching card objects -->
             </div>
             
             <div id="empty-leagues-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-500 font-sans">No active leagues match your search parameters.</p>
+                <p class="text-xs text-gray-500">No active leagues match your search parameters.</p>
             </div>
         </section>
 
         <!-- Tab 2: Create League Setup Screen -->
-        <section id="tab-create" class="tab-panel hidden max-w-md mx-auto animate-fade-in font-sans">
+        <section id="tab-create" class="tab-panel hidden max-w-md mx-auto animate-fade-in">
             <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 shadow-2xl">
-                <h2 class="text-xl font-black mb-1 font-sans">Create Tournament</h2>
-                <p class="text-xs text-gray-400 mb-6 font-sans">Set up your local league, manage rosters, and generate Berger schedules.</p>
+                <h2 class="text-xl font-black mb-1">Create Tournament</h2>
+                <p class="text-xs text-gray-400 mb-6">Set up your local league, manage rosters, and generate Berger schedules.</p>
 
                 <!-- Setup Step Indicators -->
-                <div class="flex items-center space-x-3 mb-6 text-[10px] font-semibold uppercase tracking-wider overflow-x-auto hide-scrollbar font-sans">
-                    <span id="step-1-indicator" class="text-orange-500 border-b-2 border-orange-500 pb-1 flex-shrink-0 font-bold font-sans">1. Settings</span>
-                    <span class="text-gray-500 flex-shrink-0 font-sans">&rarr;</span>
-                    <span id="step-2-indicator" class="text-gray-500 flex-shrink-0 font-sans font-semibold">2. Rules</span>
-                    <span class="text-gray-500 flex-shrink-0 font-sans">&rarr;</span>
-                    <span id="step-3-indicator" class="text-gray-500 flex-shrink-0 font-sans font-semibold">3. Rosters</span>
+                <div class="flex items-center space-x-3 mb-6 text-[10px] font-semibold uppercase tracking-wider overflow-x-auto hide-scrollbar">
+                    <span id="step-1-indicator" class="text-orange-500 border-b-2 border-orange-500 pb-1 flex-shrink-0">1. Settings</span>
+                    <span class="text-gray-500 flex-shrink-0">&rarr;</span>
+                    <span id="step-2-indicator" class="text-gray-500 flex-shrink-0">2. Rules</span>
+                    <span class="text-gray-500 flex-shrink-0">&rarr;</span>
+                    <span id="step-3-indicator" class="text-gray-500 flex-shrink-0">3. Rosters</span>
                 </div>
 
                 <!-- Wizard Step Panels -->
-                <form id="create-league-form" onsubmit="event.preventDefault();" class="space-y-4 font-sans">
+                <form id="create-league-form" onsubmit="event.preventDefault();" class="space-y-4">
                     
                     <!-- Step 1 Pane -->
                     <div id="wizard-step-1" class="wizard-pane space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400 font-sans">League Name (Auto-Shortname Active)</label>
-                            <input type="text" id="league-name-input" placeholder="e.g. Indian Premier League" class="w-full bg-black border border-gray-800 rounded-xl py-3 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold font-sans">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400">League Name (Auto-Shortname Active)</label>
+                            <input type="text" id="league-name-input" placeholder="e.g. Indian Premier League" class="w-full bg-black border border-gray-800 rounded-xl py-3 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400 font-sans">Number of Teams</label>
-                            <select id="league-teams-count" onchange="updateCalculatedLastDate()" class="w-full bg-black border border-gray-800 rounded-xl py-3 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold font-sans">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400">Number of Teams</label>
+                            <select id="league-teams-count" onchange="updateCalculatedLastDate()" class="w-full bg-black border border-gray-800 rounded-xl py-3 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold">
                                 <option value="2">2 Teams (3 Matches total)</option>
                                 <option value="3">3 Teams (6 Matches total)</option>
                                 <option value="4" selected>4 Teams (10 Matches total)</option>
@@ -229,24 +229,24 @@
                             </select>
                         </div>
                         <div class="pt-2 flex justify-end">
-                            <button type="button" onclick="goToWizardStep(2)" class="px-5 py-2 bg-gray-800 hover:bg-gray-700 font-bold text-xs rounded-xl text-white transition font-sans">Continue</button>
+                            <button type="button" onclick="goToWizardStep(2)" class="px-5 py-2 bg-gray-800 hover:bg-gray-700 font-bold text-xs rounded-xl text-white transition">Continue</button>
                         </div>
                     </div>
 
                     <!-- Step 2 Pane -->
-                    <div id="wizard-step-2" class="wizard-pane hidden space-y-4 animate-fade-in font-sans">
-                        <div class="grid grid-cols-2 gap-3 font-sans">
+                    <div id="wizard-step-2" class="wizard-pane hidden space-y-4 animate-fade-in">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400 font-sans">Match Overs</label>
-                                <select id="match-over-limit" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold font-sans">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400">Match Overs</label>
+                                <select id="match-over-limit" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold">
                                     <option value="5" selected>5 Overs</option>
                                     <option value="10">10 Overs</option>
                                     <option value="20">20 Overs (T20)</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400 font-sans">Players Per Team</label>
-                                <select id="players-per-team" onchange="updateCalculatedLastDate()" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold font-sans">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400">Players Per Team</label>
+                                <select id="players-per-team" onchange="updateCalculatedLastDate()" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold">
                                     <option value="2">2 Players</option>
                                     <option value="3">3 Players</option>
                                     <option value="4">4 Players</option>
@@ -262,40 +262,40 @@
                         </div>
 
                         <!-- Date & Time Picker Controls with dynamic calculations -->
-                        <div class="space-y-3 font-sans">
+                        <div class="space-y-3">
                             <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400 font-sans">Match Start Date</label>
-                                <input type="date" id="match-start-date" onchange="updateCalculatedLastDate()" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold font-sans">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400">Match Start Date</label>
+                                <input type="date" id="match-start-date" onchange="updateCalculatedLastDate()" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400 font-sans">Daily Start Time</label>
-                                <input type="time" id="match-start-time" value="18:00" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold font-sans">
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 font-semibold text-gray-400">Daily Start Time</label>
+                                <input type="time" id="match-start-time" value="18:00" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 text-xs focus:outline-none focus:border-orange-500 transition text-white font-bold">
                             </div>
                         </div>
 
                         <!-- Dynamic Target Calculation Card -->
-                        <div class="p-3.5 bg-orange-600/10 border border-orange-500/20 rounded-xl space-y-1 font-sans">
-                            <span class="text-[9px] text-gray-400 uppercase tracking-widest font-black font-sans">Dynamic Schedule Duration</span>
+                        <div class="p-3.5 bg-orange-600/10 border border-orange-500/20 rounded-xl space-y-1">
+                            <span class="text-[9px] text-gray-400 uppercase tracking-widest font-black">Dynamic Schedule Duration</span>
                             <div class="flex justify-between text-xs pt-1">
-                                <span class="text-gray-300">Total Matches: <strong id="calc-total-matches" class="text-orange-500 font-sans">10</strong></span>
-                                <span class="text-gray-300 font-sans">Last Match: <strong id="calc-last-date" class="text-green-500 font-sans">N/A</strong></span>
+                                <span class="text-gray-300">Total Matches: <strong id="calc-total-matches" class="text-orange-500">10</strong></span>
+                                <span class="text-gray-300">Last Match: <strong id="calc-last-date" class="text-green-500">N/A</strong></span>
                             </div>
                         </div>
 
-                        <div class="pt-2 flex justify-between font-sans">
-                            <button type="button" onclick="goToWizardStep(1)" class="px-5 py-2 border border-gray-800 hover:bg-gray-900 font-bold text-xs rounded-xl text-white transition font-sans">Back</button>
-                            <button type="button" onclick="goToWizardStep(3)" class="px-5 py-2 bg-gray-800 hover:bg-gray-700 font-bold text-xs rounded-xl text-white transition font-sans">Continue</button>
+                        <div class="pt-2 flex justify-between">
+                            <button type="button" onclick="goToWizardStep(1)" class="px-5 py-2 border border-gray-800 hover:bg-gray-900 font-bold text-xs rounded-xl text-white transition">Back</button>
+                            <button type="button" onclick="goToWizardStep(3)" class="px-5 py-2 bg-gray-800 hover:bg-gray-700 font-bold text-xs rounded-xl text-white transition">Continue</button>
                         </div>
                     </div>
 
                     <!-- Step 3 Pane -->
-                    <div id="wizard-step-3" class="wizard-pane hidden space-y-4 animate-fade-in font-sans">
+                    <div id="wizard-step-3" class="wizard-pane hidden space-y-4 animate-fade-in">
                         <div id="roster-dynamic-inputs" class="space-y-4 max-h-[350px] overflow-y-auto pr-1">
                             <!-- Populated in adjustTeamRosterInputs() -->
                         </div>
-                        <div class="pt-3 flex justify-between border-t border-gray-800 font-sans">
-                            <button type="button" onclick="goToWizardStep(2)" class="px-5 py-2 border border-gray-800 hover:bg-gray-955 font-bold text-xs rounded-xl text-white transition font-sans font-bold">Back</button>
-                            <button type="button" onclick="submitNewLeague()" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 font-extrabold text-xs rounded-xl uppercase text-white transition tracking-wider shadow font-sans">Compile League</button>
+                        <div class="pt-3 flex justify-between border-t border-gray-800">
+                            <button type="button" onclick="goToWizardStep(2)" class="px-5 py-2 border border-gray-800 hover:bg-gray-955 font-bold text-xs rounded-xl text-white transition">Back</button>
+                            <button type="button" onclick="submitNewLeague()" class="px-6 py-2 bg-orange-600 hover:bg-orange-700 font-extrabold text-xs rounded-xl uppercase text-white transition tracking-wider shadow">Compile League</button>
                         </div>
                     </div>
 
@@ -304,135 +304,135 @@
         </section>
 
         <!-- Tab 3: Your Created Leagues Manager Board -->
-        <section id="tab-created" class="tab-panel hidden space-y-4 font-sans">
+        <section id="tab-created" class="tab-panel hidden space-y-4">
             <div>
-                <h2 class="text-xl font-black tracking-tight font-sans">Management Console</h2>
-                <p class="text-xs text-gray-400 font-sans">Manage, score, and broadcast leagues created by you.</p>
+                <h2 class="text-xl font-black tracking-tight">Management Console</h2>
+                <p class="text-xs text-gray-400">Manage, score, and broadcast leagues created by you.</p>
             </div>
 
             <!-- Active User Leagues -->
-            <div id="managed-leagues-container" class="space-y-4 font-sans">
+            <div id="managed-leagues-container" class="space-y-4">
                 <!-- Programmatically populated lists with match selectors -->
             </div>
 
             <div id="empty-managed-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-500 mb-4 font-sans">You have not created any leagues yet.</p>
-                <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold text-white transition font-sans">Launch Creation Wizard</button>
+                <p class="text-xs text-gray-500 mb-4">You have not created any leagues yet.</p>
+                <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold text-white transition">Launch Creation Wizard</button>
             </div>
 
             <!-- In-Play Scorer Console (Fully Automated Scorer console) -->
-            <div id="scorer-console-view" class="hidden bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-4 shadow-2xl font-sans">
+            <div id="scorer-console-view" class="hidden bg-gray-900 border border-gray-800 rounded-2xl p-4 space-y-4 shadow-2xl">
                 <div class="flex justify-between items-center border-b border-gray-800 pb-3">
                     <div>
                         <span id="scorer-match-header" class="text-[9px] text-orange-500 font-bold uppercase tracking-widest">Live Match Scorer</span>
-                        <h3 id="scorer-match-teams" class="text-sm font-black mt-0.5 font-sans">Select Teams to Start</h3>
+                        <h3 id="scorer-match-teams" class="text-sm font-black mt-0.5">Select Teams to Start</h3>
                     </div>
-                    <button onclick="exitScorerConsole()" class="text-xs text-gray-400 hover:text-white underline font-bold font-sans">Exit Console</button>
+                    <button onclick="exitScorerConsole()" class="text-xs text-gray-400 hover:text-white underline font-bold">Exit Console</button>
                 </div>
 
                 <!-- Step A: Toss Selection -->
-                <div id="scorer-toss-panel" class="p-4 bg-black border border-gray-800 rounded-xl space-y-4 font-sans">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-center font-sans">Coin Toss Initialization</h4>
-                    <div class="flex justify-center my-2 font-sans">
+                <div id="scorer-toss-panel" class="p-4 bg-black border border-gray-800 rounded-xl space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-center">Coin Toss Initialization</h4>
+                    <div class="flex justify-center my-2">
                         <!-- Coin Visual -->
-                        <div id="toss-coin" class="w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none font-sans">
+                        <div id="toss-coin" class="w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none">
                             TOSS
                         </div>
                     </div>
-                    <div class="max-w-xs mx-auto space-y-2 font-sans">
-                        <select id="toss-winner-select" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold font-sans">
+                    <div class="max-w-xs mx-auto space-y-2">
+                        <select id="toss-winner-select" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold">
                             <!-- Populated with match teams -->
                         </select>
-                        <select id="toss-decision-select" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold font-sans">
+                        <select id="toss-decision-select" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold">
                             <option value="bat">Batting First</option>
                             <option value="bowl">Bowling First</option>
                         </select>
-                        <button onclick="executeCoinFlip()" class="w-full py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-bold text-[10px] uppercase tracking-widest text-white transition shadow-lg font-sans">Flip Coin & Start</button>
+                        <button onclick="executeCoinFlip()" class="w-full py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-bold text-[10px] uppercase tracking-widest text-white transition shadow-lg">Flip Coin & Start</button>
                     </div>
                 </div>
 
                 <!-- Step B: Select Lineups -->
-                <div id="scorer-lineup-panel" class="hidden p-4 bg-black border border-gray-800 rounded-xl space-y-3 font-sans">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-white font-sans">Select Opening Roles</h4>
-                    <div class="space-y-2.5 font-sans">
+                <div id="scorer-lineup-panel" class="hidden p-4 bg-black border border-gray-800 rounded-xl space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-white">Select Opening Roles</h4>
+                    <div class="space-y-2.5">
                         <div>
-                            <label class="block text-[9px] text-gray-400 mb-1 font-bold font-sans">Striker Batsman</label>
-                            <select id="select-striker" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold font-sans"></select>
+                            <label class="block text-[9px] text-gray-400 mb-1 font-bold">Striker Batsman</label>
+                            <select id="select-striker" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold"></select>
                         </div>
                         <div>
-                            <label class="block text-[9px] text-gray-400 mb-1 font-bold font-sans">Non-Striker Batsman</label>
-                            <select id="select-non-striker" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold font-sans"></select>
+                            <label class="block text-[9px] text-gray-400 mb-1 font-bold">Non-Striker Batsman</label>
+                            <select id="select-non-striker" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold"></select>
                         </div>
                         <div>
-                            <label class="block text-[9px] text-gray-400 mb-1 font-bold font-sans">Opening Bowler</label>
-                            <select id="select-bowler" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold font-sans"></select>
+                            <label class="block text-[9px] text-gray-400 mb-1 font-bold">Opening Bowler</label>
+                            <select id="select-bowler" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold"></select>
                         </div>
                     </div>
-                    <button onclick="commitOpeningLineups()" class="mt-2 w-full py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-bold text-[10px] uppercase text-white transition shadow-md font-sans">Start Inning</button>
+                    <button onclick="commitOpeningLineups()" class="mt-2 w-full py-2 bg-orange-600 hover:bg-orange-700 rounded-lg font-bold text-[10px] uppercase text-white transition shadow-md">Start Inning</button>
+                </div>
+
+                <!-- Super Over Activation Card (Moved outside controls sibling layer to prevent parent hiding layout bug) -->
+                <div id="super-over-trigger-container" class="hidden bg-yellow-600/10 border border-yellow-500/20 p-4 rounded-xl text-center space-y-2.5 my-3">
+                    <p class="text-xs font-bold text-yellow-400">MATCH TIED! SUPER OVER REQUIRED TO DECLARE WINNER</p>
+                    <button onclick="activateSuperOverMode()" class="w-full py-3 bg-yellow-500 hover:bg-yellow-600 font-extrabold text-xs text-black rounded-lg uppercase transition shadow-md">Start Super Over</button>
                 </div>
 
                 <!-- Step C: Event Controller & Action Buttons -->
-                <div id="scorer-controls" class="hidden space-y-4 font-sans">
+                <div id="scorer-controls" class="hidden space-y-4">
                     <!-- Inline Match Score Visual -->
-                    <div class="bg-black p-3.5 border border-gray-800 rounded-xl space-y-3 shadow-inner font-sans">
-                        <div class="flex justify-between items-center font-sans">
-                            <p class="text-[9px] text-gray-555 uppercase tracking-widest font-bold font-sans" id="scorer-inning-label">First Innings</p>
-                            <div class="flex space-x-1 font-sans">
-                                <span id="scorer-free-hit-badge" class="hidden bg-yellow-400 text-black font-black text-[9px] px-2 py-0.5 rounded animate-pulse font-sans">FREE HIT</span>
-                                <span id="super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[9px] px-2 py-0.5 rounded font-sans">SUPER OVER</span>
+                    <div class="bg-black p-3.5 border border-gray-800 rounded-xl space-y-3 shadow-inner">
+                        <div class="flex justify-between items-center">
+                            <p class="text-[9px] text-gray-555 uppercase tracking-widest font-bold" id="scorer-inning-label">First Innings</p>
+                            <div class="flex space-x-1">
+                                <span id="scorer-free-hit-badge" class="hidden bg-yellow-400 text-black font-black text-[9px] px-2 py-0.5 rounded animate-pulse">FREE HIT</span>
+                                <span id="super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[9px] px-2 py-0.5 rounded">SUPER OVER</span>
                             </div>
                         </div>
-                        <p class="text-2xl font-black text-white font-sans" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-555">(0.0)</span></p>
-                        <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5 font-sans">
-                            <p class="text-gray-400 font-bold font-sans" id="scorer-metric-striker">Striker: --</p>
-                            <p class="text-gray-450 font-semibold font-sans" id="scorer-metric-nonstriker">Non-Striker: --</p>
-                            <p class="text-gray-450 font-semibold font-sans" id="scorer-metric-bowler">Bowler: --</p>
+                        <p class="text-2xl font-black text-white" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-555">(0.0)</span></p>
+                        <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5">
+                            <p class="text-gray-400 font-bold" id="scorer-metric-striker">Striker: --</p>
+                            <p class="text-gray-450 font-semibold" id="scorer-metric-nonstriker">Non-Striker: --</p>
+                            <p class="text-gray-450 font-semibold" id="scorer-metric-bowler">Bowler: --</p>
                         </div>
-                    </div>
-
-                    <!-- Super Over Activation Card -->
-                    <div id="super-over-trigger-container" class="hidden bg-yellow-600/10 border border-yellow-500/20 p-3 rounded-xl text-center space-y-2 font-sans">
-                        <p class="text-[10px] font-bold text-yellow-400 font-sans">MATCH TIED! SUPER OVER REQUIRED TO DECLARE WINNER</p>
-                        <button onclick="activateSuperOverMode()" class="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 font-extrabold text-[10px] text-black rounded-lg uppercase transition font-bold font-sans">Start Super Over</button>
                     </div>
 
                     <!-- Keyboard Grid layout -->
-                    <div class="space-y-3 font-sans">
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest font-semibold font-sans">Event Transition Controller</label>
-                        <div class="grid grid-cols-4 gap-1.5 font-sans">
-                            <button onclick="scoreBalls(0)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white transition font-sans">0 Run</button>
-                            <button onclick="scoreBalls(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white transition font-sans">1 Run</button>
-                            <button onclick="scoreBalls(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white transition font-sans">2 Runs</button>
-                            <button onclick="scoreBalls(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white transition font-sans">3 Runs</button>
+                    <div class="space-y-3">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest font-semibold">Event Transition Controller</label>
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <button onclick="scoreBalls(0)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white transition">0 Run</button>
+                            <button onclick="scoreBalls(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white transition">1 Run</button>
+                            <button onclick="scoreBalls(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white transition">2 Runs</button>
+                            <button onclick="scoreBalls(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-xs text-white transition">3 Runs</button>
                         </div>
-                        <div class="grid grid-cols-3 gap-1.5 font-sans">
-                            <button onclick="scoreBalls(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-xs text-white transition font-bold font-sans">4 Run</button>
-                            <button onclick="scoreBalls(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-xs text-white transition font-sans">6 Run</button>
-                            <button onclick="triggerCustomRun()" class="py-2.5 bg-gray-800 hover:bg-gray-700 text-xs font-bold rounded-lg text-white transition font-sans">___ Run</button>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="scoreBalls(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-xs text-white transition font-bold">4 Run</button>
+                            <button onclick="scoreBalls(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-xs text-white transition font-bold">6 Run</button>
+                            <button onclick="triggerCustomRun()" class="py-2.5 bg-gray-800 hover:bg-gray-700 text-xs font-bold rounded-lg text-white transition">___ Run</button>
                         </div>
-                        <div class="grid grid-cols-3 gap-1.5 font-sans">
-                            <button onclick="scoreExtra('WD')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-orange-400 transition font-sans">Wide (+1)</button>
-                            <button onclick="scoreExtra('NB')" class="py-2.5 bg-gray-900 hover:bg-gray-850 border border-yellow-500/30 text-[10px] font-bold rounded-lg text-yellow-400 transition font-sans">No Ball (+NB)</button>
-                            <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-gray-400 transition font-sans">Leg Bye</button>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="scoreExtra('WD')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-orange-400 transition">Wide (+1)</button>
+                            <button onclick="scoreExtra('NB')" class="py-2.5 bg-gray-900 hover:bg-gray-850 border border-yellow-500/30 text-[10px] font-bold rounded-lg text-yellow-400 transition">No Ball (+NB)</button>
+                            <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-gray-400 transition">Leg Bye</button>
                         </div>
-                        <div class="grid grid-cols-1 gap-2 font-sans">
-                            <button onclick="openWicketModal()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase transition shadow-md font-sans">Wicket</button>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="openWicketModal()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase transition shadow-md">Wicket</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Direct Device Stream Box inside Scorer Console -->
-                <div class="border border-gray-800 p-3.5 rounded-xl bg-black space-y-3 mt-4 font-sans">
+                <div class="border border-gray-800 p-3.5 rounded-xl bg-black space-y-3 mt-4">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-orange-500 flex items-center space-x-2">
-                        <i class="fa-solid fa-video animate-pulse font-sans"></i>
-                        <span class="font-sans">Direct Live Stream Console</span>
+                        <i class="fa-solid fa-video animate-pulse"></i>
+                        <span>Direct Live Stream Console</span>
                     </h4>
-                    <p class="text-[9px] text-gray-400 font-semibold font-sans">Stream this match directly using this device's camera while scoring.</p>
-                    <div class="flex space-x-2 font-sans">
-                        <button id="btn-start-direct-cam" onclick="startDirectScorerCam()" class="flex-1 py-2 bg-green-600 hover:bg-green-700 font-bold text-[10px] rounded-lg uppercase text-white transition font-sans">Start Camera</button>
-                        <button id="btn-stop-direct-cam" onclick="stopDirectScorerCam()" class="flex-1 py-2 bg-red-650 hover:bg-red-700 font-bold text-[10px] rounded-lg uppercase hidden text-white transition font-sans font-bold">Stop Camera</button>
+                    <p class="text-[9px] text-gray-400 font-semibold">Stream this match directly using this device's camera while scoring.</p>
+                    <div class="flex space-x-2">
+                        <button id="btn-start-direct-cam" onclick="startDirectScorerCam()" class="flex-1 py-2 bg-green-600 hover:bg-green-700 font-bold text-[10px] rounded-lg uppercase text-white transition">Start Camera</button>
+                        <button id="btn-stop-direct-cam" onclick="stopDirectScorerCam()" class="flex-1 py-2 bg-red-655 hover:bg-red-700 font-bold text-[10px] rounded-lg uppercase hidden text-white transition">Stop Camera</button>
                     </div>
-                    <div id="direct-cam-preview-container" class="hidden relative aspect-video bg-black rounded-lg overflow-hidden border border-gray-800 font-sans">
+                    <div id="direct-cam-preview-container" class="hidden relative aspect-video bg-black rounded-lg overflow-hidden border border-gray-800">
                         <video id="direct-cam-video" class="w-full h-full object-cover" autoplay playsinline muted></video>
                         <canvas id="direct-cam-canvas" class="hidden"></canvas>
                     </div>
@@ -441,9 +441,304 @@
             </div>
         </section>
 
+        <!-- Tab 4: Share Camera & Extra Nodes Coordinator -->
+        <section id="tab-share" class="tab-panel hidden space-y-4 max-w-sm mx-auto">
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-5 shadow-2xl">
+                <div>
+                    <h2 class="text-xl font-black">Broadcasting</h2>
+                    <p class="text-xs text-gray-400">Generate single-use codes to let third-party devices stream matches.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest font-semibold font-sans">Associated League</label>
+                    <select id="camera-association-select" class="w-full bg-black border border-gray-800 rounded-xl py-2.5 px-3 focus:outline-none focus:border-orange-500 text-xs text-white font-bold">
+                        <!-- Populated with managed leagues -->
+                    </select>
+                </div>
+
+                <button onclick="generateCameraCode()" class="w-full py-3 bg-orange-600 hover:bg-orange-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition shadow-lg">Generate Code</button>
+
+                <!-- Active codes display area -->
+                <div id="active-camera-codes" class="space-y-2 pt-3 border-t border-gray-800 hidden">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Keys</h4>
+                    <div id="codes-list" class="space-y-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 5: Profile & Google Settings -->
+        <section id="tab-profile" class="tab-panel hidden max-w-sm mx-auto space-y-4">
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-5 shadow-2xl">
+                <div class="flex items-center space-x-3">
+                    <div id="profile-avatar" class="w-12 h-12 bg-orange-600/20 text-orange-500 rounded-full flex items-center justify-center font-bold text-lg">
+                        U
+                    </div>
+                    <div>
+                        <h2 id="profile-name" class="text-md font-black">Guest Viewer</h2>
+                        <p id="profile-email" class="text-xs text-gray-400 font-semibold">Please sign in to register nodes.</p>
+                    </div>
+                </div>
+
+                <div id="auth-buttons-zone" class="space-y-2">
+                    <button onclick="loginWithGoogle()" id="btn-login" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 font-bold rounded-xl flex items-center justify-center space-x-2 text-xs text-white transition shadow shadow-lg">
+                        <i class="fa-brands fa-google"></i>
+                        <span>Continue with Google</span>
+                    </button>
+                    <button onclick="loginAsGuest()" id="btn-guest-login" class="w-full py-2.5 border border-gray-700 hover:bg-gray-850 font-bold rounded-xl text-xs text-white transition">
+                        <i class="fa-solid fa-user-secret"></i>
+                        <span>Continue as Guest</span>
+                    </button>
+                    <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-855 font-bold rounded-xl text-xs text-gray-400 transition">Logout</button>
+                </div>
+
+                <!-- Camera Key Registration Box -->
+                <div id="camera-registration-box" class="hidden border-t border-gray-800 pt-5 space-y-3">
+                    <h3 class="text-xs font-bold font-sans">Register as Cameraman</h3>
+                    <p class="text-[10px] text-gray-400 font-semibold">Enter a 6-digit key generated by a tournament owner to start broadcasting.</p>
+                    <div class="flex space-x-2">
+                        <input type="text" id="cameraman-code-input" maxlength="6" placeholder="000000" class="bg-black border border-gray-800 rounded-lg p-3 text-center text-lg font-mono tracking-widest focus:outline-none focus:border-orange-500 text-white w-full font-bold">
+                        <button onclick="registerAsCameraman()" class="px-5 bg-orange-600 hover:bg-orange-700 font-extrabold rounded-lg text-xs uppercase text-white transition shadow">Link</button>
+                    </div>
+                </div>
+
+                <!-- Saved Leagues Section -->
+                <div class="border-t border-gray-800 pt-5 space-y-3">
+                    <button onclick="toggleSavedLeaguesView()" class="w-full py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white flex items-center justify-between px-4 transition shadow">
+                        <span class="flex items-center space-x-2">
+                            <i class="fa-solid fa-bell text-yellow-500 animate-bounce"></i>
+                            <span>Saved Leagues</span>
+                        </span>
+                        <i id="saved-leagues-chevron" class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    <div id="saved-leagues-container" class="hidden space-y-4 pt-2">
+                        <!-- Populated dynamically with the standard home card format -->
+                    </div>
+                </div>
+
+                <!-- User registered leagues deletion controller -->
+                <div id="profile-leagues-container" class="border-t border-gray-800 pt-5 space-y-3 hidden">
+                    <h3 class="text-xs font-black text-orange-500 uppercase tracking-wider font-sans">Your Registered Leagues</h3>
+                    <div id="profile-leagues-list" class="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Live Match Broadcast View Overlay -->
+        <section id="live-match-spectator-overlay" class="hidden fixed inset-0 bg-black z-50 overflow-y-auto font-sans">
+            <!-- Header bar inside live match view -->
+            <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10 animate-fade-in font-sans">
+                <div class="flex items-center space-x-2 font-sans">
+                    <span class="bg-red-600 text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded text-white animate-pulse shadow font-sans">LIVE</span>
+                    <!-- Real-Time Viewer Count Pill -->
+                    <span class="bg-black/40 text-gray-300 text-[9px] px-2 py-0.5 rounded flex items-center space-x-1 font-mono">
+                        <i class="fa-solid fa-eye text-orange-500"></i>
+                        <span id="overlay-live-views" class="font-bold font-sans">1</span>
+                    </span>
+                    <h3 id="live-spectator-league-title" class="text-xs font-bold truncate max-w-[150px] text-white font-sans">Elite League</h3>
+                </div>
+                <div class="flex items-center space-x-3 font-sans">
+                    <button onclick="toggleVideoRotation()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-1 font-semibold font-sans">
+                        <i class="fa-solid fa-rotate text-sm"></i>
+                        <span class="hidden">Rotate Video</span>
+                    </button>
+                    <button onclick="closeLiveSpectatorOverlay()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-1 font-semibold font-sans">
+                        <i class="fa-solid fa-times-circle text-sm"></i>
+                        <span>Exit</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Viewport Split Structure -->
+            <div class="flex flex-col h-[calc(100vh-45px)]" id="broadcast-frame-container">
+                
+                <!-- Top: Live Feed Container -->
+                <div class="bg-black relative aspect-video flex items-center justify-center overflow-hidden border-b border-gray-800" id="live-camera-feed-box">
+                    <video id="live-camera-video" class="w-full h-full object-cover hidden" autoplay playsinline muted></video>
+                    <canvas id="live-camera-fallback-canvas" class="w-full h-full object-cover hidden"></canvas>
+                    <img id="live-camera-img" class="w-full h-full object-cover hidden" alt="Fallback Broadcast Source">
+                    
+                    <!-- Pre-match countdown screen -->
+                    <div id="live-countdown-panel" class="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center space-y-3 px-4 text-center font-sans">
+                        <div class="w-12 h-12 bg-orange-600/10 text-orange-500 rounded-full flex items-center justify-center text-xl shadow animate-bounce">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <h4 class="text-sm font-bold font-sans">Innings Not Yet In Progress</h4>
+                        <p class="text-[10px] text-gray-400 max-w-xs font-semibold font-sans">No camera streams are active. Displays match metadata and scoring updates below.</p>
+                        <div id="match-countdown-string" class="text-xs font-mono text-orange-500 font-bold font-sans"></div>
+                    </div>
+
+                    <!-- TV Broadcast Feed Animation Overlay Container (Center aligned inside video area, hides nothing) -->
+                    <div id="live-feed-animation-overlay" class="absolute inset-0 flex items-center justify-center pointer-events-none z-20 hidden">
+                        <div id="live-animation-card" class="text-center transform scale-0 transition-transform duration-300">
+                            <span id="live-animation-text" class="text-3xl font-extrabold px-6 py-3 rounded-full uppercase tracking-wider text-white shadow-2xl"></span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic TV Broadcast Graphic Overlay (Hotstar/Jio Style score scoreboard UI) -->
+                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-2.5 flex flex-col justify-end space-y-1">
+                        <!-- Row 1: Active Batsman & Bowler Stats Overlay -->
+                        <div class="flex items-center justify-between text-[9px] font-bold tracking-tight gap-1 font-sans">
+                            <!-- Batting Bug -->
+                            <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded flex items-center space-x-2 shadow font-sans">
+                                <span id="overlay-active-batsman-1" class="text-white">🏏 Striker: --</span>
+                                <span id="overlay-active-batsman-2" class="text-gray-400">--</span>
+                            </div>
+                            <!-- Bowler Bug -->
+                            <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded flex items-center space-x-1.5 shadow font-sans">
+                                <span id="overlay-free-hit-badge" class="hidden bg-yellow-400 text-black font-black text-[8px] px-1.5 py-0.5 rounded animate-pulse">FREE HIT</span>
+                                <span id="overlay-active-bowler" class="text-gray-300 font-sans">Bowler: --</span>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Scorecard Bug Banner -->
+                        <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 text-white rounded px-2 py-1 flex items-center justify-between font-black shadow-lg border border-orange-500 gap-1 text-[11px] font-sans">
+                            <div class="flex items-center space-x-1.5 font-sans">
+                                <span id="overlay-teams-abbrev" class="tracking-wide text-[10px] bg-black/30 px-1.5 py-0.5 rounded text-white font-sans">T1 vs T2</span>
+                                <span id="overlay-innings-score" class="text-xs border-l border-white/20 pl-1.5 font-sans font-bold">0-0 <span class="text-[9px] font-semibold opacity-90 font-sans">(0.0)</span></span>
+                                <span id="overlay-match-limit" class="text-[8px] opacity-80 font-normal text-white font-sans">(5 Overs)</span>
+                            </div>
+                            <!-- Current Over Delivery Log -->
+                            <div class="flex items-center space-x-0.5" id="overlay-over-log">
+                                <!-- Dots or runs of current over -->
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Live Run Rates & Targets -->
+                        <div class="flex justify-between items-center text-[8px] uppercase tracking-wider font-extrabold text-orange-400 px-1 font-sans">
+                            <span id="overlay-run-rates" class="font-sans">CRR: --</span>
+                            <span id="overlay-required-runs" class="text-white font-mono font-bold font-sans"></span>
+                        </div>
+
+                        <!-- Playback Controller Seek Bar (Rewind Option buttons) -->
+                        <div class="flex items-center space-x-1.5 pt-0.5 justify-start">
+                            <button onclick="handleRewind(10)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-600 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white transition font-bold shadow font-sans">
+                                <i class="fa-solid fa-backward text-[6px]"></i> <span>Rewind 10s</span>
+                            </button>
+                            <button onclick="handleRewind(20)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-600 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white transition font-bold shadow font-sans">
+                                <i class="fa-solid fa-backward text-[6px]"></i> <span>Rewind 20s</span>
+                            </button>
+                            <button onclick="resumeLiveStream()" class="px-1.5 py-0.5 bg-green-600/80 hover:bg-green-700 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white transition font-bold shadow font-sans">
+                                <i class="fa-solid fa-play text-[6px]"></i> <span>Resume</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match Archives & Video Playback Section -->
+                <div id="video-archive-block-container" class="hidden bg-gray-900 border-b border-gray-800 p-3.5 space-y-2">
+                    <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 flex items-center space-x-1.5 font-sans">
+                        <i class="fa-solid fa-circle-play"></i>
+                        <span>Match Video Archive (Available for 60 hrs)</span>
+                    </h4>
+                    <div id="video-archive-grid" class="grid grid-cols-2 gap-2.5 font-sans">
+                        <!-- Dynamic playback items -->
+                    </div>
+                </div>
+
+                <!-- Bottom: Dynamic Tabs (Fit nicely in single view) -->
+                <div class="flex flex-col flex-1 bg-gray-900 overflow-hidden font-sans">
+                    <div class="flex border-b border-gray-800 bg-black text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        <button onclick="switchLiveTab('scorecard')" id="live-tab-btn-scorecard" class="flex-1 py-3 text-center border-b-2 border-orange-500 text-white font-black">Scorecard</button>
+                        <button onclick="switchLiveTab('fixtures')" id="live-tab-btn-fixtures" class="flex-1 py-3 text-center border-b-2 border-transparent font-black">Fixtures</button>
+                        <button onclick="switchLiveTab('standings')" id="live-tab-btn-standings" class="flex-1 py-3 text-center border-b-2 border-transparent font-black">Standings</button>
+                        <button onclick="switchLiveTab('awards')" id="live-tab-btn-awards" class="flex-1 py-3 text-center border-b-2 border-transparent font-black">Awards</button>
+                        <button onclick="switchLiveTab('videos')" id="live-tab-btn-videos" class="flex-1 py-3 text-center border-b-2 border-transparent font-black font-semibold">Videos</button>
+                    </div>
+
+                    <div class="p-4 flex-1 overflow-y-auto font-sans">
+                        <!-- Scorecard Tab Pane -->
+                        <div id="live-panel-scorecard" class="space-y-4 animate-fade-in font-sans">
+                            <!-- Populated dynamically with detailed Cricbuzz style dual-innings scoreboard -->
+                        </div>
+
+                        <!-- Fixtures Tab Pane -->
+                        <div id="live-panel-fixtures" class="hidden space-y-4 animate-fade-in font-sans">
+                            <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans">Tournament Schedule</h4>
+                            <div id="ipl-fixtures-container" class="space-y-3 font-sans">
+                                <!-- Dynamic IPL Match Cards -->
+                            </div>
+                        </div>
+
+                        <!-- Standings Tab Pane -->
+                        <div id="live-panel-standings" class="hidden space-y-3 animate-fade-in font-sans">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-[11px] text-left font-sans">
+                                    <thead>
+                                        <tr class="border-b border-gray-800 text-gray-500 font-bold uppercase text-[9px] font-sans">
+                                            <th class="py-1.5 text-white font-semibold font-sans">Team</th>
+                                            <th class="py-1.5 text-center text-white font-semibold font-sans">P</th>
+                                            <th class="py-1.5 text-center text-white font-semibold font-sans">W</th>
+                                            <th class="py-1.5 text-center text-white font-semibold font-sans">PTS</th>
+                                            <th class="py-1.5 text-center text-white font-semibold font-sans">NRR</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="live-table-standings">
+                                        <!-- Calculated Standings -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Awards Tab Pane -->
+                        <div id="live-panel-awards" class="hidden space-y-3 animate-fade-in font-sans">
+                            <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans">Cap Leaders</h4>
+                            <div class="space-y-2.5">
+                                <!-- Orange Cap Card -->
+                                <div onclick="openStatsLeaderboardModal('runs')" class="bg-amber-600/10 border border-amber-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-amber-500/40 transition shadow shadow-amber-500/5">
+                                    <div>
+                                        <span class="bg-amber-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded uppercase font-sans">Orange Cap</span>
+                                        <h3 id="orange-cap-name" class="text-xs font-black mt-1 text-white text-md font-sans">Awaiting Stats</h3>
+                                        <span class="text-[8px] text-orange-400 font-semibold uppercase tracking-wider block mt-1 font-sans">Click to view sequence</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span id="orange-cap-runs" class="text-lg font-black text-amber-500 font-mono">0</span> <span class="text-[10px] text-gray-400 font-bold font-semibold font-sans font-bold">Runs</span>
+                                    </div>
+                                </div>
+
+                                <!-- Purple Cap Card -->
+                                <div onclick="openStatsLeaderboardModal('wickets')" class="bg-fuchsia-600/10 border border-fuchsia-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-fuchsia-500/40 transition shadow shadow-fuchsia-500/5">
+                                    <div>
+                                        <span class="bg-fuchsia-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase font-sans">Purple Cap</span>
+                                        <h3 id="purple-cap-name" class="text-xs font-black mt-1 text-white text-md font-sans font-bold font-sans">Awaiting Stats</h3>
+                                        <span class="text-[8px] text-fuchsia-400 font-semibold uppercase tracking-wider block mt-1 font-sans font-bold animate-pulse font-sans">Click to view sequence</span>
+                                    </div>
+                                    <div class="text-right font-sans">
+                                        <span id="purple-cap-wickets" class="text-lg font-black text-fuchsia-500 font-mono font-sans font-bold">0</span> <span class="text-[10px] text-gray-400 font-bold font-semibold font-bold font-sans font-sans">Wkts</span>
+                                    </div>
+                                </div>
+
+                                <!-- MVP Card -->
+                                <div onclick="openStatsLeaderboardModal('mvp')" class="bg-emerald-600/10 border border-emerald-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-emerald-500/40 transition shadow shadow-emerald-500/5">
+                                    <div>
+                                        <span class="bg-emerald-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded uppercase font-sans font-bold">Tournament MVP</span>
+                                        <h3 id="mvp-name" class="text-xs font-black mt-1 text-white text-md font-sans font-sans">Awaiting Stats</h3>
+                                        <span class="text-[8px] text-emerald-400 font-semibold uppercase tracking-wider block mt-1 font-sans font-sans">Click to view sequence</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span id="mvp-points" class="text-lg font-black text-emerald-500 font-mono font-sans font-bold">0</span> <span class="text-[10px] text-gray-400 font-bold font-semibold font-sans font-sans">Pts</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Videos Tab Pane -->
+                        <div id="live-panel-videos" class="hidden space-y-4 animate-fade-in font-sans">
+                            <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans font-bold">Match Broadcast Archive (60 hrs)</h4>
+                            <div id="videos-tab-grid" class="grid grid-cols-2 gap-3 font-sans">
+                                <!-- Populated dynamically with exact same premium card layout! -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <!-- Global Modals Section (Directly under body to guarantee z-index overlays receive click events perfectly) -->
+    <!-- Global Modals Section (Moved directly under body to guarantee z-index overlays receive click events perfectly with zero structural interference) -->
     
     <!-- 1. Auth Gate Overlay -->
     <div id="auth-gate-modal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
@@ -452,9 +747,9 @@
                 <i class="fa-solid fa-lock font-sans"></i>
             </div>
             <h2 class="text-xl font-extrabold mb-2 font-sans font-bold">Sign-In Required</h2>
-            <p class="text-gray-400 text-xs mb-6 font-semibold font-sans">Authenticate using Google or continue as a Guest Scorer to start broadcasting.</p>
+            <p class="text-gray-400 text-xs mb-6 font-semibold font-sans font-sans">Authenticate using Google or continue as a Guest Scorer to start broadcasting.</p>
             
-            <div class="space-y-3 font-sans">
+            <div class="space-y-3 font-sans font-sans">
                 <button onclick="loginWithGoogle()" class="w-full py-3 px-4 bg-orange-600 hover:bg-orange-700 active:translate-y-0.5 transform transition font-bold rounded-xl flex items-center justify-center space-x-3 text-white text-sm shadow font-sans">
                     <i class="fa-brands fa-google text-md font-sans"></i>
                     <span>Continue with Google</span>
@@ -466,31 +761,31 @@
                 </button>
             </div>
             
-            <button onclick="closeAuthGate()" class="mt-4 text-xs text-gray-555 hover:text-gray-400 underline font-semibold font-sans font-bold">Browse Public Directories</button>
+            <button onclick="closeAuthGate()" class="mt-4 text-xs text-gray-555 hover:text-gray-400 underline font-semibold font-sans font-bold font-sans">Browse Public Directories</button>
         </div>
     </div>
 
     <!-- 2. VS Intro Overlay Slide Animation -->
     <div id="vs-intro-overlay" class="hidden fixed inset-0 bg-black z-50 flex flex-col items-center justify-center space-y-6 animate-fade-in font-sans">
-        <div class="text-center px-4">
+        <div class="text-center px-4 font-sans">
             <span class="text-[10px] font-black tracking-widest text-orange-500 uppercase font-sans font-bold">Tournament Registered</span>
-            <h2 id="vs-intro-league" class="text-2xl font-black mt-2 leading-tight font-sans font-black">Elite Premier Division</h2>
+            <h2 id="vs-intro-league" class="text-2xl font-black mt-2 leading-tight font-sans font-black font-sans">Elite Premier Division</h2>
         </div>
-        <div class="flex items-center space-x-6 text-center">
-            <div class="animate-pulse w-24">
-                <div id="vs-t1-badge" class="w-16 h-16 bg-orange-600/20 text-orange-500 border border-orange-500 rounded-full flex items-center justify-center text-xl font-extrabold mx-auto mb-2 font-sans font-black">T1</div>
-                <p id="vs-t1-name" class="font-bold text-xs truncate font-sans font-bold">Team One</p>
+        <div class="flex items-center space-x-6 text-center font-sans">
+            <div class="animate-pulse w-24 font-sans">
+                <div id="vs-t1-badge" class="w-16 h-16 bg-orange-600/20 text-orange-500 border border-orange-500 rounded-full flex items-center justify-center text-xl font-extrabold mx-auto mb-2 font-sans font-black font-sans">T1</div>
+                <p id="vs-t1-name" class="font-bold text-xs truncate font-sans font-bold font-sans">Team One</p>
             </div>
-            <div class="text-2xl font-black text-gray-500 italic font-sans font-bold">VS</div>
-            <div class="animate-pulse w-24">
-                <div id="vs-t2-badge" class="w-16 h-16 bg-green-600/20 text-green-500 border border-green-500 rounded-full flex items-center justify-center text-xl font-extrabold mx-auto mb-2 font-sans font-black">T2</div>
-                <p id="vs-t2-name" class="font-bold text-xs truncate font-sans font-bold">Team Two</p>
+            <div class="text-2xl font-black text-gray-500 italic font-sans font-bold font-sans">VS</div>
+            <div class="animate-pulse w-24 font-sans">
+                <div id="vs-t2-badge" class="w-16 h-16 bg-green-600/20 text-green-500 border border-green-500 rounded-full flex items-center justify-center text-xl font-extrabold mx-auto mb-2 font-sans font-black font-sans">T2</div>
+                <p id="vs-t2-name" class="font-bold text-xs truncate font-sans font-bold font-sans">Team Two</p>
             </div>
         </div>
-        <p class="text-[10px] text-gray-500 tracking-wider font-semibold font-sans font-bold">Generating Dynamic IPL Fixtures...</p>
+        <p class="text-[10px] text-gray-500 tracking-wider font-semibold font-sans font-bold font-sans">Generating Dynamic IPL Fixtures...</p>
     </div>
 
-    <!-- 3. Wicket Options Selection Modal (Free Hit aware UI, blocks invalid methods of dismissal) -->
+    <!-- 3. Wicket Options Selection Modal (Free Hit Aware UI, perfectly blocks invalid choices) -->
     <div id="wicket-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 animate-fade-in shadow-2xl">
             <h4 class="text-md font-black text-red-500 font-sans font-bold">How did the wicket fall?</h4>
@@ -508,17 +803,17 @@
 
     <!-- 4. No Ball Runs Modal Selection Pop-up -->
     <div id="no-ball-runs-modal" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
-        <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl font-sans">
+        <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl">
             <h4 class="text-md font-black text-yellow-500 text-center uppercase tracking-wider font-sans font-black">No Ball Runs Selection</h4>
-            <p class="text-[10px] text-gray-400 text-center font-semibold font-sans font-sans">Select batsman runs on this delivery. Bowler will be charged +1 extra run and Free Hit will be awarded!</p>
-            <div class="grid grid-cols-4 gap-1.5 text-xs text-white font-sans font-bold font-sans">
+            <p class="text-[10px] text-gray-400 text-center font-semibold font-sans">Select batsman runs on this delivery. Bowler will be charged +1 extra run and Free Hit will be awarded!</p>
+            <div class="grid grid-cols-4 gap-1.5 text-xs text-white font-sans font-bold">
                 <button onclick="commitNoBallRuns(0)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">0 Run</button>
                 <button onclick="commitNoBallRuns(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">1 Run</button>
                 <button onclick="commitNoBallRuns(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">2 Run</button>
                 <button onclick="commitNoBallRuns(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">3 Run</button>
                 <button onclick="commitNoBallRuns(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-center col-span-2 transition shadow font-bold font-sans">4 Run</button>
-                <button onclick="commitNoBallRuns(5)" class="py-2.5 bg-gray-850 hover:bg-gray-800 border border-gray-750 font-bold rounded-lg text-center col-span-2 transition font-bold font-sans">5 Run</button>
-                <button onclick="commitNoBallRuns(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-center col-span-4 transition shadow font-bold font-sans">6 Run</button>
+                <button onclick="commitNoBallRuns(5)" class="py-2.5 bg-gray-850 hover:bg-gray-800 border border-gray-750 font-bold rounded-lg text-center col-span-2 transition font-bold font-sans font-semibold">5 Run</button>
+                <button onclick="commitNoBallRuns(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-center col-span-4 transition shadow font-bold font-sans font-bold">6 Run</button>
             </div>
             <button onclick="document.getElementById('no-ball-runs-modal').classList.add('hidden')" class="w-full py-2 text-xs text-gray-400 hover:text-white underline text-center font-bold font-sans">Cancel</button>
         </div>
@@ -527,8 +822,8 @@
     <!-- 5. Over Change Bowler Selection Modal -->
     <div id="bowler-change-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl animate-fade-in font-sans">
-            <h4 class="text-md font-black text-orange-500 uppercase tracking-wider font-sans font-bold">Select Next Bowler</h4>
-            <p class="text-[9px] text-gray-400 font-semibold font-sans">Note: Immediate previous bowler cannot bowl consecutive overs.</p>
+            <h4 class="text-md font-black text-orange-500 uppercase tracking-wider font-sans font-bold font-sans">Select Next Bowler</h4>
+            <p class="text-[9px] text-gray-400 font-semibold font-sans font-sans">Note: Immediate previous bowler cannot bowl consecutive overs.</p>
             <select id="select-next-bowler" class="w-full bg-black border border-gray-800 rounded p-2 text-xs text-white font-bold font-sans">
                 <!-- Populated dynamically with non-consecutive bowling squad options -->
             </select>
@@ -540,7 +835,7 @@
     <div id="batsman-replacement-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl animate-fade-in font-sans">
             <h4 class="text-md font-black text-red-500 uppercase tracking-wider font-sans font-bold">Batsman Dismissed!</h4>
-            <p class="text-[9px] text-gray-400 font-semibold font-sans">Choose incoming batsman. Dismissed players cannot bat again.</p>
+            <p class="text-[9px] text-gray-400 font-semibold font-sans font-sans font-semibold">Choose incoming batsman. Dismissed players cannot bat again.</p>
             <select id="select-incoming-batsman" class="w-full bg-black border border-gray-800 rounded p-2 text-xs text-white font-bold font-sans">
                 <!-- Populated with non-dismissed batting squad options -->
             </select>
@@ -550,7 +845,7 @@
 
     <!-- 7. Stats Leaderboard Modal -->
     <div id="stats-leaderboard-modal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
-        <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl font-sans font-sans">
+        <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl font-sans">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3 font-sans">
                 <h3 id="leaderboard-modal-title" class="text-xs font-black uppercase tracking-wider text-orange-500 font-sans font-bold">Cap Leaders</h3>
                 <button onclick="closeStatsLeaderboardModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg transition font-semibold font-sans">Close</button>
@@ -558,12 +853,12 @@
             
             <!-- Modal filter toggle -->
             <div class="flex space-x-2 bg-black p-1 rounded-lg text-[10px] font-bold font-sans">
-                <button id="btn-leaderboard-top10" onclick="toggleLeaderboardScope('top10')" class="flex-1 py-1.5 rounded-md text-center bg-orange-600 text-white transition font-sans font-bold font-sans">Top 10</button>
-                <button id="btn-leaderboard-seeall" onclick="toggleLeaderboardScope('seeall')" class="flex-1 py-1.5 rounded-md text-center text-gray-400 transition font-sans font-bold font-sans">See All</button>
+                <button id="btn-leaderboard-top10" onclick="toggleLeaderboardScope('top10')" class="flex-1 py-1.5 rounded-md text-center bg-orange-600 text-white transition font-sans font-bold">Top 10</button>
+                <button id="btn-leaderboard-seeall" onclick="toggleLeaderboardScope('seeall')" class="flex-1 py-1.5 rounded-md text-center text-gray-400 transition font-sans font-bold">See All</button>
             </div>
 
             <!-- List container -->
-            <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white font-sans" id="leaderboard-modal-list">
+            <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white font-sans" id="leaderboard-modal-list font-sans">
                 <!-- Sorted players list goes here -->
             </div>
         </div>
@@ -811,7 +1106,6 @@
             renderLeaguesList();
         }
 
-        font-sans
         function calculateSearchDensity(leagueName, query) {
             if (!leagueName) return -1;
             if (!query) return 1;
@@ -901,14 +1195,14 @@
                 let playerInputsHTML = "";
                 for (let j = 1; j <= pCount; j++) {
                     playerInputsHTML += `
-                        <div class="grid grid-cols-12 gap-1.5 p-1.5 bg-gray-900/50 rounded border border-gray-800/80 items-center text-white font-sans font-bold font-sans">
+                        <div class="grid grid-cols-12 gap-1.5 p-1.5 bg-gray-900/50 rounded border border-gray-800/80 items-center text-white font-sans font-bold">
                             <div class="col-span-4">
                                 <label class="block text-[8px] text-gray-400 font-semibold font-sans">Player ${j} Name</label>
                                 <input type="text" id="team-${i}-player-${j}-name" placeholder="Player ${j}" class="w-full bg-black border border-gray-700 rounded p-1 text-[10px] text-white font-bold font-sans">
                             </div>
                             <div class="col-span-3">
                                 <label class="block text-[8px] text-gray-400 font-semibold font-sans">Role</label>
-                                <select id="team-${i}-player-${j}-role" class="w-full bg-black border border-gray-700 rounded p-1 text-[10px] text-white font-sans font-bold">
+                                <select id="team-${i}-player-${j}-role" class="w-full bg-black border border-gray-700 rounded p-1 text-[10px] text-white font-sans font-bold font-sans">
                                     <option value="Batsman">Batsman</option>
                                     <option value="Bowler">Bowler</option>
                                     <option value="All-Rounder">All-Rounder</option>
@@ -916,7 +1210,7 @@
                                 </select>
                             </div>
                             <div class="col-span-3">
-                                <label class="block text-[8px] text-gray-400 font-semibold font-sans font-sans">Image URL</label>
+                                <label class="block text-[8px] text-gray-400 font-semibold font-sans">Image URL</label>
                                 <input type="text" id="team-${i}-player-${j}-img" placeholder="https://..." class="w-full bg-black border border-gray-700 rounded p-1 text-[10px] text-white font-semibold font-sans">
                             </div>
                             <div class="col-span-2 text-center flex flex-col items-center">
@@ -928,7 +1222,7 @@
                 }
 
                 rosterArea.innerHTML += `
-                    <div class="border border-gray-800 p-3 rounded-xl space-y-2 bg-black text-white shadow font-sans">
+                    <div class="border border-gray-800 p-3 rounded-xl space-y-2 bg-black text-white shadow">
                         <div class="flex justify-between items-center">
                             <h4 class="text-[10px] font-black text-orange-500 uppercase tracking-widest font-sans">Team ${i} Specifications</h4>
                             <input type="text" id="team-${i}-name" placeholder="Team ${i} Name" class="bg-black border border-gray-800 rounded py-1 px-2 text-xs text-white font-bold w-32 shadow-inner">
@@ -1092,7 +1386,7 @@
                     { home: 'C', away: 'I', round: 16 }, { home: 'D', away: 'J', round: 17 }, { home: 'E', away: 'I', round: 18 },
                     { home: 'F', away: 'J', round: 19 }, { home: 'G', away: 'I', round: 20 }, { home: 'H', away: 'J', round: 21 },
                     { home: 'A', away: 'D', round: 22 }, { home: 'B', away: 'C', round: 23 }, { home: 'E', away: 'H', round: 24 },
-                    { home: 'F', away: 'G', round: 25 }, { home: 'I', away: 'D', rounded: 26 }, { home: 'J', away: 'C', round: 27 },
+                    { home: 'F', away: 'G', round: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', round: 27 },
                     { home: 'A', away: 'F', round: 28 }, { home: 'B', away: 'E', rounded: 29 }, { home: 'C', away: 'H', round: 30 },
                     { home: 'D', away: 'G', round: 31 }, { home: 'I', away: 'B', rounded: 32 }, { home: 'J', away: 'A', round: 33 },
                     { home: 'E', away: 'C', round: 34 }, { home: 'F', away: 'D', round: 35 }, { home: 'G', away: 'B', round: 36 },
@@ -1364,7 +1658,7 @@
                                 <span class="font-semibold">Overs: ${oversLimit} | Teams: ${teamCount}</span>
                                 <span class="font-mono text-orange-400 font-bold">${startDate}</span>
                             </div>
-                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow">
+                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-850 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow shadow-lg">
                                 <span>View Broadcast</span>
                                 <i class="fa-solid fa-arrow-right text-xs"></i>
                             </button>
@@ -1431,7 +1725,7 @@
                 const key = item.key;
                 const league = item.league;
                 const activeLabel = (league.liveMatch && league.liveMatch.active) 
-                    ? `<span class="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse shadow text-white font-sans font-bold">LIVE</span>` 
+                    ? `<span class="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse shadow text-white">LIVE</span>` 
                     : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
 
                 const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
@@ -1529,18 +1823,18 @@
 
                             <div class="space-y-1.5">
                                 <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest font-semibold">Select Match</label>
-                                <select id="match-select-${key}" onchange="initManagedLeaguesTickers()" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold font-sans">
+                                <select id="match-select-${key}" onchange="initManagedLeaguesTickers()" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold">
                                     ${optionsHTML || `<option disabled>All matches completed</option>`}
                                 </select>
                             </div>
 
                             <!-- Dynamic Countdown and Console trigger button wrapper -->
                             <div class="space-y-2 pt-1">
-                                <div id="countdown-banner-${key}" class="hidden text-center py-2 bg-black border border-red-500/20 rounded-xl shadow-inner font-sans">
-                                    <p class="text-[9px] text-red-500 font-black uppercase tracking-widest font-sans">Awaiting scheduled start time</p>
+                                <div id="countdown-banner-${key}" class="hidden text-center py-2 bg-black border border-red-500/20 rounded-xl shadow-inner">
+                                    <p class="text-[9px] text-red-500 font-black uppercase tracking-widest">Awaiting scheduled start time</p>
                                     <p id="countdown-timer-${key}" class="text-xs font-mono font-bold text-white mt-0.5">--:--:--</p>
                                 </div>
-                                <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white transition shadow-md font-sans" ${!optionsHTML ? 'disabled' : ''}>
+                                <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white transition shadow-md" ${!optionsHTML ? 'disabled' : ''}>
                                     Open Scorer Console
                                 </button>
                             </div>
@@ -1588,12 +1882,12 @@
                         if (isMatchCurrentlyActive) {
                             banner.classList.add("hidden");
                             button.removeAttribute("disabled");
-                            button.className = "w-full py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white animate-pulse shadow-md transition font-sans";
+                            button.className = "w-full py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white animate-pulse shadow-md transition";
                             button.textContent = "RESUME LIVE MATCH";
                         } else if (now < targetTime) {
                             banner.classList.remove("hidden");
                             button.setAttribute("disabled", "true");
-                            button.className = "w-full py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase tracking-wider cursor-not-allowed transition font-sans";
+                            button.className = "w-full py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase tracking-wider cursor-not-allowed transition";
                             button.textContent = "Locked (Scheduled Start pending)";
 
                             const diff = targetTime - now;
@@ -1606,7 +1900,7 @@
                         } else {
                             banner.classList.add("hidden");
                             button.removeAttribute("disabled");
-                            button.className = "w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white transition shadow-md font-sans";
+                            button.className = "w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white transition shadow-md";
                             button.textContent = "START LIVE / Open Console";
                         }
                     }
@@ -1682,7 +1976,7 @@
         function executeCoinFlip() {
             const coin = document.getElementById("toss-coin");
             const side = Math.random() < 0.5 ? "heads" : "tails";
-            coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none font-sans";
+            coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none";
             
             // Hyper-fast transition flip
             if (side === "heads") {
@@ -1741,7 +2035,6 @@
             }, 350);
         }
 
-        // Updated setupLineupOptions to display player roles on batsman & bowler selection dropdowns
         function setupLineupOptions(battingTeam, bowlingTeam) {
             const league = allLeagues[selectedScorerLeagueId];
             const bTeamObj = league.teams.find(t => t.name === battingTeam);
@@ -1757,15 +2050,13 @@
 
             bTeamObj.roster.forEach(player => {
                 const pName = typeof player === 'string' ? player : player.name;
-                const pRole = typeof player === 'string' ? 'Batsman' : player.role;
-                sStriker.innerHTML += `<option value="${pName}">${pName} (${pRole})</option>`;
-                sNonStriker.innerHTML += `<option value="${pName}">${pName} (${pRole})</option>`;
+                sStriker.innerHTML += `<option value="${pName}">${pName}</option>`;
+                sNonStriker.innerHTML += `<option value="${pName}">${pName}</option>`;
             });
 
             bowlTeamObj.roster.forEach(player => {
                 const pName = typeof player === 'string' ? player : player.name;
-                const pRole = typeof player === 'string' ? 'Bowler' : player.role;
-                sBowler.innerHTML += `<option value="${pName}">${pName} (${pRole})</option>`;
+                sBowler.innerHTML += `<option value="${pName}">${pName}</option>`;
             });
         }
 
@@ -1822,7 +2113,7 @@
                 }
 
                 document.getElementById("scorer-metric-score").innerHTML = `
-                    ${data.runs} - ${data.wickets} <span class="text-sm font-medium text-gray-400 font-sans">(${data.overs})</span>
+                    ${data.runs} - ${data.wickets} <span class="text-sm font-medium text-gray-400">(${data.overs})</span>
                 `;
                 document.getElementById("scorer-metric-striker").textContent = `Striker: ${data.striker || '--'}`;
                 document.getElementById("scorer-metric-nonstriker").textContent = `Non-Striker: ${data.nonStriker || '--'}`;
@@ -1870,7 +2161,6 @@
         }
 
         // Action scoring events logic with Strike Rotation (1, 3, 5 Swap Striker)
-        // Fixed: overCompleted checks strictly evaluate legal delivery whole number conversions (e.g. 1.0, 2.0 etc.)
         function scoreBalls(runs) {
             const league = allLeagues[selectedScorerLeagueId];
             if (!league) return;
@@ -1903,6 +2193,7 @@
                     }
 
                     data.runs += runs;
+                    const prevOvers = data.overs;
                     data.overs = incrementOverBalls(data.overs);
                     data.overLog = data.overLog || [];
                     
@@ -1919,8 +2210,8 @@
                         data.nonStriker = temp;
                     }
 
-                    // Over finished bowler switch check (Strictly sensing integer overs, e.g. 1.0, 2.0, 3.0 etc.)
-                    const overCompleted = Number.isInteger(data.overs) && data.overs > 0;
+                    // Over finished bowler switch check
+                    const overCompleted = Math.floor(data.overs) > Math.floor(prevOvers);
                     if (overCompleted) {
                         data.previousBowler = data.currentBowler;
                         data.needsBowlerChange = true;
@@ -1993,6 +2284,7 @@
                         }
 
                         data.runs += parsed;
+                        const prevOvers = data.overs;
                         data.overs = incrementOverBalls(data.overs);
                         data.overLog = data.overLog || [];
                         
@@ -2009,7 +2301,7 @@
                             data.nonStriker = temp;
                         }
 
-                        const overCompleted = Number.isInteger(data.overs) && data.overs > 0;
+                        const overCompleted = Math.floor(data.overs) > Math.floor(prevOvers);
                         if (overCompleted) {
                             data.previousBowler = data.currentBowler;
                             data.needsBowlerChange = true;
@@ -2295,11 +2587,12 @@
                             data.batsmanStats[striker].balls += 1;
                         }
 
+                        const prevOvers = data.overs;
                         data.overs = incrementOverBalls(data.overs);
                         data.overLog = data.overLog || [];
                         data.overLog.push("0(FH)");
 
-                        const overCompleted = Number.isInteger(data.overs) && data.overs > 0;
+                        const overCompleted = Math.floor(data.overs) > Math.floor(prevOvers);
                         if (overCompleted) {
                             data.previousBowler = data.currentBowler;
                             data.needsBowlerChange = true;
@@ -2341,11 +2634,12 @@
                     }
 
                     data.wickets += 1;
+                    const prevOvers = data.overs;
                     data.overs = incrementOverBalls(data.overs);
                     data.overLog = data.overLog || [];
                     data.overLog.push("W");
 
-                    const overCompleted = Number.isInteger(data.overs) && data.overs > 0;
+                    const overCompleted = Math.floor(data.overs) > Math.floor(prevOvers);
                     if (overCompleted) {
                         data.previousBowler = data.currentBowler;
                         data.needsBowlerChange = true;
@@ -2462,7 +2756,6 @@
 
         // Automatic Inning & Match termination evaluation (Cricket Rules) with Super Over checks
         // Re-designed to immediately and automatically transition tied games into Super Overs in real-time
-        // Removed dynamic setting of needsBowlerChange from evaluateMatchProgress (strictly delegated to legal deliveries only)
         function evaluateMatchProgress(data, league) {
             const oversLimit = parseFloat(data.isSuperOver ? 1.0 : data.oversLimit) || 5.0;
             const playersCount = parseInt(league.metadata.playersCount) || 11;
@@ -2471,6 +2764,9 @@
             if (!data.inning) {
                 data.inning = 1;
             }
+
+            const overDec = overToDecimal(data.overs);
+            const isOverEnded = (overDec > 0) && (overDec % 1 === 0);
 
             if (data.inning === 1) {
                 const isAllOut = data.wickets >= maxWickets;
@@ -2498,6 +2794,10 @@
                     data.bowlingTeam = prevBatting;
 
                     data.needsInning2Lineup = true; 
+                } else {
+                    if (isOverEnded) {
+                        data.needsBowlerChange = true;
+                    }
                 }
             } else if (data.inning === 2) {
                 const target = data.targetRuns;
@@ -2553,6 +2853,10 @@
                         data.outcome = data.isSuperOver 
                             ? `[SUPER OVER] ${data.bowlingTeam} won!` 
                             : `${data.bowlingTeam} won by ${target - 1 - data.runs} runs!`;
+                    }
+                } else {
+                    if (isOverEnded) {
+                        data.needsBowlerChange = true;
                     }
                 }
             }
@@ -3339,7 +3643,7 @@
             }
 
             return `
-                <div class="bg-black border border-gray-800 p-3.5 rounded-2xl space-y-3 shadow-lg font-sans">
+                <div class="bg-black border border-gray-800 p-3.5 rounded-2xl space-y-3 shadow-lg">
                     <div class="flex justify-between items-center bg-gradient-to-r from-gray-900 to-black px-3 py-2 rounded-xl border border-gray-800/85">
                         <span class="text-xs font-black uppercase text-orange-500 tracking-wider">🏏 ${teamName} Batting</span>
                         <span class="text-xs font-mono font-black text-white">${scoreData.runs} - ${scoreData.wickets} <span class="text-[9px] text-gray-400">(${scoreData.overs} Ov)</span></span>
@@ -3427,14 +3731,14 @@
                     if (matchCountdownStr) matchCountdownStr.textContent = "MATCH TIED! SUPER OVER IN PROGRESS";
                     if (scoreElement) {
                         scoreElement.innerHTML = `
-                            ${data.runs}-${data.wickets} <span class="text-[10px] font-semibold opacity-90 font-sans font-sans">(${data.overs})</span> <span class="text-[8px] bg-yellow-500 text-black px-1 rounded ml-1 font-bold">SUPER OVER</span>
+                            ${data.runs}-${data.wickets} <span class="text-[10px] font-semibold opacity-90 font-sans">(${data.overs})</span> <span class="text-[8px] bg-yellow-500 text-black px-1 rounded ml-1 font-bold">SUPER OVER</span>
                         `;
                     }
                 } else {
                     if (matchCountdownStr) matchCountdownStr.textContent = data.isSuperOver ? `LIVE SUPER OVER: ${data.battingTeam} is batting` : `LIVE: ${data.battingTeam} is batting`;
                     if (scoreElement) {
                         scoreElement.innerHTML = `
-                            ${data.runs}-${data.wickets} <span class="text-[10px] font-semibold opacity-90 font-sans font-sans">(${data.overs})</span> ${data.isSuperOver ? '<span class="text-[8px] bg-yellow-500 text-black px-1 rounded ml-1 font-bold font-sans">SO</span>' : ''}
+                            ${data.runs}-${data.wickets} <span class="text-[10px] font-semibold opacity-90 font-sans">(${data.overs})</span> ${data.isSuperOver ? '<span class="text-[8px] bg-yellow-500 text-black px-1 rounded ml-1 font-bold">SO</span>' : ''}
                         `;
                     }
                 }
@@ -3502,15 +3806,15 @@
                 
                 let subTitleStatus = "";
                 if (isLiveSelected) {
-                    subTitleStatus = `<span class="bg-red-600 text-white font-bold px-2 py-0.5 rounded text-[8px] animate-pulse uppercase tracking-widest ml-2 shadow font-sans font-sans">LIVE NOW</span>`;
+                    subTitleStatus = `<span class="bg-red-600 text-white font-bold px-2 py-0.5 rounded text-[8px] animate-pulse uppercase tracking-widest ml-2 shadow font-sans">LIVE NOW</span>`;
                 } else if (matchToShow && matchToShow.status === "COMPLETED") {
-                    subTitleStatus = `<span class="bg-green-600 text-white font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 shadow font-sans font-sans">COMPLETED</span>`;
+                    subTitleStatus = `<span class="bg-green-600 text-white font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 shadow font-sans">COMPLETED</span>`;
                 } else {
-                    subTitleStatus = `<span class="bg-gray-800 text-gray-400 font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 font-semibold font-bold font-sans font-sans">UPCOMING</span>`;
+                    subTitleStatus = `<span class="bg-gray-800 text-gray-400 font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 font-semibold font-bold font-sans">UPCOMING</span>`;
                 }
 
                 let headerHTML = `
-                    <div class="bg-gray-950 border border-gray-800 p-3.5 rounded-xl flex justify-between items-center shadow-inner font-sans">
+                    <div class="bg-gray-950 border border-gray-800 p-3.5 rounded-xl flex justify-between items-center shadow-inner">
                         <div>
                             <h4 class="text-xs font-black text-white uppercase tracking-wider font-sans">${matchTitleText}</h4>
                             <p class="text-[9px] text-gray-400 font-bold font-sans">Viewing complete scorecard. Tap other fixtures to see their scores.</p>
@@ -3786,7 +4090,7 @@
                     <div class="flex items-center justify-between p-2.5 bg-black rounded-xl border border-gray-800">
                         <div class="flex items-center space-x-3">
                             <span class="w-6 text-center text-xs ${rankColor}">#${idx + 1}</span>
-                            <span class="text-xs font-bold text-white font-sans">${p.name}</span>
+                            <span class="text-xs font-bold text-white">${p.name}</span>
                         </div>
                         <span class="text-xs font-mono font-bold text-orange-500">${scoreValue}</span>
                     </div>
@@ -3794,7 +4098,7 @@
             });
 
             if (displayPlayers.length === 0) {
-                listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center py-4 font-semibold font-sans">No records accumulated yet.</p>`;
+                listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center py-4 font-semibold">No records accumulated yet.</p>`;
             }
         }
 
@@ -3828,10 +4132,10 @@
                     }
 
                     container.innerHTML += `
-                        <div onclick="selectSpectatorFixture(${index})" class="bg-black border hover:border-orange-500/50 border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs cursor-pointer transition duration-300 shadow animate-fade-in font-sans">
-                            <div class="flex-1 space-y-1 font-sans">
+                        <div onclick="selectSpectatorFixture(${index})" class="bg-black border hover:border-orange-500/50 border-gray-800 rounded-xl p-3 flex justify-between items-center text-xs cursor-pointer transition duration-300 shadow animate-fade-in">
+                            <div class="flex-1 space-y-1">
                                 <p class="text-[9px] text-gray-400 uppercase font-black tracking-wider font-sans">Match ${index + 1} &bull; ${match.type}</p>
-                                <div class="flex items-center space-x-2 font-bold text-white font-sans">
+                                <div class="flex items-center space-x-2 font-bold text-white">
                                     <span class="font-sans">${generateShortName(match.homeTeam)}</span>
                                     <span class="text-gray-500 font-black">vs</span>
                                     <span class="font-sans">${generateShortName(match.awayTeam)}</span>
@@ -3932,11 +4236,11 @@
 
             list.forEach(item => {
                 tbody.innerHTML += `
-                    <tr class="border-b border-gray-800 text-[11px] text-white font-sans font-sans">
+                    <tr class="border-b border-gray-800 text-[11px] text-white font-sans">
                         <td class="py-2 font-bold font-sans">${generateShortName(item.name)}</td>
-                        <td class="text-center font-sans font-sans">${item.played}</td>
-                        <td class="text-center font-sans font-sans">${item.won}</td>
-                        <td class="text-center text-orange-500 font-extrabold font-sans font-sans">${item.points}</td>
+                        <td class="text-center font-sans">${item.played}</td>
+                        <td class="text-center font-sans">${item.won}</td>
+                        <td class="text-center text-orange-500 font-extrabold font-sans">${item.points}</td>
                         <td class="text-center font-mono ${item.nrr >= 0 ? 'text-green-500' : 'text-red-500'}">${item.nrr >= 0 ? '+' : ''}${item.nrr}</td>
                     </tr>
                 `;
@@ -3955,12 +4259,12 @@
                 if (league && league.metadata && league.metadata.ownerId === currentUser.uid) {
                     count++;
                     list.innerHTML += `
-                        <div class="flex items-center justify-between bg-black p-2.5 rounded-xl border border-gray-800 shadow font-sans font-sans">
+                        <div class="flex items-center justify-between bg-black p-2.5 rounded-xl border border-gray-800 shadow font-sans">
                             <div class="space-y-0.5 max-w-[200px] font-sans">
-                                <h4 class="text-xs font-bold text-white truncate font-sans">${league.metadata.name}</h4>
+                                <h4 class="text-xs font-bold text-white truncate font-sans font-bold">${league.metadata.name}</h4>
                                 <p class="text-[9px] text-gray-400 font-semibold font-sans font-sans">Short: ${league.metadata.shortName || generateShortName(league.metadata.name)}</p>
                             </div>
-                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-650 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans shadow font-sans font-sans">
+                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-650 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans shadow font-sans">
                                 <i class="fa-solid fa-trash-can font-sans"></i>
                                 <span>Delete</span>
                             </button>
@@ -3970,7 +4274,7 @@
             });
 
             if (count === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2 font-semibold font-sans font-sans">No leagues created by you yet.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-400 text-center py-2 font-semibold font-sans">No leagues created by you yet.</p>`;
             }
         }
 
@@ -4034,7 +4338,6 @@
                 });
             });
         }
-
         function fetchActiveCameramenCodes(leagueId) {
             db.ref(`leagues/${leagueId}/cameramen`).on('value', snapshot => {
                 const data = snapshot.val() || {};
@@ -4058,7 +4361,7 @@
 
                     list.innerHTML += `
                         <div class="flex items-center justify-between bg-black p-2 rounded-lg border border-gray-800 shadow font-sans">
-                            <span class="font-mono text-sm tracking-wider text-orange-500 font-black font-sans font-sans">${key}</span>
+                            <span class="font-mono text-sm tracking-wider text-orange-500 font-black font-sans">${key}</span>
                             ${status}
                         </div>
                     `;
@@ -4099,7 +4402,7 @@
             document.getElementById("cameraman-live-overlay").classList.remove("hidden");
             document.getElementById("cameraman-assigned-title").textContent = `Linked Feed: ${code}`;
 
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio:false })
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
                 .then(stream => {
                     localCameraStream = stream;
                     const preview = document.getElementById("cameraman-preview-video");
