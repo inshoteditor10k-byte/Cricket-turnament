@@ -388,7 +388,7 @@
                                 <span id="super-over-badge" class="hidden bg-yellow-500 text-black font-black text-[9px] px-2 py-0.5 rounded">SUPER OVER</span>
                             </div>
                         </div>
-                        <p class="text-2xl font-black text-white" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-555">(0.0)</span></p>
+                        <p class="text-2xl font-black text-white" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-400">(0.0)</span></p>
                         <div class="space-y-1 text-xs border-t border-gray-800 pt-2.5">
                             <p class="text-gray-400 font-bold" id="scorer-metric-striker">Striker: --</p>
                             <p class="text-gray-450 font-semibold" id="scorer-metric-nonstriker">Non-Striker: --</p>
@@ -655,7 +655,7 @@
 
                         <!-- Fixtures Tab Pane -->
                         <div id="live-panel-fixtures" class="hidden space-y-4 animate-fade-in font-sans">
-                            <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans">Tournament Schedule</h4>
+                            <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans font-bold">Tournament Schedule</h4>
                             <div id="ipl-fixtures-container" class="space-y-3 font-sans">
                                 <!-- Dynamic IPL Match Cards -->
                             </div>
@@ -683,7 +683,7 @@
 
                         <!-- Awards Tab Pane -->
                         <div id="live-panel-awards" class="hidden space-y-3 animate-fade-in font-sans">
-                            <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans">Cap Leaders</h4>
+                            <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans font-bold">Cap Leaders</h4>
                             <div class="space-y-2.5">
                                 <!-- Orange Cap Card -->
                                 <div onclick="openStatsLeaderboardModal('runs')" class="bg-amber-600/10 border border-amber-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-amber-500/40 transition shadow shadow-amber-500/5">
@@ -860,6 +860,31 @@
             <!-- List container -->
             <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white font-sans" id="leaderboard-modal-list">
                 <!-- Sorted players list goes here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. Cameraman Live Broadcast Overlay Container -->
+    <div id="cameraman-live-overlay" class="hidden fixed inset-0 bg-black z-50 flex flex-col font-sans">
+        <!-- Header bar inside live match view -->
+        <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10">
+            <div class="flex items-center space-x-2">
+                <span class="bg-red-600 text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded text-white animate-pulse shadow">CAMERAMAN</span>
+                <h3 id="cameraman-assigned-title" class="text-xs font-black text-white">Linked Feed: ------</h3>
+            </div>
+            <button onclick="stopBroadcasting()" class="text-xs text-gray-400 hover:text-white flex items-center space-x-1 font-semibold">
+                <i class="fa-solid fa-times-circle text-sm"></i>
+                <span>Disconnect</span>
+            </button>
+        </div>
+        <!-- Live stream device viewscreen feed -->
+        <div class="flex-1 bg-black relative flex items-center justify-center overflow-hidden">
+            <video id="cameraman-preview-video" class="w-full h-full object-cover" autoplay playsinline muted></video>
+            <canvas id="cameraman-capture-canvas" class="hidden"></canvas>
+            
+            <div class="absolute top-4 left-4 bg-black/75 px-3 py-1.5 rounded-xl border border-green-500/30 text-[10px] text-green-400 font-bold uppercase tracking-wider flex items-center space-x-1.5 shadow shadow-green-500/10">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                <span>Broadcasting Active</span>
             </div>
         </div>
     </div>
@@ -1106,6 +1131,10 @@
             renderLeaguesList();
         }
 
+        function handleSearch() {
+            renderLeaguesList();
+        }
+
         function calculateSearchDensity(leagueName, query) {
             if (!leagueName) return -1;
             if (!query) return 1;
@@ -1331,7 +1360,7 @@
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 },
                     { home: 'A', away: 'G', round: 4 }, { home: 'B', away: 'C', round: 5 }, { home: 'D', away: 'E', round: 6 },
                     { home: 'F', away: 'G', round: 7 }, { home: 'A', away: 'C', round: 8 }, { home: 'B', away: 'D', round: 9 },
-                    { home: 'E', away: 'G', round: 10 }, { home: 'A', away: 'D', round: 11 }, { home: 'B', away: 'E', round: 12 },
+                    { home: 'E', away: 'G', round: 10 }, { home: 'A', away: 'D', round: 11 }, { home: 'B', py: 'E', round: 12 },
                     { home: 'C', away: 'F', round: 13 }, { home: 'D', away: 'G', round: 14 }, { home: 'A', away: 'E', round: 15 },
                     { home: 'B', away: 'F', round: 16 }, { home: 'C', away: 'G', round: 17 }, { home: 'A', away: 'F', round: 18 },
                     { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'E', round: 20 }, { home: 'D', away: 'F', round: 21 }
@@ -2863,7 +2892,8 @@
                 }
             }
         }
-// Activates the Super Over protocol resets (Left as manual fallback option, but now automated on evaluate)
+
+        // Activates the Super Over protocol resets (Left as manual fallback option, but now automated on evaluate)
         function activateSuperOverMode() {
             if (!selectedScorerLeagueId) return;
             const league = allLeagues[selectedScorerLeagueId];
@@ -3816,7 +3846,7 @@
                 }
 
                 let headerHTML = `
-                    <div class="bg-gray-950 border border-gray-800 p-3.5 rounded-xl flex justify-between items-center shadow-inner">
+                    <div class="bg-gray-955 border border-gray-800 p-3.5 rounded-xl flex justify-between items-center shadow-inner">
                         <div>
                             <h4 class="text-xs font-black text-white uppercase tracking-wider font-sans">${matchTitleText}</h4>
                             <p class="text-[9px] text-gray-400 font-bold font-sans">Viewing complete scorecard. Tap other fixtures to see their scores.</p>
@@ -4379,13 +4409,15 @@
             }
 
             let found = false;
+            const assignedUid = currentUser ? currentUser.uid : 'guest_cameraman';
+
             Object.keys(allLeagues).forEach(leagueId => {
                 const league = allLeagues[leagueId];
                 if (league.cameramen && league.cameramen[code]) {
                     found = true;
                     db.ref(`leagues/${leagueId}/cameramen/${code}`).update({
                         active: true,
-                        assignedTo: currentUser.uid
+                        assignedTo: assignedUid
                     }).then(() => {
                         currentCameramanKey = code;
                         currentCameramanLeagueId = leagueId;
