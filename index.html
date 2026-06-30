@@ -701,7 +701,7 @@
                                 <div onclick="openStatsLeaderboardModal('wickets')" class="bg-fuchsia-600/10 border border-fuchsia-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-fuchsia-500/40 transition shadow shadow-fuchsia-500/5">
                                     <div>
                                         <span class="bg-fuchsia-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase font-sans">Purple Cap</span>
-                                        <h3 id="purple-cap-name" class="text-xs font-black mt-1 text-white text-md font-sans font-bold font-sans">Awaiting Stats</h3>
+                                        <h3 id="purple-cap-name" class="text-xs font-black mt-1 text-white text-md font-sans font-bold font-sans font-bold">Awaiting Stats</h3>
                                         <span class="text-[8px] text-fuchsia-400 font-semibold uppercase tracking-wider block mt-1 font-sans font-bold animate-pulse font-sans">Click to view sequence</span>
                                     </div>
                                     <div class="text-right font-sans">
@@ -811,7 +811,7 @@
                 <button onclick="commitNoBallRuns(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">1 Run</button>
                 <button onclick="commitNoBallRuns(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">2 Run</button>
                 <button onclick="commitNoBallRuns(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">3 Run</button>
-                <button onclick="commitNoBallRuns(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-center col-span-2 transition shadow font-bold font-sans">4 Run</button>
+                <button onclick="commitNoBallRuns(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-center col-span-2 transition shadow font-bold font-sans font-bold">4 Run</button>
                 <button onclick="commitNoBallRuns(5)" class="py-2.5 bg-gray-850 hover:bg-gray-800 border border-gray-750 font-bold rounded-lg text-center col-span-2 transition font-bold font-sans font-semibold">5 Run</button>
                 <button onclick="commitNoBallRuns(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-center col-span-4 transition shadow font-bold font-sans font-bold">6 Run</button>
             </div>
@@ -858,7 +858,7 @@
             </div>
 
             <!-- List container -->
-            <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white font-sans" id="leaderboard-modal-list font-sans">
+            <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white font-sans" id="leaderboard-modal-list">
                 <!-- Sorted players list goes here -->
             </div>
         </div>
@@ -1640,7 +1640,7 @@
                     }
 
                     container.innerHTML += `
-                        <div class="bg-gray-950 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition shadow-lg">
+                        <div class="bg-gray-955 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition shadow-lg">
                             <div class="flex items-center justify-between">
                                 ${activeLabel}
                                 <div class="flex items-center space-x-2">
@@ -2018,6 +2018,7 @@
                     freeHit: false, 
                     inning: 1,
                     needsInning2Lineup: false,
+                    needsSuperOverLineup: false,
                     needsCompletionSave: false,
                     viewerCount: 1,
                     tossResult: `${winner} won toss and elected to ${decision} first.`,
@@ -2074,7 +2075,8 @@
                 striker: str,
                 nonStriker: nonStr,
                 currentBowler: bowl,
-                needsInning2Lineup: false
+                needsInning2Lineup: false,
+                needsSuperOverLineup: false
             };
 
             db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).update(updates)
@@ -2150,7 +2152,7 @@
                     document.getElementById("super-over-trigger-container").classList.add("hidden");
                 }
 
-                if (data.needsInning2Lineup) {
+                if (data.needsInning2Lineup || data.needsSuperOverLineup) {
                     setTimeout(() => {
                         setupLineupOptions(data.battingTeam, data.bowlingTeam);
                         document.getElementById("scorer-lineup-panel").classList.remove("hidden");
@@ -2861,8 +2863,7 @@
                 }
             }
         }
-
-        // Activates the Super Over protocol resets (Left as manual fallback option, but now automated on evaluate)
+// Activates the Super Over protocol resets (Left as manual fallback option, but now automated on evaluate)
         function activateSuperOverMode() {
             if (!selectedScorerLeagueId) return;
             const league = allLeagues[selectedScorerLeagueId];
@@ -3250,6 +3251,7 @@
             spectatorSelectedMatchIndex = null;
         }
 
+        // Dedicated helper function for global alerts
         function showRealtimeTextAnimation(heading, detail) {
             const container = document.getElementById("overlay-anim");
             const mainText = document.getElementById("overlay-text");
