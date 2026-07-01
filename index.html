@@ -1442,7 +1442,7 @@
                     { home: 'A', away: 'D', round: 22 }, { home: 'B', away: 'C', round: 23 }, { home: 'E', away: 'H', round: 24 },
                     { home: 'F', away: 'G', round: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', round: 27 },
                     { home: 'A', away: 'F', round: 28 }, { home: 'B', away: 'E', rounded: 29 }, { home: 'C', away: 'H', round: 30 },
-                    { home: 'D', away: 'G', round: 31 }, { home: 'I', away: 'B', rounded: 32 }, { home: 'J', away: 'A', round: 33 },
+                    { home: 'D', away: 'G', rounded: 31 }, { home: 'I', away: 'B', rounded: 32 }, { home: 'J', away: 'A', round: 33 },
                     { home: 'E', away: 'C', round: 34 }, { home: 'F', away: 'D', round: 35 }, { home: 'G', away: 'B', round: 36 },
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
                     { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', rounded: 42 },
@@ -1623,6 +1623,7 @@
         }
 
         // Saved Leagues Local Management
+        // Automatically stores selected leagues inside native client storage
         function isLeagueSaved(leagueId) {
             const saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
             return saved.includes(leagueId);
@@ -3282,16 +3283,22 @@
                 }
             });
 
-            // Set spectatorSelectedMatchIndex correctly to active match or first match default
-            const league = allLeagues[leagueId];
-            if (league) {
-                if (league.liveMatch && league.liveMatch.active) {
-                    spectatorSelectedMatchIndex = league.liveMatch.matchIndex;
-                } else {
-                    spectatorSelectedMatchIndex = 0;
+            // Target a dedicated live listener on this specific active league to guarantee instant scoreboard updates!
+            db.ref(`leagues/${leagueId}`).on('value', snapshot => {
+                const league = snapshot.val();
+                if (league) {
+                    allLeagues[leagueId] = league; // update local cache
+                    
+                    if (spectatorSelectedMatchIndex === null) {
+                        if (league.liveMatch && league.liveMatch.active) {
+                            spectatorSelectedMatchIndex = league.liveMatch.matchIndex;
+                        } else {
+                            spectatorSelectedMatchIndex = 0;
+                        }
+                    }
+                    syncLiveViewerState(league);
                 }
-                syncLiveViewerState(league);
-            }
+            });
 
             initiateMultiCameraRotation(leagueId);
             renderVideoArchiveGrid(allLeagues[leagueId]);
@@ -3308,6 +3315,7 @@
                 db.ref(`leagues/${currentlySelectedLeagueId}/liveMatch/viewerCount`).transaction(c => Math.max(0, (c || 1) - 1));
                 db.ref(`leagues/${currentlySelectedLeagueId}/alertBroadcast`).off('value');
                 db.ref(`leagues/${currentlySelectedLeagueId}/cameramen`).off('value');
+                db.ref(`leagues/${currentlySelectedLeagueId}`).off('value'); // Remove dedicated real-time listener
             }
             document.getElementById("live-match-spectator-overlay").classList.add("hidden");
             if (rotationTimer) clearInterval(rotationTimer);
@@ -3823,9 +3831,9 @@
                     }
                 }
 
-                if (activeBat1) activeBat1.textContent = `🏏 ${data.striker || '--'}*`;
+                if (activeBat1) activeBat1.textContent = `🏏 ${data.striker || '--'}`;
                 if (activeBat2) activeBat2.textContent = `${data.nonStriker || '--'}`;
-                if (activeBowl) activeBowl.textContent = `🎳 ${data.currentBowler || '--'}`;
+                if (activeBowl) activeBowl.textContent = `Bowler: ${data.currentBowler || '--'}`;
 
                 const viewsElement = document.getElementById("overlay-live-views");
                 if (viewsElement) viewsElement.textContent = data.viewerCount || 1;
@@ -3883,7 +3891,7 @@
                     <div class="bg-gray-955 border border-gray-800 p-3.5 rounded-xl flex justify-between items-center shadow-inner">
                         <div>
                             <h4 class="text-xs font-black text-white uppercase tracking-wider font-sans">${matchTitleText}</h4>
-                            <p class="text-[9px] text-gray-450 font-bold font-sans">Viewing complete scorecard. Tap other fixtures to see their scores.</p>
+                            <p class="text-[9px] text-gray-400 font-bold font-sans">Viewing complete scorecard. Tap other fixtures to see their scores.</p>
                         </div>
                         ${subTitleStatus}
                     </div>
@@ -3896,8 +3904,13 @@
                 let batsmanStats = {}, bowlerStats = {};
 
                 if (isLiveSelected) {
-                    battingTeam1 = data.inning1BattingTeam || data.teams.home;
-                    battingTeam2 = data.inning2BattingTeam || data.teams.away;
+                    if (data.inning === 1) {
+                        battingTeam1 = data.battingTeam;
+                        battingTeam2 = data.bowlingTeam;
+                    } else {
+                        battingTeam1 = data.inning1BattingTeam || data.bowlingTeam;
+                        battingTeam2 = data.battingTeam;
+                    }
 
                     runs1 = data.inning1Runs || (data.inning === 1 ? data.runs : 0);
                     wickets1 = data.inning1Wickets || (data.inning === 1 ? data.wickets : 0);
@@ -3939,12 +3952,18 @@
                 const inn1Html = buildInningsScorecardHtml(league, battingTeam1, battingTeam2, { runs: runs1, wickets: wickets1, overs: overs1 }, batsmanStats, bowlerStats);
                 bTableContainer.innerHTML += inn1Html;
 
-                // Render Inning 2 Scorecard (if it has started or match completed)
+                // Render Inning 2 Scorecard (if started or completed)
                 const hasInning2Started = isLiveSelected ? (data.inning === 2 || data.inning1Runs !== undefined) : (matchToShow && matchToShow.status === "COMPLETED");
                 if (hasInning2Started) {
                     const inn2Html = buildInningsScorecardHtml(league, battingTeam2, battingTeam1, { runs: runs2, wickets: wickets2, overs: overs2 }, batsmanStats, bowlerStats);
                     bTableContainer.innerHTML += inn2Html;
                 }
+            }
+
+            // Automatically keep the active stats modal updated live if it's currently visible
+            const statsModal = document.getElementById("stats-leaderboard-modal");
+            if (statsModal && !statsModal.classList.contains("hidden")) {
+                renderStatsLeaderboardModalList();
             }
         }
 
@@ -4332,7 +4351,7 @@
                                 <h4 class="text-xs font-bold text-white truncate font-sans font-bold">${league.metadata.name}</h4>
                                 <p class="text-[9px] text-gray-400 font-semibold font-sans font-sans">Short: ${league.metadata.shortName || generateShortName(league.metadata.name)}</p>
                             </div>
-                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-650 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans shadow font-sans">
+                            <button onclick="deleteLeagueByOwner('${key}')" class="px-2.5 py-1 bg-red-655 hover:bg-red-700 text-[10px] font-black rounded-lg uppercase transition flex items-center space-x-1 text-white font-sans shadow font-sans">
                                 <i class="fa-solid fa-trash-can font-sans"></i>
                                 <span>Delete</span>
                             </button>
@@ -4346,6 +4365,7 @@
             }
         }
 
+        // Deletes tournament references
         function deleteLeagueByOwner(leagueId) {
             const confirmation = confirm("Are you sure you want to delete this league entirely? This action is irreversible.");
             if (confirmation) {
