@@ -889,6 +889,29 @@
         </div>
     </div>
 
+    <!-- 9. Match Time Editor Modal -->
+    <div id="match-time-editor-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
+        <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl font-sans">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <div>
+                    <h3 class="text-xs font-black uppercase tracking-wider text-orange-500 font-sans font-bold">Edit Match Schedule</h3>
+                    <p class="text-[9px] text-gray-400 font-semibold font-sans mt-0.5">Customize specific start times for each match round.</p>
+                </div>
+                <button onclick="closeMatchTimeEditorModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg transition font-semibold">Close</button>
+            </div>
+            
+            <!-- Dates & Custom Times List -->
+            <div id="match-times-list-container" class="max-h-[300px] overflow-y-auto space-y-2.5 pr-1 text-white">
+                <!-- Programmatically populated list of match rounds, dates (read-only), and editable time inputs -->
+            </div>
+            
+            <div class="pt-2 flex justify-end space-x-2 border-t border-gray-800">
+                <button onclick="closeMatchTimeEditorModal()" class="px-4 py-2 border border-gray-800 hover:bg-gray-900 font-bold text-xs rounded-xl text-white transition">Cancel</button>
+                <button onclick="saveMatchTimesSchedule()" class="px-5 py-2 bg-orange-600 hover:bg-orange-700 font-bold text-xs rounded-xl text-white transition shadow-md">Save Schedule</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Fixed Bottom Sticky Navigation Bar -->
     <nav class="fixed bottom-0 inset-x-0 max-w-[480px] mx-auto bg-gray-900 border-t border-gray-800 z-30 py-2 px-1">
         <div class="flex items-center justify-between text-[10px] font-medium text-gray-400 font-sans">
@@ -943,6 +966,7 @@
         let selectedScorerMatchIndex = null;
         let videoRotationMode = false;
         let managedCountdownsTimer = null;
+        let editingTimeLeagueId = null;
         
         // Dynamic Cameraman Broadcasting states
         let localCameraStream = null;
@@ -1195,7 +1219,8 @@
             const match = league.fixtures[matchIndex];
             if (!match) return 0;
             const startDateStr = league.metadata.startDate;
-            const startTimeStr = league.metadata.startTime || "18:00";
+            // Use match-specific customTime if it exists, otherwise fall back to global league startTime
+            const startTimeStr = match.customTime || league.metadata.startTime || "18:00";
             
             const startDate = new Date(startDateStr);
             const matchDate = new Date(startDate.getTime() + (match.round - 1) * 24 * 60 * 60 * 1000);
@@ -1360,7 +1385,7 @@
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 },
                     { home: 'A', away: 'G', round: 4 }, { home: 'B', away: 'C', round: 5 }, { home: 'D', away: 'E', round: 6 },
                     { home: 'F', away: 'G', round: 7 }, { home: 'A', away: 'C', round: 8 }, { home: 'B', away: 'D', round: 9 },
-                    { home: 'E', away: 'G', round: 10 }, { home: 'A', away: 'D', round: 11 }, { home: 'B', py: 'E', round: 12 },
+                    { home: 'E', away: 'G', round: 10 }, { home: 'A', away: 'D', round: 11 }, { home: 'B', away: 'E', round: 12 },
                     { home: 'C', away: 'F', round: 13 }, { home: 'D', away: 'G', round: 14 }, { home: 'A', away: 'E', round: 15 },
                     { home: 'B', away: 'F', round: 16 }, { home: 'C', away: 'G', round: 17 }, { home: 'A', away: 'F', round: 18 },
                     { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'E', round: 20 }, { home: 'D', away: 'F', round: 21 }
@@ -1396,7 +1421,7 @@
                     { home: 'F', away: 'I', round: 17 }, { home: 'A', away: 'F', round: 18 }, { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'H', round: 20 },
                     { home: 'D', away: 'I', round: 21 }, { home: 'E', away: 'H', round: 22 }, { home: 'A', away: 'G', round: 23 }, { home: 'B', away: 'H', round: 24 },
                     { home: 'C', away: 'I', rounded: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
-                    { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', round: 32 },
+                    { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', rounded: 32 },
                     { home: 'C', away: 'F', round: 33 }, { home: 'D', away: 'G', round: 34 }, { home: 'E', away: 'I', round: 35 }, { home: 'F', away: 'H', round: 36 }
                 ];
                 playoffTemplates = [
@@ -1422,7 +1447,7 @@
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
                     { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', rounded: 42 },
                     { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', round: 45 },
-                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', round: 47 }, { home: 'I', away: 'E', round: 48 },
+                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', rounded: 47 }, { home: 'I', away: 'E', round: 48 },
                     { home: 'J', away: 'F', round: 49 }, { home: 'I', away: 'G', rounded: 50 }, { home: 'J', away: 'H', round: 51 },
                     { home: 'D', away: 'A', round: 52 }, { home: 'C', away: 'B', round: 53 }, { home: 'H', away: 'E', round: 54 },
                     { home: 'G', away: 'F', rounded: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
@@ -1863,9 +1888,18 @@
                                     <p class="text-[9px] text-red-500 font-black uppercase tracking-widest">Awaiting scheduled start time</p>
                                     <p id="countdown-timer-${key}" class="text-xs font-mono font-bold text-white mt-0.5">--:--:--</p>
                                 </div>
-                                <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white transition shadow-md" ${!optionsHTML ? 'disabled' : ''}>
-                                    Open Scorer Console
-                                </button>
+                                <div class="flex items-center space-x-1.5 pt-1.5">
+                                    <button onclick="switchTab('home')" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 font-bold text-[11px] rounded-xl uppercase text-white transition flex-shrink-0">
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                    </button>
+                                    <button onclick="openMatchTimeEditorModal('${key}')" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 font-bold text-[11px] rounded-xl uppercase text-white transition flex items-center justify-center space-x-1">
+                                        <i class="fa-solid fa-clock"></i>
+                                        <span>Times</span>
+                                    </button>
+                                    <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="flex-[2] py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase text-white transition shadow-md" ${!optionsHTML ? 'disabled' : ''}>
+                                        Open Console
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1911,13 +1945,13 @@
                         if (isMatchCurrentlyActive) {
                             banner.classList.add("hidden");
                             button.removeAttribute("disabled");
-                            button.className = "w-full py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white animate-pulse shadow-md transition";
-                            button.textContent = "RESUME LIVE MATCH";
+                            button.className = "flex-[2] py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase text-white animate-pulse shadow-md transition";
+                            button.textContent = "RESUME";
                         } else if (now < targetTime) {
                             banner.classList.remove("hidden");
                             button.setAttribute("disabled", "true");
-                            button.className = "w-full py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase tracking-wider cursor-not-allowed transition";
-                            button.textContent = "Locked (Scheduled Start pending)";
+                            button.className = "flex-[2] py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase cursor-not-allowed transition";
+                            button.textContent = "Locked";
 
                             const diff = targetTime - now;
                             const days = Math.floor(diff / (24 * 3600 * 1000));
@@ -1929,8 +1963,8 @@
                         } else {
                             banner.classList.add("hidden");
                             button.removeAttribute("disabled");
-                            button.className = "w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase tracking-wider text-white transition shadow-md";
-                            button.textContent = "START LIVE / Open Console";
+                            button.className = "flex-[2] py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase text-white transition shadow-md";
+                            button.textContent = "Console";
                         }
                     }
                 });
@@ -3849,7 +3883,7 @@
                     <div class="bg-gray-955 border border-gray-800 p-3.5 rounded-xl flex justify-between items-center shadow-inner">
                         <div>
                             <h4 class="text-xs font-black text-white uppercase tracking-wider font-sans">${matchTitleText}</h4>
-                            <p class="text-[9px] text-gray-400 font-bold font-sans">Viewing complete scorecard. Tap other fixtures to see their scores.</p>
+                            <p class="text-[9px] text-gray-450 font-bold font-sans">Viewing complete scorecard. Tap other fixtures to see their scores.</p>
                         </div>
                         ${subTitleStatus}
                     </div>
@@ -3950,6 +3984,7 @@
         }
 
         // Leaderboards Calculation & Awards Tab Updating
+        // Automatically tracks and formats dynamic caps list safely
         function updateCapLeaders(league) {
             const stats = {};
             
@@ -4147,6 +4182,7 @@
                 league.fixtures.forEach((match, index) => {
                     const matchDate = new Date(new Date(startDateStr).getTime() + (match.round - 1) * 24 * 60 * 60 * 1000);
                     const dateStr = matchDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                    const matchTimeStr = match.customTime || startTimeStr;
                     
                     let badgeColor = "bg-gray-800 text-gray-300";
                     let displayStatus = match.status;
@@ -4172,7 +4208,7 @@
                                     <span class="text-gray-500 font-black">vs</span>
                                     <span class="font-sans">${generateShortName(match.awayTeam)}</span>
                                 </div>
-                                <p class="text-[9px] font-mono text-orange-400 font-bold font-sans">${dateStr} @ ${startTimeStr}</p>
+                                <p class="text-[9px] font-mono text-orange-400 font-bold font-sans">${dateStr} @ ${matchTimeStr}</p>
                                 ${match.status === "COMPLETED" || displayStatus === "Match TIE" ? `<p class="text-[9px] text-yellow-500 font-bold font-sans">${displayOutcome || "Tie Breaker Playoff Activated"}</p>` : ""}
                             </div>
                             <div>
@@ -4498,6 +4534,72 @@
                     }
                 }
             });
+        }
+
+        // Match round-by-round time customization schedule editor methods
+        function openMatchTimeEditorModal(leagueId) {
+            editingTimeLeagueId = leagueId;
+            const league = allLeagues[leagueId];
+            if (!league) return;
+
+            const container = document.getElementById("match-times-list-container");
+            if (!container) return;
+            container.innerHTML = "";
+
+            const startDateStr = league.metadata.startDate || new Date().toISOString().split('T')[0];
+            const globalStartTime = league.metadata.startTime || "18:00";
+
+            if (league.fixtures) {
+                league.fixtures.forEach((match, index) => {
+                    const matchDate = new Date(new Date(startDateStr).getTime() + (match.round - 1) * 24 * 60 * 60 * 1000);
+                    const dateDisplayStr = matchDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const currentMatchTime = match.customTime || globalStartTime;
+
+                    container.innerHTML += `
+                        <div class="p-3 bg-black border border-gray-800 rounded-xl space-y-1.5 flex flex-col justify-between">
+                            <div class="flex justify-between items-center text-[9px] text-gray-400 font-black uppercase tracking-wider">
+                                <span>Round ${match.round} &bull; ${match.type}</span>
+                                <span class="text-orange-500 font-mono font-bold">${dateDisplayStr}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-xs font-bold truncate max-w-[150px]">${generateShortName(match.homeTeam)} vs ${generateShortName(match.awayTeam)}</span>
+                                <input type="time" id="match-custom-time-${index}" value="${currentMatchTime}" class="bg-black border border-gray-750 rounded px-2 py-1 text-xs text-white font-mono font-bold w-24">
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById("match-time-editor-modal").classList.remove("hidden");
+        }
+
+        function closeMatchTimeEditorModal() {
+            document.getElementById("match-time-editor-modal").classList.add("hidden");
+            editingTimeLeagueId = null;
+        }
+
+        function saveMatchTimesSchedule() {
+            if (!editingTimeLeagueId) return;
+            const league = allLeagues[editingTimeLeagueId];
+            if (!league || !league.fixtures) return;
+
+            const updates = {};
+            league.fixtures.forEach((match, index) => {
+                const inputEl = document.getElementById(`match-custom-time-${index}`);
+                if (inputEl) {
+                    updates[`leagues/${editingTimeLeagueId}/fixtures/${index}/customTime`] = inputEl.value;
+                }
+            });
+
+            db.ref().update(updates)
+                .then(() => {
+                    alert("Match schedules successfully updated!");
+                    closeMatchTimeEditorModal();
+                    initManagedLeaguesTickers(); // Re-trigger live countdown tickers instantly
+                })
+                .catch(err => {
+                    alert("Failed to save schedule: " + err.message);
+                });
         }
     </script>
 </body>
