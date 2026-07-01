@@ -135,6 +135,10 @@
             50% { transform: translateY(-12px); }
             100% { transform: translateY(0); opacity: 1; }
         }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(350px) rotate(360deg); opacity: 0; }
+        }
     </style>
 </head>
 <body class="text-white font-sans min-h-screen pb-24 selection:bg-orange-500 selection:text-white">
@@ -149,9 +153,27 @@
         </div>
         
         <!-- Live Rupee Wallet Balance Container -->
-        <div id="header-wallet-zone" class="hidden flex items-center space-x-2 bg-black border border-gray-850 px-3 py-1.5 rounded-xl shadow-inner">
-            <span class="text-xs text-orange-500 font-black">₹</span>
-            <span id="wallet-balance-indicator" class="text-xs font-black text-white font-mono">0.00</span>
+        <div class="relative">
+            <div id="header-wallet-zone" onclick="toggleWalletDropdown()" class="hidden flex items-center space-x-2 bg-black border border-gray-850 px-3 py-1.5 rounded-xl shadow-inner cursor-pointer hover:border-orange-500 transition">
+                <span class="text-xs text-orange-500 font-black">₹</span>
+                <span id="wallet-balance-indicator" class="text-xs font-black text-white font-mono">0.00</span>
+                <i class="fa-solid fa-chevron-down text-[8px] text-gray-400"></i>
+            </div>
+            <!-- Wallet Dropdown Overlay -->
+            <div id="wallet-dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-50 p-3 space-y-2 text-xs">
+                <div class="border-b border-gray-800 pb-2">
+                    <p class="text-[9px] text-gray-400 uppercase tracking-wider font-bold">Deposit Balance</p>
+                    <p class="text-sm font-black text-white font-mono">₹<span id="dropdown-deposit-balance">0.00</span></p>
+                </div>
+                <div class="border-b border-gray-800 pb-2">
+                    <p class="text-[9px] text-gray-400 uppercase tracking-wider font-bold">Withdrawal Balance</p>
+                    <p class="text-sm font-black text-green-500 font-mono">₹<span id="dropdown-withdrawal-balance">0.00</span></p>
+                </div>
+                <div class="pt-1 flex flex-col space-y-1.5">
+                    <button onclick="triggerDepositAction()" class="w-full py-1.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-[10px] uppercase tracking-wider transition">Deposit Money</button>
+                    <button onclick="openWithdrawalModal()" class="w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg text-[10px] uppercase tracking-wider transition">Withdraw Money</button>
+                </div>
+            </div>
         </div>
 
         <div id="auth-status-container" class="flex items-center space-x-2 text-sm text-gray-400">
@@ -287,7 +309,7 @@
                                 <span class="text-gray-300 font-semibold">Last Match: <strong id="calc-last-date" class="text-green-500">N/A</strong></span>
                             </div>
                             <div class="flex justify-between text-xs pt-1.5 border-t border-gray-850 mt-1.5">
-                                <span class="text-gray-300 font-semibold">League Auto-Deduction Price:</span>
+                                <span class="text-gray-300 font-semibold">League Auto-Deduction Price (₹5/Match):</span>
                                 <span id="calc-auto-cost" class="text-orange-500 font-extrabold font-mono">₹50.00</span>
                             </div>
                         </div>
@@ -499,6 +521,22 @@
                         <span>Continue as Guest</span>
                     </button>
                     <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-855 font-bold rounded-xl text-xs text-gray-400 transition font-bold">Logout</button>
+                </div>
+
+                <!-- Cashback Tracker Drawer Card -->
+                <div id="cashback-tracker-card" class="hidden bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-3 shadow-2xl">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xs font-black text-orange-500 uppercase tracking-wider font-sans">🎁 Cashback Drawer</h3>
+                        <span class="text-[9px] text-green-500 font-black font-sans">Instant Claim</span>
+                    </div>
+                    <p class="text-[9px] text-gray-400 font-bold font-sans">Earn randomized cashback incentive (0% - 10%) on verified deposits.</p>
+                    <div class="p-3 bg-black/45 border border-gray-800 rounded-xl flex justify-between items-center">
+                        <div>
+                            <span class="text-[8px] text-gray-500 uppercase font-black font-sans block">Claimable Cashback</span>
+                            <p class="text-base font-black text-green-500 font-mono font-bold">₹<span id="pending-cashback-indicator">0.00</span></p>
+                        </div>
+                        <button id="btn-claim-cashback" onclick="claimCashbackToWithdrawal()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition shadow-md disabled:opacity-40 disabled:cursor-not-allowed font-bold">Claim</button>
+                    </div>
                 </div>
 
                 <!-- UPI Rupee Wallet Recharge Grid (Dynamically Configured) -->
@@ -768,7 +806,7 @@
             <div class="flex justify-between items-center border-b border-gray-800 pb-3 text-left">
                 <div>
                     <h3 class="text-sm font-black uppercase tracking-wider text-orange-500 font-bold">UPI Payment Gateway</h3>
-                    <p class="text-[9px] text-gray-400 font-semibold">Select your preferred transaction channel.</p>
+                    <p class="text-[9px] text-gray-400 font-semibold">Complete your wallet deposit.</p>
                 </div>
                 <button onclick="closePaymentModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg">Close</button>
             </div>
@@ -780,13 +818,21 @@
                 <span class="text-orange-500 font-extrabold text-sm" id="modal-plan-price">Pay ₹50.00</span>
             </div>
 
-            <div class="space-y-3">
-                <!-- Username entry field for payment matching -->
+            <!-- Interactive Purchase Form Phase 1: Inputs -->
+            <div id="payment-input-phase" class="space-y-3 text-left">
                 <div>
-                    <label class="block text-[8px] text-gray-400 uppercase text-left tracking-wider font-bold mb-1 font-semibold">Verify Username (Autopay Sync Match)</label>
-                    <input type="text" id="upi-payment-username" placeholder="Enter username" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Your UPI ID (For Verification)</label>
+                    <input type="text" id="payment-user-upi-id" placeholder="username@upi" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
                 </div>
+                <div>
+                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Full Name (Registered on UPI App)</label>
+                    <input type="text" id="payment-user-upi-name" placeholder="E.g. Rajesh Kumar" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                </div>
+                <button onclick="submitPaymentInitiation()" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition font-bold shadow-lg">Proceed to Pay</button>
+            </div>
 
+            <!-- Interactive Purchase Form Phase 2: Action Gateway Screen -->
+            <div id="payment-gateway-phase" class="hidden space-y-3">
                 <!-- Launch UPI Deep Link URL for direct mobile redirection -->
                 <button onclick="launchDirectUpiPay()" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition flex items-center justify-center space-x-2 font-bold">
                     <i class="fa-solid fa-mobile-screen"></i>
@@ -799,22 +845,58 @@
                 <div class="bg-white p-3 rounded-xl inline-block shadow-lg mx-auto">
                     <img id="upi-qr-image" src="" class="w-40 h-40 object-contain mx-auto" alt="UPI Scanning Code">
                 </div>
-                <p class="text-[9px] text-gray-400 font-semibold font-sans">Take a screenshot of this QR, open your UPI App, and pay to confirm.</p>
+                <p class="text-[9px] text-gray-400 font-semibold font-sans">Scan or screenshot this QR inside any UPI App to pay.</p>
             </div>
         </div>
     </div>
 
-    <!-- Recharge Success Alert Dialog Popup -->
-    <div id="recharge-success-popup" class="hidden fixed inset-0 bg-black/95 z-[60] flex flex-col items-center justify-center text-center p-4 font-sans animate-fade-in">
-        <div class="w-20 h-20 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full flex items-center justify-center text-5xl mb-4 animate-bounce">
-            <i class="fa-solid fa-circle-check"></i>
+    <!-- Capital Withdrawal Settlement Modal -->
+    <div id="withdrawal-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
+        <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl text-center">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3 text-left">
+                <div>
+                    <h3 class="text-sm font-black uppercase tracking-wider text-green-500 font-bold">Capital Withdrawal</h3>
+                    <p class="text-[9px] text-gray-400 font-semibold">Transfer your withdrawal balance to UPI.</p>
+                </div>
+                <button onclick="closeWithdrawalModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg">Close</button>
+            </div>
+            <div class="p-3 bg-black/45 border border-gray-800 rounded-xl">
+                <span class="text-[10px] text-gray-400 uppercase tracking-widest font-black block">Available Settlement Capital</span>
+                <span class="text-green-500 font-extrabold text-lg font-mono">₹<span id="withdraw-available-balance">0.00</span></span>
+            </div>
+            <div class="space-y-3 text-left">
+                <div>
+                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Withdrawal Amount (₹)</label>
+                    <input type="number" id="withdraw-amount-input" placeholder="Enter amount" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                </div>
+                <div>
+                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Destination UPI ID</label>
+                    <input type="text" id="withdraw-upi-input" placeholder="example@upi" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                </div>
+                <div>
+                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Account Holder Name</label>
+                    <input type="text" id="withdraw-name-input" placeholder="Full name" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                </div>
+                <button onclick="submitWithdrawalRequest()" class="w-full py-2.5 bg-green-600 hover:bg-green-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition font-bold shadow-lg">Submit Withdrawal</button>
+            </div>
         </div>
-        <h2 class="text-2xl font-black text-white">Payment Received!</h2>
-        <p class="text-gray-400 text-xs mt-2 max-w-xs font-semibold">Your UPI transaction has been verified successfully. Balance credited to your ₹ Wallet!</p>
-        <button onclick="closeSuccessPopup()" class="mt-6 px-6 py-2 bg-green-600 hover:bg-green-700 font-bold text-xs uppercase text-white rounded-xl transition font-bold">Okay</button>
     </div>
 
-    <!-- 1. Auth Gate Overlay -->
+    <!-- Confetti Success Alert Dialog Overlay -->
+    <div id="payment-success-confetti-modal" class="hidden fixed inset-0 bg-black/95 z-[70] flex flex-col items-center justify-center text-center p-4 font-sans animate-fade-in">
+        <div class="relative w-full max-w-xs flex flex-col items-center justify-center">
+            <!-- Confetti animation container using simple CSS keyframes -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden" id="confetti-container"></div>
+            <div class="w-20 h-20 bg-green-500/20 text-green-400 border-2 border-green-500 rounded-full flex items-center justify-center text-5xl mb-4 animate-bounce">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2 class="text-2xl font-black text-white">Transaction Approved!</h2>
+            <p class="text-gray-400 text-xs mt-2 font-semibold">Your transaction has been successfully verified. Your wallet balances have been updated live!</p>
+            <button onclick="closeSuccessConfettiModal()" class="mt-6 px-6 py-2.5 bg-green-600 hover:bg-green-700 font-bold text-xs uppercase text-white rounded-xl transition shadow-lg">Excellent</button>
+        </div>
+    </div>
+
+    <!-- Auth Gate Overlay -->
     <div id="auth-gate-modal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-8 rounded-2xl max-sm w-full text-center shadow-2xl">
             <div class="w-16 h-16 mx-auto bg-orange-600/10 text-orange-500 rounded-full flex items-center justify-center text-3xl mb-4 shadow">
@@ -839,7 +921,7 @@
         </div>
     </div>
 
-    <!-- 2. VS Intro Overlay Slide Animation -->
+    <!-- VS Intro Overlay Slide Animation -->
     <div id="vs-intro-overlay" class="hidden fixed inset-0 bg-black z-50 flex flex-col items-center justify-center space-y-6 animate-fade-in font-sans">
         <div class="text-center px-4 font-sans">
             <span class="text-[10px] font-black tracking-widest text-orange-500 uppercase font-sans font-bold">Tournament Registered</span>
@@ -859,7 +941,7 @@
         <p class="text-[10px] text-gray-500 tracking-wider font-semibold font-sans font-bold">Generating Dynamic IPL Fixtures...</p>
     </div>
 
-    <!-- 3. Wicket Options Selection Modal -->
+    <!-- Wicket Options Selection Modal -->
     <div id="wicket-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 animate-fade-in shadow-2xl">
             <h4 class="text-md font-black text-red-500 font-sans font-bold">How did the wicket fall?</h4>
@@ -875,7 +957,7 @@
         </div>
     </div>
 
-    <!-- 4. No Ball Runs Modal Selection Pop-up -->
+    <!-- No Ball Runs Modal Selection Pop-up -->
     <div id="no-ball-runs-modal" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl">
             <h4 class="text-md font-black text-yellow-500 text-center uppercase tracking-wider font-sans font-black">No Ball Runs Selection</h4>
@@ -893,7 +975,7 @@
         </div>
     </div>
 
-    <!-- 5. Over Change Bowler Selection Modal -->
+    <!-- Over Change Bowler Selection Modal -->
     <div id="bowler-change-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl animate-fade-in font-sans">
             <h4 class="text-md font-black text-orange-500 uppercase tracking-wider font-sans font-bold font-sans">Select Next Bowler</h4>
@@ -905,7 +987,7 @@
         </div>
     </div>
 
-    <!-- 6. Batsman Replacement Modal Selector -->
+    <!-- Batsman Replacement Modal Selector -->
     <div id="batsman-replacement-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl animate-fade-in font-sans">
             <h4 class="text-md font-black text-red-500 uppercase tracking-wider font-sans font-bold">Batsman Dismissed!</h4>
@@ -917,7 +999,7 @@
         </div>
     </div>
 
-    <!-- 7. Stats Leaderboard Modal -->
+    <!-- Stats Leaderboard Modal -->
     <div id="stats-leaderboard-modal" class="hidden fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl font-sans">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3 font-sans">
@@ -938,7 +1020,7 @@
         </div>
     </div>
 
-    <!-- 8. Cameraman Live Broadcast Overlay Container -->
+    <!-- Cameraman Live Broadcast Overlay Container -->
     <div id="cameraman-live-overlay" class="hidden fixed inset-0 bg-black z-50 flex flex-col font-sans">
         <!-- Header bar inside live match view -->
         <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10">
@@ -963,7 +1045,7 @@
         </div>
     </div>
 
-    <!-- 9. Match Time Editor Modal -->
+    <!-- Match Time Editor Modal -->
     <div id="match-time-editor-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl font-sans">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -1041,7 +1123,7 @@
         let videoRotationMode = false;
         let managedCountdownsTimer = null;
         let editingTimeLeagueId = null;
-        let lastPlayedAudioTimestamp = 0; // New audio tracker variable!
+        let lastPlayedAudioTimestamp = 0; 
         let selectedActivePlan = null;
         
         // Dynamic Cameraman Broadcasting states
@@ -1157,13 +1239,15 @@
                     const userRef = db.ref(`users/${userId}`);
                     userRef.once('value').then(snap => {
                         if (!snap.exists()) {
-                            // Assign welcome bonus rupee credit dynamically between ₹1 and ₹100
+                            // First-time welcome bonus logic via secure set / initialize
                             const welcomeBonus = Math.floor(Math.random() * 100) + 1;
                             userRef.set({
                                 username: user.displayName || "Google User",
                                 email: user.email || "No Email",
                                 login_type: "google",
                                 rupee_balance: welcomeBonus,
+                                withdrawal_balance: 0,
+                                pending_cashback_claim: 0,
                                 payment_status: "idle"
                             }).then(() => {
                                 alert(`Welcome! ₹${welcomeBonus}.00 registration bonus has been credited successfully to your ₹ Wallet!`);
@@ -1205,6 +1289,8 @@
                 email: guestUser.email,
                 login_type: "guest",
                 rupee_balance: 0,
+                withdrawal_balance: 0,
+                pending_cashback_claim: 0,
                 payment_status: "idle"
             }).then(() => {
                 closeAuthGate();
@@ -1230,6 +1316,7 @@
             const btnLogout = document.getElementById("btn-logout");
             const cameraBox = document.getElementById("camera-registration-box");
             const profileLeagues = document.getElementById("profile-leagues-container");
+            const cashbackCard = document.getElementById("cashback-tracker-card");
 
             // Look up guest session if present
             const guestSession = sessionStorage.getItem("guest_ipc_session");
@@ -1247,6 +1334,7 @@
                 if (btnLogout) btnLogout.classList.remove("hidden");
                 if (cameraBox) cameraBox.classList.remove("hidden");
                 if (profileLeagues) profileLeagues.classList.remove("hidden");
+                if (cashbackCard) cashbackCard.classList.remove("hidden");
 
                 document.getElementById("profile-name").textContent = currentUser.displayName;
                 document.getElementById("profile-email").textContent = currentUser.email;
@@ -1261,6 +1349,7 @@
                 if (btnLogout) btnLogout.classList.add("hidden");
                 if (cameraBox) cameraBox.classList.add("hidden");
                 if (profileLeagues) profileLeagues.classList.add("hidden");
+                if (cashbackCard) cashbackCard.classList.add("hidden");
                 document.getElementById("profile-name").textContent = "Guest Viewer";
                 document.getElementById("profile-email").textContent = "Please sign in to configure camera nodes.";
                 document.getElementById("profile-avatar").innerHTML = `U`;
@@ -1275,13 +1364,131 @@
             db.ref(`users/${currentUser.uid}`).on('value', snap => {
                 const val = snap.val();
                 if (val) {
-                    const balance = val.rupee_balance || 0;
-                    document.getElementById("wallet-balance-indicator").textContent = balance.toFixed(2);
-                    
-                    // Show successful recharge popup
+                    const depositBal = val.rupee_balance || 0;
+                    const withdrawBal = val.withdrawal_balance || 0;
+                    const pendingCashback = val.pending_cashback_claim || 0;
+
+                    // Update UI components
+                    document.getElementById("wallet-balance-indicator").textContent = depositBal.toFixed(2);
+                    document.getElementById("dropdown-deposit-balance").textContent = depositBal.toFixed(2);
+                    document.getElementById("dropdown-withdrawal-balance").textContent = withdrawBal.toFixed(2);
+                    document.getElementById("withdraw-available-balance").textContent = withdrawBal.toFixed(2);
+                    document.getElementById("pending-cashback-indicator").textContent = pendingCashback.toFixed(2);
+
+                    const claimBtn = document.getElementById("btn-claim-cashback");
+                    if (claimBtn) {
+                        if (pendingCashback > 0) {
+                            claimBtn.removeAttribute("disabled");
+                        } else {
+                            claimBtn.setAttribute("disabled", "true");
+                        }
+                    }
+
+                    // Show successful recharge popup / confetti overlay
                     if (val.payment_status === "SUCCESS") {
                         showPaymentSuccessPopup();
                     }
+                }
+            });
+        }
+
+        // Wallet Dropdown toggle mechanics
+        function toggleWalletDropdown() {
+            const menu = document.getElementById("wallet-dropdown-menu");
+            if (menu) menu.classList.toggle("hidden");
+        }
+
+        function triggerDepositAction() {
+            toggleWalletDropdown();
+            switchTab('profile');
+            const target = document.getElementById("recharge-wallet-section");
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function openWithdrawalModal() {
+            toggleWalletDropdown();
+            document.getElementById("withdrawal-modal").classList.remove("hidden");
+        }
+
+        function closeWithdrawalModal() {
+            document.getElementById("withdrawal-modal").classList.add("hidden");
+        }
+
+        // Capital Settlement Withdrawal request submit
+        function submitWithdrawalRequest() {
+            const amountInput = document.getElementById("withdraw-amount-input");
+            const upiInput = document.getElementById("withdraw-upi-input");
+            const nameInput = document.getElementById("withdraw-name-input");
+
+            const amount = parseFloat(amountInput.value);
+            const destinationUpi = upiInput.value.trim();
+            const holderName = nameInput.value.trim();
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please type a valid amount of money to withdraw.");
+                return;
+            }
+            if (!destinationUpi || !holderName) {
+                alert("UPI ID and Account Holder Name are required.");
+                return;
+            }
+
+            const userRef = db.ref(`users/${currentUser.uid}`);
+            userRef.once('value').then(snap => {
+                const userData = snap.val() || {};
+                const currentWithdrawalBalance = userData.withdrawal_balance || 0;
+
+                if (currentWithdrawalBalance < amount) {
+                    alert(`Insufficient balance! Requested: ₹${amount.toFixed(2)}, Available: ₹${currentWithdrawalBalance.toFixed(2)}`);
+                    return;
+                }
+
+                // Deduct from withdrawal balance via transaction safely
+                userRef.child('withdrawal_balance').transaction(currentBal => {
+                    return (currentBal || 0) - amount;
+                }).then(() => {
+                    const withdrawalId = 'with_' + Date.now();
+                    const requestPayload = {
+                        withdrawalId: withdrawalId,
+                        userId: currentUser.uid,
+                        amount: amount,
+                        destinationUpi: destinationUpi,
+                        holderName: holderName,
+                        status: "pending",
+                        timestamp: Date.now()
+                    };
+
+                    db.ref(`withdrawals/${withdrawalId}`).set(requestPayload)
+                        .then(() => {
+                            alert("Withdrawal request submitted successfully! Your funds are reserved and are being processed.");
+                            amountInput.value = "";
+                            upiInput.value = "";
+                            nameInput.value = "";
+                            closeWithdrawalModal();
+                        });
+                });
+            });
+        }
+
+        // Google / Deposit claims cashback logic
+        function claimCashbackToWithdrawal() {
+            const userRef = db.ref(`users/${currentUser.uid}`);
+            userRef.once('value').then(snap => {
+                const val = snap.val();
+                if (val && val.pending_cashback_claim > 0) {
+                    const claimable = val.pending_cashback_claim;
+                    
+                    userRef.transaction(currentData => {
+                        if (currentData) {
+                            currentData.withdrawal_balance = (currentData.withdrawal_balance || 0) + claimable;
+                            currentData.pending_cashback_claim = 0;
+                        }
+                        return currentData;
+                    }).then(() => {
+                        alert(`Success! ₹${claimable.toFixed(2)} cashback claimed directly to your capital withdrawal balance!`);
+                    }).catch(err => alert("Failed to execute claim transaction: " + err.message));
                 }
             });
         }
@@ -1292,13 +1499,6 @@
         }
 
         // Dedicated helper function to load and play audio commentaries
-        function playAudioCommentary(fileName) {
-            if (!fileName) return;
-            const audio = new Audio(fileName);
-            audio.play().catch(err => {
-                console.warn("Audio autoplay blocked or failed:", err);
-            });
-        }
         function playAudioCommentary(fileName) {
             if (!fileName) return;
             const audio = new Audio(fileName);
@@ -1599,7 +1799,7 @@
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
                     { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', rounded: 42 },
                     { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', rounded: 45 },
-                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', rounded: 47 }, { home: 'I', away: 'E', round: 48 },
+                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', rounded: 47 }, { stroke: 'I', away: 'E', round: 48 },
                     { home: 'J', away: 'F', round: 49 }, { home: 'I', away: 'G', rounded: 50 }, { home: 'J', away: 'H', round: 51 },
                     { home: 'D', away: 'A', round: 52 }, { home: 'C', away: 'B', round: 53 }, { home: 'H', away: 'E', round: 54 },
                     { home: 'G', away: 'F', rounded: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
@@ -2002,7 +2202,7 @@
                             <span class="font-semibold">Overs: ${oversLimit} | Teams: ${teamCount}</span>
                             <span class="font-mono text-orange-400 font-bold">${startDate}</span>
                         </div>
-                        <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow shadow-lg">
+                        <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-850 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow shadow-lg">
                             <span>View Broadcast</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </button>
@@ -2766,75 +2966,6 @@
                 const modal = document.getElementById("wicket-modal");
                 if (modal) modal.classList.remove("hidden");
             }
-        }
-
-        // LBW Special Runs flow: hides wicket modal, opens runs modal
-        function openLbwRunsModal() {
-            document.getElementById("wicket-modal").classList.add("hidden");
-            document.getElementById("lbw-runs-modal").classList.remove("hidden");
-        }
-
-        // Commits custom runs for LBW, without counting the ball, and awards a Free Hit
-        function commitLbwRuns(runs) {
-            document.getElementById("lbw-runs-modal").classList.add("hidden");
-            const league = allLeagues[selectedScorerLeagueId];
-            if (!league) return;
-
-            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
-                if (data) {
-                    const bowler = data.currentBowler;
-                    if (bowler) {
-                        data.bowlerStats = data.bowlerStats || {};
-                        if (!data.bowlerStats[bowler]) {
-                            data.bowlerStats[bowler] = { balls: 0, runs: 0, dots: 0, fours: 0, sixes: 0, wickets: 0 };
-                        }
-                        data.bowlerStats[bowler].runs += runs;
-                    }
-
-                    const striker = data.striker;
-                    if (striker) {
-                        data.batsmanStats = data.batsmanStats || {};
-                        if (!data.batsmanStats[striker]) {
-                            data.batsmanStats[striker] = { runs: 0, balls: 0, fours: 0, sixes: 0, status: "not out" };
-                        }
-                        data.batsmanStats[striker].runs += runs;
-                        if (runs === 4) data.batsmanStats[striker].fours += 1;
-                        if (runs === 6) data.batsmanStats[striker].sixes += 1;
-                    }
-
-                    data.runs += runs;
-                    data.overLog = data.overLog || [];
-                    data.overLog.push(`Lbw+${runs}`);
-
-                    if (runs === 1 || runs === 3 || runs === 5) {
-                        const temp = data.striker;
-                        data.striker = data.nonStriker;
-                        data.nonStriker = temp;
-                    }
-
-                    data.freeHit = true;
-
-                    let eventType = "freehit";
-                    let animText = `LBW + ${runs} RUNS! FREE HIT!`;
-                    if (runs === 4) {
-                        eventType = "four";
-                        animText = "LBW + FOUR! FREE HIT!";
-                    } else if (runs === 6) {
-                        eventType = "six";
-                        animText = "LBW + SIX! FREE HIT!";
-                    }
-
-                    data.lastEvent = { text: animText, type: eventType, timestamp: Date.now() };
-                    data.audioPlay = { file: "lbw.wav", t: Date.now() };
-
-                    evaluateMatchProgress(data, league);
-                }
-                return data;
-            }, (error, committed, snapshot) => {
-                if (committed && snapshot.exists()) {
-                    triggerOverlayBroadcast(selectedScorerLeagueId, "LBW - FREE HIT!", `${runs} Runs Added`);
-                }
-            });
         }
 
         // Updated commitWicket transaction with strict Free Hit rules (Only Run Out is valid)
@@ -3648,7 +3779,7 @@
                     isRewindPlaybackActive = false;
                     clearInterval(rewindTimer);
                 }
-            }, 200);
+            },200);
         }
 
         // Resume Live Video Stream from rewind
@@ -4887,25 +5018,22 @@
             document.getElementById("modal-plan-name").textContent = `₹${reward.toFixed(2)} Balance Credit Package`;
             document.getElementById("modal-plan-price").textContent = `Pay ₹${price.toFixed(2)}`;
             
-            // Auto fill logged username
+            // Clean dynamic interface forms phases back to initial input state
+            document.getElementById("payment-input-phase").classList.remove("hidden");
+            document.getElementById("payment-gateway-phase").classList.add("hidden");
+            document.getElementById("payment-user-upi-id").value = "";
+            document.getElementById("payment-user-upi-name").value = "";
+
             if (currentUser) {
                 db.ref(`users/${currentUser.uid}`).once('value').then(snap => {
                     const u = snap.val();
                     if (u && u.username) {
-                        document.getElementById("upi-payment-username").value = u.username;
+                        document.getElementById("payment-user-upi-name").value = u.username;
                     }
                 });
             }
 
-            // Sync dynamic QR payload
-            db.ref('admin_config/upi_id').once('value').then(snap => {
-                const adminUpi = snap.val() || "test@upi";
-                const username = document.getElementById("upi-payment-username").value.trim() || (currentUser ? currentUser.displayName : "User");
-                const upiPayload = `upi://pay?pa=${encodeURIComponent(adminUpi)}&am=${price}&pn=${encodeURIComponent(username)}&tn=${encodeURIComponent(username)}&tr=TXN_${Date.now()}`;
-                
-                document.getElementById("upi-qr-image").src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiPayload)}`;
-                document.getElementById("upi-payment-modal").classList.remove("hidden");
-            });
+            document.getElementById("upi-payment-modal").classList.remove("hidden");
         }
 
         function closePaymentModal() {
@@ -4913,31 +5041,99 @@
             selectedActivePlan = null;
         }
 
+        function submitPaymentInitiation() {
+            const userUpiId = document.getElementById("payment-user-upi-id").value.trim();
+            const userUpiName = document.getElementById("payment-user-upi-name").value.trim();
+
+            if (!userUpiId || !userUpiName) {
+                alert("Please complete both UPI ID and Registered Name fields to proceed.");
+                return;
+            }
+
+            if (!selectedActivePlan) {
+                alert("Please select a plan before initiating checkout.");
+                return;
+            }
+
+            // Push payment record to /payments
+            const paymentId = 'pay_' + Date.now();
+            const payload = {
+                paymentId: paymentId,
+                userId: currentUser.uid,
+                userUpiId: userUpiId,
+                userUpiName: userUpiName,
+                price: selectedActivePlan.price,
+                reward: selectedActivePlan.reward,
+                status: "new",
+                timestamp: Date.now()
+            };
+
+            db.ref(`payments/${paymentId}`).set(payload)
+                .then(() => {
+                    // Switch interface phase
+                    document.getElementById("payment-input-phase").classList.add("hidden");
+                    document.getElementById("payment-gateway-phase").classList.remove("hidden");
+
+                    // Renders scan code with deep link
+                    db.ref('admin_config/upi_id').once('value').then(snap => {
+                        const adminUpi = snap.val() || "test@upi";
+                        const upiPayload = `upi://pay?pa=${encodeURIComponent(adminUpi)}&am=${selectedActivePlan.price}&pn=${encodeURIComponent(userUpiName)}&tn=${encodeURIComponent(userUpiName)}&tr=${paymentId}`;
+                        
+                        document.getElementById("upi-qr-image").src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiPayload)}`;
+                    });
+                })
+                .catch(err => alert("Payment setup exception: " + err.message));
+        }
+
         function launchDirectUpiPay() {
-            const username = document.getElementById("upi-payment-username").value.trim();
-            if (!username) {
-                alert("Please verify your Username first for transaction tracking!");
+            const userUpiName = document.getElementById("payment-user-upi-name").value.trim() || (currentUser ? currentUser.displayName : "User");
+            if (!userUpiName) {
+                alert("Please complete verification name first!");
                 return;
             }
 
             db.ref('admin_config/upi_id').once('value').then(snap => {
                 const adminUpi = snap.val() || "test@upi";
-                const upiPayload = `upi://pay?pa=${encodeURIComponent(adminUpi)}&am=${selectedActivePlan.price}&pn=${encodeURIComponent(username)}&tn=${encodeURIComponent(username)}&tr=TXN_${Date.now()}`;
-                
-                // Redirection URL deep link launcher
+                const upiPayload = `upi://pay?pa=${encodeURIComponent(adminUpi)}&am=${selectedActivePlan.price}&pn=${encodeURIComponent(userUpiName)}&tn=${encodeURIComponent(userUpiName)}&tr=pay_${Date.now()}`;
                 window.location.href = upiPayload;
             });
         }
 
         function showPaymentSuccessPopup() {
-            document.getElementById("recharge-success-popup").classList.remove("hidden");
-            closePaymentModal();
+            // Set payment status back to idle to prevent repeat prompts
+            db.ref(`users/${currentUser.uid}`).update({ payment_status: "idle" }).then(() => {
+                const popup = document.getElementById("payment-success-confetti-modal");
+                if (popup) {
+                    popup.classList.remove("hidden");
+                    spawnConfetti();
+                }
+            });
         }
 
-        function closeSuccessPopup() {
-            document.getElementById("recharge-success-popup").classList.add("hidden");
-            if (currentUser) {
-                db.ref(`users/${currentUser.uid}/payment_status`).set("idle");
+        function closeSuccessConfettiModal() {
+            const popup = document.getElementById("payment-success-confetti-modal");
+            if (popup) popup.classList.add("hidden");
+            const container = document.getElementById("confetti-container");
+            if (container) container.innerHTML = "";
+        }
+
+        function spawnConfetti() {
+            const container = document.getElementById("confetti-container");
+            if (!container) return;
+            container.innerHTML = "";
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement("div");
+                confetti.className = "absolute w-2 h-2 rounded-full opacity-80";
+                const colors = ["#10b981", "#3b82f6", "#f59e0b", "#f43f5e", "#8b5cf6"];
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + "%";
+                confetti.style.top = -10 + "px";
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                const duration = 2 + Math.random() * 3;
+                confetti.style.animation = `fall ${duration}s linear infinite`;
+                
+                container.appendChild(confetti);
             }
         }
 
