@@ -445,7 +445,7 @@
                         <div class="grid grid-cols-3 gap-1.5">
                             <button onclick="scoreExtra('WD')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-orange-400 transition font-bold">Wide (+1)</button>
                             <button onclick="scoreExtra('NB')" class="py-2.5 bg-gray-900 hover:bg-gray-850 border border-yellow-500/30 text-[10px] font-bold rounded-lg text-yellow-400 transition font-bold">No Ball (+NB)</button>
-                            <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-gray-400 transition font-bold">Leg Bye</button>
+                            <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-900 hover:bg-gray-850 border border-yellow-500/30 text-[10px] font-bold rounded-lg text-yellow-400 transition font-bold">Leg Bye</button>
                         </div>
                         <div class="grid grid-cols-1 gap-2">
                             <button onclick="openWicketModal()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase transition shadow-md font-bold">Wicket</button>
@@ -524,7 +524,7 @@
                 </div>
 
                 <!-- Cashback Tracker Drawer Card -->
-                <div id="cashback-tracker-card" class="hidden bg-gray-950 border border-gray-800 rounded-2xl p-4 space-y-3 shadow-2xl">
+                <div id="cashback-tracker-card" class="hidden bg-gray-955 border border-gray-800 rounded-2xl p-4 space-y-3 shadow-2xl">
                     <div class="flex items-center justify-between">
                         <h3 class="text-xs font-black text-orange-500 uppercase tracking-wider font-sans">🎁 Cashback Drawer</h3>
                         <span class="text-[9px] text-green-500 font-black font-sans">Instant Claim</span>
@@ -1325,6 +1325,7 @@
             const cameraBox = document.getElementById("camera-registration-box");
             const profileLeagues = document.getElementById("profile-leagues-container");
             const cashbackCard = document.getElementById("cashback-tracker-card");
+            const rechargeSection = document.getElementById("recharge-wallet-section");
 
             // Look up guest session if present
             const guestSession = sessionStorage.getItem("guest_ipc_session");
@@ -1343,6 +1344,7 @@
                 if (cameraBox) cameraBox.classList.remove("hidden");
                 if (profileLeagues) profileLeagues.classList.remove("hidden");
                 if (cashbackCard) cashbackCard.classList.remove("hidden");
+                if (rechargeSection) rechargeSection.classList.remove("hidden");
 
                 document.getElementById("profile-name").textContent = currentUser.displayName;
                 document.getElementById("profile-email").textContent = currentUser.email;
@@ -1358,6 +1360,7 @@
                 if (cameraBox) cameraBox.classList.add("hidden");
                 if (profileLeagues) profileLeagues.classList.add("hidden");
                 if (cashbackCard) cashbackCard.classList.add("hidden");
+                if (rechargeSection) rechargeSection.classList.add("hidden");
                 document.getElementById("profile-name").textContent = "Guest Viewer";
                 document.getElementById("profile-email").textContent = "Please sign in to configure camera nodes.";
                 document.getElementById("profile-avatar").innerHTML = `U`;
@@ -1411,6 +1414,7 @@
             switchTab('profile');
             const target = document.getElementById("recharge-wallet-section");
             if (target) {
+                target.classList.remove("hidden");
                 target.scrollIntoView({ behavior: 'smooth' });
             }
         }
@@ -1800,7 +1804,7 @@
                     { home: 'C', away: 'I', round: 16 }, { home: 'D', away: 'J', round: 17 }, { home: 'E', away: 'I', round: 18 },
                     { home: 'F', away: 'J', round: 19 }, { home: 'G', away: 'I', round: 20 }, { home: 'H', away: 'J', round: 21 },
                     { home: 'A', away: 'D', round: 22 }, { home: 'B', away: 'C', round: 23 }, { home: 'E', away: 'H', round: 24 },
-                    { home: 'F', away: 'G', round: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', round: 27 },
+                    { home: 'F', away: 'G', rounded: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', round: 27 },
                     { home: 'A', away: 'F', round: 28 }, { home: 'B', away: 'E', rounded: 29 }, { home: 'C', away: 'H', round: 30 },
                     { home: 'D', away: 'G', rounded: 31 }, { home: 'I', away: 'B', rounded: 32 }, { home: 'J', away: 'A', round: 33 },
                     { home: 'E', away: 'C', round: 34 }, { home: 'F', away: 'D', round: 35 }, { home: 'G', away: 'B', round: 36 },
@@ -2210,7 +2214,7 @@
                             <span class="font-semibold">Overs: ${oversLimit} | Teams: ${teamCount}</span>
                             <span class="font-mono text-orange-400 font-bold">${startDate}</span>
                         </div>
-                        <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow shadow-lg">
+                        <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-850 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow shadow-lg">
                             <span>View Broadcast</span>
                             <i class="fa-solid fa-arrow-right text-xs"></i>
                         </button>
@@ -3522,7 +3526,7 @@
                         q2Match.homeTeam = q1Match.outcome.includes(q1Match.homeTeam) ? q1Match.awayTeam : q1Match.homeTeam;
                     }
                     if (elimMatch && elimMatch.status === 'COMPLETED') {
-                        q2Match.awayTeam = elimMatch.outcome.includes(elimMatch.homeTeam) ? elimMatch.homeTeam : elimMatch.awayTeam;
+                        q2Match.awayTeam = elimMatch.outcome.includes(elimMatch.homeTeam) ? elimMatch.awayTeam : elimMatch.awayTeam;
                     }
                 }
                 if (gfMatch) {
@@ -3530,7 +3534,7 @@
                         gfMatch.homeTeam = q1Match.outcome.includes(q1Match.homeTeam) ? q1Match.homeTeam : q1Match.awayTeam;
                     }
                     if (q2Match && q2Match.status === 'COMPLETED') {
-                        gfMatch.awayTeam = q2Match.outcome.includes(q2Match.homeTeam) ? q2Match.homeTeam : q2Match.awayTeam;
+                        gfMatch.awayTeam = q2Match.outcome.includes(q2Match.homeTeam) ? q2Match.awayTeam : q2Match.awayTeam;
                     }
                 }
                 updates[`fixtures`] = fixtures;
@@ -4191,6 +4195,7 @@
 
                 if (abbrevElement) abbrevElement.textContent = `${generateShortName(data.teams.home)} VS ${generateShortName(data.teams.away)}`;
                 if (limitElement) limitElement.textContent = data.isSuperOver ? `(1 Over Limit)` : `(${data.oversLimit} Overs Limit)`;
+
                 if (overLogContainer) {
                     overLogContainer.innerHTML = "";
                     if (data.overLog) {
@@ -4227,7 +4232,7 @@
                     const remainingRuns = data.targetRuns - data.runs;
                     if (remainingOvers > 0) {
                         rrr = (remainingRuns / remainingOvers).toFixed(2);
-                    }
+}
                     if (reqRunsElement) {
                         reqRunsElement.textContent = `${remainingRuns} runs needed from ${Math.round(remainingOvers * 6)} balls`;
                     }
@@ -5064,6 +5069,11 @@
                     }
                 });
             }
+
+            // Quick live check of adminUpiId from multiple nodes to guarantee correctness
+            db.ref('admin_config/upi_id').once('value').then(snap => {
+                if (snap.val()) adminUpiId = snap.val();
+            });
 
             document.getElementById("upi-payment-modal").classList.remove("hidden");
         }
