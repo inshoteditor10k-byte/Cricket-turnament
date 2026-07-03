@@ -214,7 +214,7 @@
             </div>
             
             <div id="empty-leagues-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-555">No active leagues match your search parameters.</p>
+                <p class="text-xs text-gray-500">No active leagues match your search parameters.</p>
             </div>
         </section>
 
@@ -227,9 +227,9 @@
                 <!-- Setup Step Indicators -->
                 <div class="flex items-center space-x-3 mb-6 text-[10px] font-semibold uppercase tracking-wider overflow-x-auto hide-scrollbar">
                     <span id="step-1-indicator" class="text-orange-500 border-b-2 border-orange-500 pb-1 flex-shrink-0">1. Settings</span>
-                    <span class="text-gray-555 flex-shrink-0">&rarr;</span>
+                    <span class="text-gray-500 flex-shrink-0">&rarr;</span>
                     <span id="step-2-indicator" class="text-gray-500 flex-shrink-0">2. Rules</span>
-                    <span class="text-gray-555 flex-shrink-0">&rarr;</span>
+                    <span class="text-gray-500 flex-shrink-0">&rarr;</span>
                     <span id="step-3-indicator" class="text-gray-500 flex-shrink-0">3. Rosters</span>
                 </div>
 
@@ -308,7 +308,7 @@
                                 <span class="text-gray-300 font-semibold">Total Matches: <strong id="calc-total-matches" class="text-orange-500 font-mono">10</strong></span>
                                 <span class="text-gray-300 font-semibold">Last Match: <strong id="calc-last-date" class="text-green-500">N/A</strong></span>
                             </div>
-                            <div class="flex justify-between text-xs pt-1.5 border-t border-gray-850 mt-1.5">
+                            <div class="flex justify-between text-xs pt-1.5 border-t border-gray-855 mt-1.5">
                                 <span class="text-gray-300 font-semibold">League Auto-Deduction Price (₹5/Match):</span>
                                 <span id="calc-auto-cost" class="text-orange-500 font-extrabold font-mono">₹50.00</span>
                             </div>
@@ -348,7 +348,7 @@
             </div>
 
             <div id="empty-managed-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-555 mb-4">You have not created any leagues yet.</p>
+                <p class="text-xs text-gray-500 mb-4">You have not created any leagues yet.</p>
                 <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold text-white transition">Launch Creation Wizard</button>
             </div>
 
@@ -440,7 +440,7 @@
                         <div class="grid grid-cols-3 gap-1.5">
                             <button onclick="scoreBalls(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-xs text-white transition font-bold">4 Run</button>
                             <button onclick="scoreBalls(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-xs text-white transition font-bold">6 Run</button>
-                            <button onclick="triggerCustomRun()" class="py-2.5 bg-gray-800 hover:bg-gray-700 text-xs font-bold rounded-lg text-white transition font-bold">___ Run</button>
+                            <button onclick="triggerCustomRun()" class="py-2.5 bg-gray-855 hover:bg-gray-700 text-xs font-bold rounded-lg text-white transition font-bold">___ Run</button>
                         </div>
                         <div class="grid grid-cols-3 gap-1.5">
                             <button onclick="scoreExtra('WD')" class="py-2.5 bg-gray-900 hover:bg-gray-800 text-[10px] font-semibold rounded-lg text-orange-400 transition font-bold">Wide (+1)</button>
@@ -448,7 +448,7 @@
                             <button onclick="scoreExtra('BYE')" class="py-2.5 bg-gray-900 hover:bg-gray-855 border border-yellow-500/30 text-[10px] font-bold rounded-lg text-yellow-400 transition font-bold">Leg Bye</button>
                         </div>
                         <div class="grid grid-cols-1 gap-2">
-                            <button onclick="openWicketModal()" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase transition shadow-md font-bold">Wicket</button>
+                            <button onclick="openWicketModal()" class="w-full py-2.5 bg-red-655 hover:bg-red-700 text-white font-extrabold rounded-lg text-xs uppercase transition shadow-md font-bold">Wicket</button>
                         </div>
                     </div>
                 </div>
@@ -872,22 +872,22 @@
                 </div>
                 <button onclick="closeWithdrawalModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg">Close</button>
             </div>
-            <div class="p-3 bg-black/45 border border-gray-850 rounded-xl">
+            <div class="p-3 bg-black/45 border border-gray-800 rounded-xl">
                 <span class="text-[10px] text-gray-400 uppercase tracking-widest font-black block">Available Settlement Capital</span>
                 <span class="text-green-500 font-extrabold text-lg font-mono">₹<span id="withdraw-available-balance">0.00</span></span>
             </div>
             <div class="space-y-3 text-left">
                 <div>
                     <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Withdrawal Amount (₹)</label>
-                    <input type="number" id="withdraw-amount-input" placeholder="Enter amount" class="w-full bg-black border border-gray-850 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                    <input type="number" id="withdraw-amount-input" placeholder="Enter amount" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
                 </div>
                 <div>
                     <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Destination UPI ID</label>
-                    <input type="text" id="withdraw-upi-input" placeholder="example@upi" class="w-full bg-black border border-gray-850 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                    <input type="text" id="withdraw-upi-input" placeholder="example@upi" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
                 </div>
                 <div>
                     <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Account Holder Name</label>
-                    <input type="text" id="withdraw-name-input" placeholder="Full name" class="w-full bg-black border border-gray-850 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                    <input type="text" id="withdraw-name-input" placeholder="Full name" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
                 </div>
                 <button onclick="submitWithdrawalRequest()" class="w-full py-2.5 bg-green-600 hover:bg-green-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition font-bold shadow-lg">Submit Withdrawal</button>
             </div>
@@ -1769,7 +1769,7 @@
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 },
                     { home: 'A', away: 'G', round: 4 }, { home: 'B', away: 'C', round: 5 }, { home: 'D', away: 'E', round: 6 },
                     { home: 'F', away: 'G', round: 7 }, { home: 'A', away: 'C', round: 8 }, { home: 'B', away: 'D', round: 9 },
-                    { home: 'E', away: 'G', round: 10 }, { home: 'A', away: 'D', round: 11 }, { home: 'B', away: 'E', round: 12 },
+                    { home: 'E', away: 'G', rounded: 10 }, { home: 'A', away: 'D', round: 11 }, { home: 'B', away: 'E', round: 12 },
                     { home: 'C', away: 'F', round: 13 }, { home: 'D', away: 'G', round: 14 }, { home: 'A', away: 'E', round: 15 },
                     { home: 'B', away: 'F', round: 16 }, { home: 'C', away: 'G', round: 17 }, { home: 'A', away: 'F', round: 18 },
                     { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'E', round: 20 }, { home: 'D', away: 'F', round: 21 }
@@ -2129,7 +2129,7 @@
             });
 
             if (count === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4 font-semibold font-sans">No saved leagues found.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-550 text-center py-4 font-semibold font-sans">No saved leagues found.</p>`;
             }
         }
 
@@ -2357,7 +2357,7 @@
                         } else if (now < targetTime) {
                             banner.classList.remove("hidden");
                             button.setAttribute("disabled", "true");
-                            button.className = "flex-[2] py-2 bg-gray-800 text-gray-555 font-bold text-[11px] rounded-xl uppercase cursor-not-allowed transition font-bold";
+                            button.className = "flex-[2] py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase cursor-not-allowed transition font-bold";
                             button.textContent = "Locked";
 
                             const diff = targetTime - now;
@@ -3453,7 +3453,7 @@
 
             const standingsMap = {};
             league.teams.forEach(t => {
-                standingsMap[t.name] = { name: t.name, points: 0, runsScored: 0, oversFaced: 0.0, runsConceded: 0, oversBowled: 0.0 };
+                standingsMap[t.name] = { name: t.name, played: 0, won: 0, lost: 0, tied: 0, points: 0, runsScored: 0, oversFaced: 0.0, runsConceded: 0, oversBowled: 0.0 };
             });
 
             fixtures.forEach(match => {
@@ -3554,7 +3554,7 @@
                         gfMatch.homeTeam = q1Match.outcome.includes(q1Match.homeTeam) ? q1Match.homeTeam : q1Match.awayTeam;
                     }
                     if (q2Match && q2Match.status === 'COMPLETED') {
-                        gfMatch.awayTeam = q2Match.outcome.includes(q2Match.homeTeam) ? q2Match.awayTeam : q2Match.awayTeam;
+                        gfMatch.awayTeam = q2Match.outcome.includes(q2Match.homeTeam) ? q2Match.homeTeam : q2Match.awayTeam;
                     }
                 }
                 updates[`fixtures`] = fixtures;
@@ -4278,7 +4278,7 @@
                 if (isLiveSelected) {
                     subTitleStatus = `<span class="bg-red-600 text-white font-bold px-2 py-0.5 rounded text-[8px] animate-pulse uppercase tracking-widest ml-2 shadow font-sans font-bold">LIVE NOW</span>`;
                 } else if (matchToShow && matchToShow.status === "COMPLETED") {
-                    subTitleStatus = `<span class="bg-green-600 text-white font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 shadow font-sans font-bold">COMPLETED</span>`;
+                    subTitleStatus = `<span class="bg-green-600 text-white font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 shadow font-sans font-bold font-bold">COMPLETED</span>`;
                 } else {
                     subTitleStatus = `<span class="bg-gray-800 text-gray-400 font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 font-semibold font-bold font-sans">UPCOMING</span>`;
                 }
