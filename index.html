@@ -154,7 +154,7 @@
         
         <!-- Live Rupee Wallet Balance Container -->
         <div class="relative">
-            <div id="header-wallet-zone" onclick="toggleWalletDropdown()" class="hidden flex items-center space-x-2 bg-black border border-gray-855 px-3 py-1.5 rounded-xl shadow-inner cursor-pointer hover:border-orange-500 transition">
+            <div id="header-wallet-zone" onclick="toggleWalletDropdown()" class="hidden flex items-center space-x-2 bg-black border border-gray-850 px-3 py-1.5 rounded-xl shadow-inner cursor-pointer hover:border-orange-500 transition">
                 <span class="text-xs text-orange-500 font-black">₹</span>
                 <span id="wallet-balance-indicator" class="text-xs font-black text-white font-mono">0.00</span>
                 <i class="fa-solid fa-chevron-down text-[8px] text-gray-400"></i>
@@ -214,7 +214,7 @@
             </div>
             
             <div id="empty-leagues-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-500">No active leagues match your search parameters.</p>
+                <p class="text-xs text-gray-555">No active leagues match your search parameters.</p>
             </div>
         </section>
 
@@ -227,9 +227,9 @@
                 <!-- Setup Step Indicators -->
                 <div class="flex items-center space-x-3 mb-6 text-[10px] font-semibold uppercase tracking-wider overflow-x-auto hide-scrollbar">
                     <span id="step-1-indicator" class="text-orange-500 border-b-2 border-orange-500 pb-1 flex-shrink-0">1. Settings</span>
-                    <span class="text-gray-500 flex-shrink-0">&rarr;</span>
+                    <span class="text-gray-555 flex-shrink-0">&rarr;</span>
                     <span id="step-2-indicator" class="text-gray-500 flex-shrink-0">2. Rules</span>
-                    <span class="text-gray-500 flex-shrink-0">&rarr;</span>
+                    <span class="text-gray-555 flex-shrink-0">&rarr;</span>
                     <span id="step-3-indicator" class="text-gray-500 flex-shrink-0">3. Rosters</span>
                 </div>
 
@@ -348,7 +348,7 @@
             </div>
 
             <div id="empty-managed-state" class="hidden text-center py-10 border border-dashed border-gray-800 rounded-2xl">
-                <p class="text-xs text-gray-500 mb-4">You have not created any leagues yet.</p>
+                <p class="text-xs text-gray-555 mb-4">You have not created any leagues yet.</p>
                 <button onclick="switchTab('create')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-xs font-bold text-white transition">Launch Creation Wizard</button>
             </div>
 
@@ -421,7 +421,7 @@
                             </div>
                         </div>
                         <p class="text-2xl font-black text-white animate-fade-in" id="scorer-metric-score">0 - 0 <span class="text-sm font-medium text-gray-400">(0.0)</span></p>
-                        <div class="space-y-1 text-xs border-t border-gray-850 pt-2.5">
+                        <div class="space-y-1 text-xs border-t border-gray-855 pt-2.5">
                             <p class="text-gray-400 font-bold" id="scorer-metric-striker">Striker: --</p>
                             <p class="text-gray-450 font-semibold" id="scorer-metric-nonstriker">Non-Striker: --</p>
                             <p class="text-gray-455 font-semibold" id="scorer-metric-bowler">Bowler: --</p>
@@ -847,15 +847,15 @@
                 </div>
                 <p class="text-[9px] text-gray-400 font-semibold font-sans">Scan or screenshot this QR inside any UPI App to pay.</p>
                 
-                <!-- 1-Minute Live Verification Countdown Section -->
+                <!-- 2-Minute Live Verification Countdown Section -->
                 <div id="recharge-countdown-box" class="p-3 bg-black/60 border border-orange-500/20 rounded-xl space-y-2 mt-2 text-left">
                     <div class="flex items-center justify-between">
                         <span class="text-[9px] text-gray-400 uppercase tracking-widest font-black">Recharge Verification Status</span>
-                        <span id="recharge-timer" class="text-xs font-mono font-black text-orange-500">60s</span>
+                        <span id="recharge-timer" class="text-xs font-mono font-black text-orange-500">120s</span>
                     </div>
                     <div class="flex items-center space-x-2.5">
                         <div class="w-3.5 h-3.5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
-                        <p id="recharge-status-msg" class="text-[10px] text-orange-400 font-bold animate-pulse">Awaiting verification...</p>
+                        <p id="recharge-status-msg" class="text-[10px] text-orange-400 font-bold animate-pulse">Waiting for FamPay SMS Verification - 120s remaining...</p>
                     </div>
                 </div>
             </div>
@@ -872,22 +872,22 @@
                 </div>
                 <button onclick="closeWithdrawalModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg">Close</button>
             </div>
-            <div class="p-3 bg-black/45 border border-gray-800 rounded-xl">
+            <div class="p-3 bg-black/45 border border-gray-850 rounded-xl">
                 <span class="text-[10px] text-gray-400 uppercase tracking-widest font-black block">Available Settlement Capital</span>
                 <span class="text-green-500 font-extrabold text-lg font-mono">₹<span id="withdraw-available-balance">0.00</span></span>
             </div>
             <div class="space-y-3 text-left">
                 <div>
                     <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Withdrawal Amount (₹)</label>
-                    <input type="number" id="withdraw-amount-input" placeholder="Enter amount" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                    <input type="number" id="withdraw-amount-input" placeholder="Enter amount" class="w-full bg-black border border-gray-850 rounded-xl py-2 px-3 text-xs text-white font-bold">
                 </div>
                 <div>
                     <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Destination UPI ID</label>
-                    <input type="text" id="withdraw-upi-input" placeholder="example@upi" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                    <input type="text" id="withdraw-upi-input" placeholder="example@upi" class="w-full bg-black border border-gray-850 rounded-xl py-2 px-3 text-xs text-white font-bold">
                 </div>
                 <div>
                     <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Account Holder Name</label>
-                    <input type="text" id="withdraw-name-input" placeholder="Full name" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                    <input type="text" id="withdraw-name-input" placeholder="Full name" class="w-full bg-black border border-gray-850 rounded-xl py-2 px-3 text-xs text-white font-bold">
                 </div>
                 <button onclick="submitWithdrawalRequest()" class="w-full py-2.5 bg-green-600 hover:bg-green-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition font-bold shadow-lg">Submit Withdrawal</button>
             </div>
@@ -975,10 +975,10 @@
             <h4 class="text-md font-black text-yellow-500 text-center uppercase tracking-wider font-sans font-black">No Ball Runs Selection</h4>
             <p class="text-[10px] text-gray-400 text-center font-semibold font-sans">Select batsman runs on this delivery. Bowler will be charged +1 extra run and Free Hit will be awarded!</p>
             <div class="grid grid-cols-4 gap-1.5 text-xs text-white font-sans font-bold">
-                <button onclick="commitNoBallRuns(0)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">0 Run</button>
-                <button onclick="commitNoBallRuns(1)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">1 Run</button>
-                <button onclick="commitNoBallRuns(2)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">2 Run</button>
-                <button onclick="commitNoBallRuns(3)" class="py-2.5 bg-gray-800 hover:bg-gray-700 font-bold rounded-lg text-center transition font-sans">3 Run</button>
+                <button onclick="commitNoBallRuns(0)" class="py-2.5 bg-gray-850 hover:bg-gray-800 font-bold rounded-lg text-center transition font-sans">0 Run</button>
+                <button onclick="commitNoBallRuns(1)" class="py-2.5 bg-gray-850 hover:bg-gray-800 font-bold rounded-lg text-center transition font-sans">1 Run</button>
+                <button onclick="commitNoBallRuns(2)" class="py-2.5 bg-gray-855 hover:bg-gray-800 font-bold rounded-lg text-center transition font-sans">2 Run</button>
+                <button onclick="commitNoBallRuns(3)" class="py-2.5 bg-gray-855 hover:bg-gray-800 font-bold rounded-lg text-center transition font-sans">3 Run</button>
                 <button onclick="commitNoBallRuns(4)" class="py-2.5 bg-orange-600 hover:bg-orange-700 font-black rounded-lg text-center col-span-2 transition shadow font-bold font-sans">4 Run</button>
                 <button onclick="commitNoBallRuns(5)" class="py-2.5 bg-gray-850 hover:bg-gray-800 border border-gray-750 font-bold rounded-lg text-center col-span-2 transition font-bold font-sans font-semibold">5 Run</button>
                 <button onclick="commitNoBallRuns(6)" class="py-2.5 bg-green-600 hover:bg-green-700 font-black rounded-lg text-center col-span-4 transition shadow font-bold font-sans">6 Run</button>
@@ -1035,7 +1035,7 @@
     <!-- Cameraman Live Broadcast Overlay Container -->
     <div id="cameraman-live-overlay" class="hidden fixed inset-0 bg-black z-50 flex flex-col font-sans">
         <!-- Header bar inside live match view -->
-        <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10">
+        <div class="bg-gray-955 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10">
             <div class="flex items-center space-x-2">
                 <span class="bg-red-600 text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded text-white animate-pulse shadow">CAMERAMAN</span>
                 <h3 id="cameraman-assigned-title" class="text-xs font-black text-white">Linked Feed: ------</h3>
@@ -1137,6 +1137,7 @@
         let editingTimeLeagueId = null;
         let lastPlayedAudioTimestamp = 0; 
         let selectedActivePlan = null;
+        let planSelectedTime = null; // Cache the exact buy-click plan initiation time
         
         // Dynamic Cameraman Broadcasting states
         let localCameraStream = null;
@@ -1603,7 +1604,7 @@
             if (!match) return 0;
             const startDateStr = league.metadata.startDate;
             // Use match-specific customTime if it exists, otherwise fall back to global league startTime
-            const startTimeStr = match.customTime || league.metadata.startTime || "18:00";
+            const startTimeStr = match.customTime || league.metadata.startTime || "18:05";
             
             const startDate = new Date(startDateStr);
             const matchDate = new Date(startDate.getTime() + (match.round - 1) * 24 * 60 * 60 * 1000);
@@ -1787,7 +1788,7 @@
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', rounded: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
                     { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', rounded: 23 }, { home: 'D', away: 'F', round: 24 },
-                    { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
+                    { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', rounded: 27 }, { home: 'D', away: 'E', round: 28 }
                 ];
                 playoffTemplates = [
                     { type: 'QUALIFIER 1', homePlaceholder: 'Rank 1 Team', awayPlaceholder: 'Rank 2 Team', round: 29 },
@@ -1835,7 +1836,7 @@
                     { home: 'D', away: 'A', round: 52 }, { home: 'C', away: 'B', round: 53 }, { home: 'H', away: 'E', round: 54 },
                     { home: 'G', away: 'F', rounded: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
                     { home: 'F', away: 'A', round: 58 }, { home: 'E', away: 'B', round: 59 }, { home: 'H', away: 'C', round: 60 },
-                    { home: 'G', away: 'D', round: 61 }, { home: 'B', away: 'I', round: 62 }, { home: 'A', away: 'J', round: 63 },
+                    { home: 'G', away: 'D', round: 61 }, { home: 'B', away: 'I', rounded: 62 }, { home: 'A', away: 'J', round: 63 },
                     { home: 'C', away: 'E', round: 64 }, { home: 'D', away: 'F', round: 65 }, { home: 'B', away: 'G', round: 66 },
                     { home: 'A', away: 'H', round: 67 }, { home: 'F', away: 'I', round: 68 }, { home: 'E', away: 'J', round: 69 },
                     { home: 'B', away: 'A', round: 70 }
@@ -2128,7 +2129,7 @@
             });
 
             if (count === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-555 text-center py-4 font-semibold font-sans">No saved leagues found.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4 font-semibold font-sans">No saved leagues found.</p>`;
             }
         }
 
@@ -2356,7 +2357,7 @@
                         } else if (now < targetTime) {
                             banner.classList.remove("hidden");
                             button.setAttribute("disabled", "true");
-                            button.className = "flex-[2] py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase cursor-not-allowed transition font-bold";
+                            button.className = "flex-[2] py-2 bg-gray-800 text-gray-555 font-bold text-[11px] rounded-xl uppercase cursor-not-allowed transition font-bold";
                             button.textContent = "Locked";
 
                             const diff = targetTime - now;
@@ -4155,6 +4156,248 @@
             `;
         }
 
+        // Live stats calculations and scoring sync logic
+        function syncLiveViewerState(league) {
+            if (!league) return;
+            const data = league.liveMatch;
+            const titleElement = document.getElementById("live-spectator-league-title");
+            if (titleElement) titleElement.textContent = league.metadata.name;
+
+            renderIplFixtures(league);
+            updateCapLeaders(league);
+
+            const matchCountdownStr = document.getElementById("match-countdown-string");
+            const abbrevElement = document.getElementById("overlay-teams-abbrev");
+            const scoreElement = document.getElementById("overlay-innings-score");
+            const limitElement = document.getElementById("overlay-match-limit");
+            const overLogContainer = document.getElementById("overlay-over-log");
+            const activeBat1 = document.getElementById("overlay-active-batsman-1");
+            const activeBat2 = document.getElementById("overlay-active-batsman-2");
+            const activeBowl = document.getElementById("overlay-active-bowler");
+            const runsRateElement = document.getElementById("overlay-run-rates");
+            const reqRunsElement = document.getElementById("overlay-required-runs");
+
+            const matchIndexToShow = spectatorSelectedMatchIndex !== null ? spectatorSelectedMatchIndex : 0;
+            const matchToShow = league.fixtures ? league.fixtures[matchIndexToShow] : null;
+
+            if (!data || !data.active) {
+                document.getElementById("live-countdown-panel").classList.remove("hidden");
+                if (matchCountdownStr) matchCountdownStr.textContent = "League Schedule Match Pending";
+                if (abbrevElement) abbrevElement.textContent = "No Live Match";
+                if (scoreElement) scoreElement.textContent = "0 - 0 (0.0)";
+                
+                calculateDynamicStandings(league);
+            } else {
+                document.getElementById("live-countdown-panel").classList.add("hidden");
+
+                if (data.lastEvent && data.lastEvent.timestamp > lastSeenEventTimestamp) {
+                    if (Date.now() - data.lastEvent.timestamp < 5000) {
+                        triggerBroadcastFeedAnimation(data.lastEvent.text, data.lastEvent.type);
+                    }
+                    lastSeenEventTimestamp = data.lastEvent.timestamp;
+                }
+
+                if (data.needsSuperOverTrigger || data.isSuperOver) {
+                    if (matchCountdownStr) matchCountdownStr.textContent = "MATCH TIED! SUPER OVER IN PROGRESS";
+                    if (scoreElement) {
+                        scoreElement.innerHTML = `
+                            ${data.runs}-${data.wickets} <span class="text-[10px] font-semibold opacity-90 font-sans">(${data.overs})</span> <span class="text-[8px] bg-yellow-500 text-black px-1 rounded ml-1 font-bold">SUPER OVER</span>
+                        `;
+                    }
+                } else {
+                    if (matchCountdownStr) matchCountdownStr.textContent = data.isSuperOver ? `LIVE SUPER OVER: ${data.battingTeam} is batting` : `LIVE: ${data.battingTeam} is batting`;
+                    if (scoreElement) {
+                        scoreElement.innerHTML = `
+                            ${data.runs}-${data.wickets} <span class="text-[10px] font-semibold opacity-90 font-sans">( ${data.overs} )</span> ${data.isSuperOver ? '<span class="text-[8px] bg-yellow-500 text-black px-1 rounded ml-1 font-bold">SO</span>' : ''}
+                        `;
+                    }
+                }
+
+                if (abbrevElement) abbrevElement.textContent = `${generateShortName(data.teams.home)} VS ${generateShortName(data.teams.away)}`;
+                if (limitElement) limitElement.textContent = data.isSuperOver ? `(1 Over Limit)` : `(${data.oversLimit} Overs Limit)`;
+
+                if (overLogContainer) {
+                    overLogContainer.innerHTML = "";
+                    if (data.overLog) {
+                        data.overLog.slice(-6).forEach(log => {
+                            overLogContainer.innerHTML += `
+                                <span class="w-auto h-4 px-1 bg-black/40 text-[8px] flex items-center justify-center rounded-full font-bold border border-white/10 shadow-sm font-sans">${log}</span>
+                            `;
+                        });
+                    }
+                }
+
+                if (activeBat1) activeBat1.textContent = `🏏 ${data.striker || '--'}`;
+                if (activeBat2) activeBat2.textContent = `${data.nonStriker || '--'}`;
+                if (activeBowl) activeBowl.textContent = `Bowler: ${data.currentBowler || '--'}`;
+
+                const viewsElement = document.getElementById("overlay-live-views");
+                if (viewsElement) viewsElement.textContent = data.viewerCount || 1;
+
+                const spectatorFhBadge = document.getElementById("overlay-free-hit-badge");
+                if (spectatorFhBadge) {
+                    if (data.freeHit) {
+                        spectatorFhBadge.classList.remove("hidden");
+                    } else {
+                        spectatorFhBadge.classList.add("hidden");
+                    }
+                }
+
+                const overDec = overToDecimal(data.overs);
+                const crr = overDec > 0 ? (data.runs / overDec).toFixed(2) : "0.00";
+                let rrr = "--";
+                if (data.inning === 2 && data.targetRuns) {
+                    const limit = parseFloat(data.isSuperOver ? 1.0 : data.oversLimit) || 5.0;
+                    const remainingOvers = limit - overDec;
+                    const remainingRuns = data.targetRuns - data.runs;
+                    if (remainingOvers > 0) {
+                        rrr = (remainingRuns / remainingOvers).toFixed(2);
+                    }
+                    if (reqRunsElement) {
+                        reqRunsElement.textContent = `${remainingRuns} runs needed from ${Math.round(remainingOvers * 6)} balls`;
+                    }
+                } else {
+                    if (reqRunsElement) reqRunsElement.textContent = "";
+                }
+                if (runsRateElement) {
+                    runsRateElement.textContent = `CRR: ${crr} ${data.inning === 2 ? `| RRR: ${rrr}` : ''}`;
+                }
+
+                calculateDynamicStandings(league);
+            }
+
+            // Real-Time Multi-Innings Scorecard sync (Cricbuzz-Style Renders)
+            const bTableContainer = document.getElementById("live-panel-scorecard");
+            if (bTableContainer) {
+                bTableContainer.innerHTML = "";
+                
+                const isLiveSelected = data && data.active && data.matchIndex === matchIndexToShow;
+                const matchTitleText = matchToShow ? `Round ${matchToShow.round}: ${matchToShow.homeTeam} vs ${matchToShow.awayTeam}` : "Scorecard Details";
+                
+                let subTitleStatus = "";
+                if (isLiveSelected) {
+                    subTitleStatus = `<span class="bg-red-600 text-white font-bold px-2 py-0.5 rounded text-[8px] animate-pulse uppercase tracking-widest ml-2 shadow font-sans font-bold">LIVE NOW</span>`;
+                } else if (matchToShow && matchToShow.status === "COMPLETED") {
+                    subTitleStatus = `<span class="bg-green-600 text-white font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 shadow font-sans font-bold">COMPLETED</span>`;
+                } else {
+                    subTitleStatus = `<span class="bg-gray-800 text-gray-400 font-bold px-2 py-0.5 rounded text-[8px] uppercase tracking-widest ml-2 font-semibold font-bold font-sans">UPCOMING</span>`;
+                }
+
+                let headerHTML = `
+                    <div class="bg-gray-955 border border-gray-800 p-3.5 rounded-xl flex justify-between items-center shadow-inner">
+                        <div>
+                            <h4 class="text-xs font-black text-white uppercase tracking-wider font-sans">${matchTitleText}</h4>
+                            <p class="text-[9px] text-gray-400 font-bold font-sans">Viewing complete scorecard. Tap other fixtures to see their scores.</p>
+                        </div>
+                        ${subTitleStatus}
+                    </div>
+                `;
+                bTableContainer.innerHTML += headerHTML;
+
+                let runs1 = 0, wickets1 = 0, overs1 = 0.0;
+                let runs2 = 0, wickets2 = 0, overs2 = 0.0;
+                let battingTeam1 = "", battingTeam2 = "";
+                let batsmanStats = {}, bowlerStats = {};
+
+                if (isLiveSelected) {
+                    if (data.inning === 1) {
+                        battingTeam1 = data.battingTeam;
+                        battingTeam2 = data.bowlingTeam;
+                    } else {
+                        battingTeam1 = data.inning1BattingTeam || data.bowlingTeam;
+                        battingTeam2 = data.battingTeam;
+                    }
+
+                    runs1 = data.inning1Runs || (data.inning === 1 ? data.runs : 0);
+                    wickets1 = data.inning1Wickets || (data.inning === 1 ? data.wickets : 0);
+                    overs1 = data.inning1Overs || (data.inning === 1 ? data.overs : 0.0);
+
+                    runs2 = data.inning === 2 ? data.runs : 0;
+                    wickets2 = data.inning === 2 ? data.wickets : 0;
+                    overs2 = data.inning === 2 ? data.overs : 0.0;
+
+                    batsmanStats = data.batsmanStats || {};
+                    bowlerStats = data.bowlerStats || {};
+                } else if (matchToShow) {
+                    const sc = matchToShow.scorecard || {};
+                    const sc1 = sc.inning1 || {};
+                    const sc2 = sc.inning2 || {};
+
+                    battingTeam1 = sc1.battingTeam || matchToShow.homeTeam;
+                    battingTeam2 = sc2.battingTeam || matchToShow.awayTeam;
+
+                    runs1 = sc1.runs || 0;
+                    wickets1 = sc1.wickets || 0;
+                    overs1 = sc1.overs || 0.0;
+
+                    runs2 = sc2.runs || 0;
+                    wickets2 = sc2.wickets || 0;
+                    overs2 = sc2.overs || 0.0;
+
+                    batsmanStats = sc1.batsmanStats || {};
+                    bowlerStats = sc1.bowlerStats || {};
+                    if (sc2.batsmanStats) {
+                        batsmanStats = { ...batsmanStats, ...sc2.batsmanStats };
+                    }
+                    if (sc2.bowlerStats) {
+                        bowlerStats = { ...bowlerStats, ...sc2.bowlerStats };
+                    }
+                }
+
+                // Render Inning 1 Scorecard
+                const inn1Html = buildInningsScorecardHtml(league, battingTeam1, battingTeam2, { runs: runs1, wickets: wickets1, overs: overs1 }, batsmanStats, bowlerStats);
+                bTableContainer.innerHTML += inn1Html;
+
+                // Render Inning 2 Scorecard (if started or completed)
+                const hasInning2Started = isLiveSelected ? (data.inning === 2 || data.inning1Runs !== undefined) : (matchToShow && matchToShow.status === "COMPLETED");
+                if (hasInning2Started) {
+                    const inn2Html = buildInningsScorecardHtml(league, battingTeam2, battingTeam1, { runs: runs2, wickets: wickets2, overs: overs2 }, batsmanStats, bowlerStats);
+                    bTableContainer.innerHTML += inn2Html;
+                }
+            }
+
+            // Automatically keep the active stats modal updated live if it's currently visible
+            const statsModal = document.getElementById("stats-leaderboard-modal");
+            if (statsModal && !statsModal.classList.contains("hidden")) {
+                renderStatsLeaderboardModalList();
+            }
+        }
+
+        // Dedicated TV Broadcast screen animation trigger overlay
+        function triggerBroadcastFeedAnimation(text, type) {
+            const overlay = document.getElementById("live-feed-animation-overlay");
+            const card = document.getElementById("live-animation-card");
+            const textBox = document.getElementById("live-animation-text");
+            if (!overlay || !textBox || !card) return;
+
+            textBox.textContent = text;
+            textBox.className = "text-2xl md:text-3xl font-extrabold px-6 py-3 rounded-full uppercase tracking-wider text-white shadow-2xl animate-bounce font-bold";
+
+            if (type === 'six') {
+                textBox.classList.add("glow-six");
+            } else if (type === 'four') {
+                textBox.classList.add("glow-four");
+            } else if (type === 'wicket') {
+                textBox.classList.add("glow-wicket");
+            } else if (type === 'extra') {
+                textBox.classList.add("glow-extra");
+            } else if (type === 'freehit') {
+                textBox.classList.add("glow-freehit");
+            } else {
+                textBox.classList.add("glow-default");
+            }
+
+            overlay.classList.remove("hidden");
+            card.style.transform = "scale(1)";
+
+            setTimeout(() => {
+                card.style.transform = "scale(0)";
+                setTimeout(() => {
+                    overlay.classList.add("hidden");
+                }, 300);
+            }, 1800);
+        }
+
         // Leaderboards Calculation & Awards Tab Updating
         function updateCapLeaders(league) {
             const stats = {};
@@ -4336,7 +4579,7 @@
             });
 
             if (displayPlayers.length === 0) {
-                listContainer.innerHTML = `<p class="text-xs text-gray-550 text-center py-4 font-semibold font-sans">No records accumulated yet.</p>`;
+                listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center py-4 font-semibold font-sans">No records accumulated yet.</p>`;
             }
         }
 
@@ -4347,7 +4590,7 @@
             container.innerHTML = "";
 
             const startDateStr = league.metadata.startDate || new Date().toISOString().split('T')[0];
-            const startTimeStr = league.metadata.startTime || "18:00";
+            const startTimeStr = league.metadata.startTime || "18:05";
 
             if (league.fixtures) {
                 league.fixtures.forEach((match, index) => {
@@ -4719,7 +4962,7 @@
             container.innerHTML = "";
 
             const startDateStr = league.metadata.startDate || new Date().toISOString().split('T')[0];
-            const globalStartTime = league.metadata.startTime || "18:00";
+            const globalStartTime = league.metadata.startTime || "18:05";
 
             if (league.fixtures) {
                 league.fixtures.forEach((match, index) => {
@@ -4828,6 +5071,8 @@
 
         function selectPlanForPurchase(planId, price, reward) {
             selectedActivePlan = { id: planId, price: price, reward: reward };
+            planSelectedTime = Date.now(); // Capture dynamic requestTime on "Buy Plan" initialization click event
+            
             document.getElementById("modal-plan-name").textContent = `₹${reward.toFixed(2)} Balance Credit Package`;
             document.getElementById("modal-plan-price").textContent = `Pay ₹${price.toFixed(2)}`;
             
@@ -4892,7 +5137,8 @@
                 price: selectedActivePlan.price,
                 reward: selectedActivePlan.reward,
                 status: "new",
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                requestTime: planSelectedTime || Date.now() // Precise exact buy requestTime mapped cleanly to database node
             };
 
             db.ref(`payments/${paymentId}`).set(payload)
@@ -4904,7 +5150,7 @@
                     const upiPayload = `upi://pay?pa=${encodeURIComponent(adminUpiId)}&am=${selectedActivePlan.price}&pn=${encodeURIComponent(userUpiName)}&tn=RECHARGE&tr=${paymentId}`;
                     document.getElementById("upi-qr-image").src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiPayload)}`;
 
-                    // Start 1-minute countdown and attach DB listener
+                    // Start 2-minute countdown and attach DB listener
                     startRechargeCountdown(paymentId);
                 })
                 .catch(err => alert("Payment setup exception: " + err.message));
@@ -4916,9 +5162,9 @@
             const msgEl = document.getElementById("recharge-status-msg");
             const spinner = timerEl?.closest('#recharge-countdown-box')?.querySelector('.animate-spin');
             
-            if (timerEl) timerEl.textContent = "60s";
+            if (timerEl) timerEl.textContent = "120s";
             if (msgEl) {
-                msgEl.textContent = "Awaiting verification...";
+                msgEl.textContent = "Waiting for FamPay SMS Verification - 120s remaining...";
                 msgEl.className = "text-[10px] text-orange-400 font-bold animate-pulse";
             }
             if (spinner) spinner.classList.remove("hidden");
@@ -4928,10 +5174,13 @@
                 paymentListenerRef.off();
             }
 
-            let timeLeft = 60;
+            let timeLeft = 120;
             countdownInterval = setInterval(() => {
                 timeLeft--;
                 if (timerEl) timerEl.textContent = timeLeft + "s";
+                if (msgEl) {
+                    msgEl.textContent = `Waiting for FamPay SMS Verification - ${timeLeft}s remaining...`;
+                }
 
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
@@ -4961,10 +5210,10 @@
         function handleRechargeTimeout(paymentId) {
             if (paymentListenerRef) paymentListenerRef.off();
 
-            // Automatically update the payment node in Firebase: status = "on_hold_5_days", reason = "Timeout: SMS not received within 60 seconds"
+            // Automatically update the paymentRequest node in Firebase: status = "on_hold_5_days", reason = "Timeout: FamPay SMS not received within 2 minutes"
             db.ref(`payments/${paymentId}`).update({
                 status: "on_hold_5_days",
-                reason: "Timeout: SMS not received within 60 seconds"
+                reason: "Timeout: FamPay SMS not received within 2 minutes"
             }).then(() => {
                 // Update the user UI to show timeout message
                 const msgEl = document.getElementById("recharge-status-msg");
@@ -4973,7 +5222,7 @@
                 const spinner = countdownBox?.querySelector('.animate-spin');
 
                 if (msgEl) {
-                    msgEl.textContent = "Payment Held! Verification timed out. Sent to Dispute Desk for 5-day manual audit.";
+                    msgEl.textContent = "Verification Timed Out! Sent to Dispute Desk for 5-day manual audit.";
                     msgEl.className = "text-[10px] text-red-500 font-bold";
                 }
                 if (timerEl) {
@@ -5011,10 +5260,10 @@
         }
 
         function closeSuccessConfettiModal() {
-            const popup = document.getElementById("payment-success-confetti-modal");
-            if (popup) popup.classList.add("hidden");
-            const container = document.getElementById("confetti-container");
-            if (container) container.innerHTML = "";
+            document.getElementById("payment-success-confetti-modal").classList.add("hidden");
+            if (currentUser) {
+                db.ref(`users/${currentUser.uid}/payment_status`).set("idle");
+            }
         }
 
         function spawnConfetti() {
