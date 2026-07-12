@@ -143,6 +143,11 @@
 </head>
 <body class="text-white font-sans min-h-screen pb-24 selection:bg-orange-500 selection:text-white">
 
+    <!-- IPC Firewall Real-Time Protection Warning Banner -->
+    <div id="firewall-alert-banner" class="hidden bg-red-600 text-white font-black text-[10px] text-center py-2 px-4 animate-pulse relative z-50 select-none">
+        ⚠️ SYSTEM ALERT: Payments and Recharges are currently blocked by IPC Firewall. Reason: Critical maintenance active. Please turn on internet or recharge to resume.
+    </div>
+
     <!-- Top Header Navigation Bar -->
     <header class="bg-gray-900 border-b border-gray-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-3">
@@ -152,26 +157,38 @@
             </h1>
         </div>
         
-        <!-- Live Rupee Wallet Balance Container -->
-        <div class="relative">
-            <div id="header-wallet-zone" onclick="toggleWalletDropdown()" class="hidden flex items-center space-x-2 bg-black border border-gray-850 px-3 py-1.5 rounded-xl shadow-inner cursor-pointer hover:border-orange-500 transition">
-                <span class="text-xs text-orange-500 font-black">₹</span>
-                <span id="wallet-balance-indicator" class="text-xs font-black text-white font-mono">0.00</span>
-                <i class="fa-solid fa-chevron-down text-[8px] text-gray-400"></i>
+        <!-- Live Rupee Wallet Balance & Firewall Stats Container -->
+        <div class="flex items-center space-x-1.5">
+            <!-- Firewall Live Stats Widget -->
+            <div id="firewall-stats-widget" class="hidden flex items-center space-x-1 bg-black border border-orange-600/30 px-2 py-1 rounded-xl text-[8px] text-orange-500 font-extrabold tracking-tight font-mono">
+                <span>📶 FW: ACT</span>
+                <span class="text-gray-700">|</span>
+                <span>Data: <span id="fw-data-val">0</span>M</span>
+                <span class="text-gray-700">|</span>
+                <span>Exp: <span id="fw-expiry-val">0</span>D</span>
             </div>
-            <!-- Wallet Dropdown Overlay -->
-            <div id="wallet-dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-50 p-3 space-y-2 text-xs">
-                <div class="border-b border-gray-800 pb-2">
-                    <p class="text-[9px] text-gray-400 uppercase tracking-wider font-bold">Deposit Balance</p>
-                    <p class="text-sm font-black text-white font-mono">₹<span id="dropdown-deposit-balance">0.00</span></p>
+
+            <!-- Live Rupee Wallet Balance Container -->
+            <div class="relative">
+                <div id="header-wallet-zone" onclick="toggleWalletDropdown()" class="hidden flex items-center space-x-2 bg-black border border-gray-850 px-3 py-1.5 rounded-xl shadow-inner cursor-pointer hover:border-orange-500 transition">
+                    <span class="text-xs text-orange-500 font-black">₹</span>
+                    <span id="wallet-balance-indicator" class="text-xs font-black text-white font-mono">0.00</span>
+                    <i class="fa-solid fa-chevron-down text-[8px] text-gray-400"></i>
                 </div>
-                <div class="border-b border-gray-800 pb-2">
-                    <p class="text-[9px] text-gray-400 uppercase tracking-wider font-bold">Withdrawal Balance</p>
-                    <p class="text-sm font-black text-green-500 font-mono">₹<span id="dropdown-withdrawal-balance">0.00</span></p>
-                </div>
-                <div class="pt-1 flex flex-col space-y-1.5">
-                    <button onclick="triggerDepositAction()" class="w-full py-1.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-[10px] uppercase tracking-wider transition">Deposit Money</button>
-                    <button onclick="openWithdrawalModal()" class="w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg text-[10px] uppercase tracking-wider transition">Withdraw Money</button>
+                <!-- Wallet Dropdown Overlay -->
+                <div id="wallet-dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-xl shadow-2xl z-50 p-3 space-y-2 text-xs">
+                    <div class="border-b border-gray-800 pb-2">
+                        <p class="text-[9px] text-gray-400 uppercase tracking-wider font-bold">Deposit Balance</p>
+                        <p class="text-sm font-black text-white font-mono">₹<span id="dropdown-deposit-balance">0.00</span></p>
+                    </div>
+                    <div class="border-b border-gray-800 pb-2">
+                        <p class="text-[9px] text-gray-400 uppercase tracking-wider font-bold">Withdrawal Balance</p>
+                        <p class="text-sm font-black text-green-500 font-mono">₹<span id="dropdown-withdrawal-balance">0.00</span></p>
+                    </div>
+                    <div class="pt-1 flex flex-col space-y-1.5">
+                        <button onclick="triggerDepositAction()" class="w-full py-1.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-[10px] uppercase tracking-wider transition">Deposit Money</button>
+                        <button onclick="openWithdrawalModal()" class="w-full py-1.5 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg text-[10px] uppercase tracking-wider transition">Withdraw Money</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -521,6 +538,14 @@
                         <span>Continue as Guest</span>
                     </button>
                     <button onclick="logout()" id="btn-logout" class="w-full hidden py-2.5 border border-gray-800 hover:bg-gray-855 font-bold rounded-xl text-xs text-gray-400 transition font-bold">Logout</button>
+                </div>
+
+                <!-- User Help & Report Issue Button Container -->
+                <div id="help-report-btn-container" class="hidden pt-1">
+                    <button onclick="openHelpReportModal()" class="w-full py-2.5 bg-black border border-orange-600/50 hover:border-green-500/50 font-black rounded-xl text-xs uppercase tracking-wider text-white transition flex items-center justify-center space-x-2 shadow-lg">
+                        <i class="fa-solid fa-circle-question text-orange-500 animate-pulse"></i>
+                        <span>Help & Report Issue</span>
+                    </button>
                 </div>
 
                 <!-- Cashback Tracker Drawer Card -->
@@ -991,7 +1016,7 @@
     <div id="bowler-change-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center px-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-gray-800 p-5 rounded-2xl max-w-xs w-full space-y-4 shadow-2xl animate-fade-in font-sans">
             <h4 class="text-md font-black text-orange-500 uppercase tracking-wider font-sans font-bold font-sans">Select Next Bowler</h4>
-            <p class="text-[9px] text-gray-400 font-semibold font-sans">Note: Immediate previous bowler cannot bowl consecutive overs.</p>
+            <p class="text-[9px] text-gray-400 font-semibold font-sans font-semibold">Note: Immediate previous bowler cannot bowl consecutive overs.</p>
             <select id="select-next-bowler" class="w-full bg-black border border-gray-800 rounded p-2 text-xs text-white font-bold font-sans">
                 <!-- Populated dynamically with non-consecutive bowling squad options -->
             </select>
@@ -1029,6 +1054,60 @@
             <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white font-sans" id="leaderboard-modal-list">
                 <!-- Sorted players list goes here -->
             </div>
+        </div>
+    </div>
+
+    <!-- Help & Report Issue Modal -->
+    <div id="help-report-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
+        <div class="bg-gray-900 border border-gray-800 p-6 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl text-center">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3 text-left">
+                <div>
+                    <h3 class="text-sm font-black uppercase tracking-wider text-orange-500 font-bold">Help & Report Issue</h3>
+                    <p class="text-[9px] text-gray-400 font-semibold font-sans">Our support desk is active 24/7.</p>
+                </div>
+                <button onclick="closeHelpReportModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg">Close</button>
+            </div>
+
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Select Issue Type</label>
+                    <select id="report-issue-type" onchange="handleIssueTypeChange()" class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-bold">
+                        <option value="Deleted League Restore">Deleted League Restore</option>
+                        <option value="Pending Payment Issue">Pending Payment Issue</option>
+                        <option value="Coins Not Added">Coins Not Added</option>
+                        <option value="Other Issue">Other Issue</option>
+                    </select>
+                </div>
+
+                <!-- Dynamic context-aware query loader container -->
+                <div id="report-context-container" class="hidden space-y-2">
+                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Select Reference Transaction / League</label>
+                    <div id="report-context-area" class="max-h-[150px] overflow-y-auto bg-black/50 p-2 border border-gray-800 rounded-xl space-y-2">
+                        <!-- Dynamic radio button items will be injected here -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Detailed Description</label>
+                    <textarea id="report-description" rows="3" placeholder="Explain the problem in detail so our audit team can resolve it..." class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-semibold focus:outline-none focus:border-orange-500"></textarea>
+                </div>
+
+                <button onclick="submitReport()" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition font-bold shadow-lg">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resolution Alert Notification Modal -->
+    <div id="resolution-alert-modal" class="hidden fixed inset-0 bg-black/95 z-[60] flex items-center justify-center p-4 font-sans animate-fade-in">
+        <div class="bg-gray-900 border border-green-500/30 p-6 rounded-2xl w-full max-w-sm space-y-4 shadow-2xl text-center">
+            <div class="w-16 h-16 mx-auto bg-green-500/10 text-green-400 border border-green-500 rounded-full flex items-center justify-center text-3xl mb-2 animate-bounce">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h3 class="text-lg font-black text-white">Issue Resolved! 🏆</h3>
+            <div class="bg-black/50 p-4 border border-gray-800 rounded-xl">
+                <p id="resolution-alert-message" class="text-xs text-gray-300 font-semibold leading-relaxed">Your ticket has been fully processed and corrected by the administration team.</p>
+            </div>
+            <button id="btn-complete-resolution" class="w-full py-2.5 bg-green-600 hover:bg-green-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition shadow-lg">Close & Complete</button>
         </div>
     </div>
 
@@ -1165,6 +1244,15 @@
         // Spectator Detailed Scorecard selected index track
         let spectatorSelectedMatchIndex = null;
 
+        // IPC Firewall Real-Time Protection integration variables
+        let firewallRef = null;
+        let isFirewallBlocked = false;
+        let firewallReason = "";
+
+        // User notifications tracking state
+        let userNotificationsRef = null;
+        const sessionStartTime = Date.now();
+
         // Admin UPI Config setup listeners
         let adminUpiId = "admin@upi"; 
         db.ref('admin_config/upi_id').on('value', snap => { if (snap.val()) adminUpiId = snap.val(); });
@@ -1191,9 +1279,109 @@
                 checkAutomatedDataPurging();
                 fetchAndRenderRechargePlans();
                 listenToUserWalletAndStatus();
+
+                if (user) {
+                    listenToFirewall();
+                    listenToUserNotifications(user.uid);
+                } else {
+                    if (firewallRef) {
+                        firewallRef.off();
+                        firewallRef = null;
+                    }
+                    if (userNotificationsRef) {
+                        userNotificationsRef.off();
+                        userNotificationsRef = null;
+                    }
+                    // Reset firewall visuals when unauthenticated
+                    document.getElementById("firewall-alert-banner").classList.add("hidden");
+                    document.getElementById("firewall-stats-widget").classList.add("hidden");
+                }
             });
             adjustTeamRosterInputs();
         });
+
+        // Establish real-time listener to check IPC Firewall rules
+        function listenToFirewall() {
+            if (firewallRef) firewallRef.off();
+            firewallRef = db.ref('firewall_status');
+            firewallRef.on('value', snap => {
+                const data = snap.val();
+                const banner = document.getElementById("firewall-alert-banner");
+                const widget = document.getElementById("firewall-stats-widget");
+                
+                if (data) {
+                    const blockPayments = data.block_payments || false;
+                    const blockReason = data.block_reason || "Maintenance action active.";
+                    const remainingData = data.remaining_data_mb || 0;
+                    const planExpiry = data.plan_expiry_days || 0;
+
+                    isFirewallBlocked = blockPayments;
+                    firewallReason = blockReason;
+
+                    // Toggle Top banner alert elements dynamically
+                    if (banner) {
+                        if (blockPayments) {
+                            banner.innerHTML = `⚠️ SYSTEM ALERT: Payments and Recharges are currently blocked by IPC Firewall. Reason: ${blockReason}. Please turn on internet or recharge to resume.`;
+                            banner.classList.remove("hidden");
+                            banner.classList.add("block");
+                        } else {
+                            banner.classList.add("hidden");
+                            banner.classList.remove("block");
+                        }
+                    }
+
+                    // Update header status elements
+                    if (widget) {
+                        widget.classList.remove("hidden");
+                        const dataVal = document.getElementById("fw-data-val");
+                        const expiryVal = document.getElementById("fw-expiry-val");
+                        if (dataVal) dataVal.textContent = remainingData;
+                        if (expiryVal) expiryVal.textContent = planExpiry;
+                    }
+
+                    // Force lockdown verification check update on current recharge UI elements
+                    updatePlansBlockedUI();
+                } else {
+                    if (banner) banner.classList.add("hidden");
+                    if (widget) widget.classList.add("hidden");
+                    isFirewallBlocked = false;
+                    firewallReason = "";
+                    updatePlansBlockedUI();
+                }
+            });
+        }
+
+        // Establish real-time resolution notification alert pipeline
+        function listenToUserNotifications(uid) {
+            if (userNotificationsRef) userNotificationsRef.off();
+            userNotificationsRef = db.ref('user_notifications/' + uid);
+            userNotificationsRef.on('child_added', snapshot => {
+                const data = snapshot.val();
+                if (data && data.timestamp >= sessionStartTime) {
+                    const modal = document.getElementById("resolution-alert-modal");
+                    const messageEl = document.getElementById("resolution-alert-message");
+                    const completeBtn = document.getElementById("btn-complete-resolution");
+                    
+                    if (modal && messageEl && completeBtn) {
+                        messageEl.textContent = data.message || "Your reported issue has been corrected by the admin panel team.";
+                        
+                        // Attach clean deletion click handler inside closure
+                        completeBtn.onclick = function() {
+                            db.ref('user_notifications/' + uid + '/' + snapshot.key).remove()
+                                .then(() => {
+                                    modal.classList.add("hidden");
+                                })
+                                .catch(err => {
+                                    console.error("Resolution delete exception: ", err);
+                                    modal.classList.add("hidden");
+                                });
+                        };
+                        
+                        modal.classList.remove("hidden");
+                    }
+                }
+            });
+        }
 
         // Toggle Video Rotation for Mobile Viewer Screen (Portrait / Landscape switch)
         function toggleVideoRotation() {
@@ -1342,6 +1530,7 @@
             const profileLeagues = document.getElementById("profile-leagues-container");
             const cashbackCard = document.getElementById("cashback-tracker-card");
             const rechargeSection = document.getElementById("recharge-wallet-section");
+            const helpReportContainer = document.getElementById("help-report-btn-container");
 
             // Look up guest session if present
             const guestSession = sessionStorage.getItem("guest_ipc_session");
@@ -1361,6 +1550,7 @@
                 if (profileLeagues) profileLeagues.classList.remove("hidden");
                 if (cashbackCard) cashbackCard.classList.remove("hidden");
                 if (rechargeSection) rechargeSection.classList.remove("hidden");
+                if (helpReportContainer) helpReportContainer.classList.remove("hidden");
 
                 document.getElementById("profile-name").textContent = currentUser.displayName;
                 document.getElementById("profile-email").textContent = currentUser.email;
@@ -1377,6 +1567,7 @@
                 if (profileLeagues) profileLeagues.classList.add("hidden");
                 if (cashbackCard) cashbackCard.classList.add("hidden");
                 if (rechargeSection) rechargeSection.classList.add("hidden");
+                if (helpReportContainer) helpReportContainer.classList.add("hidden");
                 document.getElementById("profile-name").textContent = "Guest Viewer";
                 document.getElementById("profile-email").textContent = "Please sign in to configure camera nodes.";
                 document.getElementById("profile-avatar").innerHTML = `U`;
@@ -1754,8 +1945,8 @@
                 rawGroupMatches = [
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 },
                     { home: 'A', away: 'C', round: 4 }, { home: 'B', away: 'E', round: 5 }, { home: 'D', away: 'F', round: 6 },
-                    { home: 'A', away: 'D', rounded: 7 }, { home: 'B', away: 'F', round: 8 }, { home: 'C', away: 'E', round: 9 },
-                    { home: 'A', away: 'E', round: 10 }, { home: 'B', away: 'D', rounded: 11 }, { home: 'C', away: 'F', round: 12 },
+                    { home: 'A', away: 'D', round: 7 }, { home: 'B', away: 'F', round: 8 }, { home: 'C', away: 'E', round: 9 },
+                    { home: 'A', away: 'E', round: 10 }, { home: 'B', away: 'D', round: 11 }, { home: 'C', away: 'F', round: 12 },
                     { home: 'A', away: 'F', round: 13 }, { home: 'B', away: 'C', round: 14 }, { home: 'D', away: 'E', round: 15 }
                 ];
                 playoffTemplates = [
@@ -1769,7 +1960,7 @@
                     { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 },
                     { home: 'A', away: 'G', round: 4 }, { home: 'B', away: 'C', round: 5 }, { home: 'D', away: 'E', round: 6 },
                     { home: 'F', away: 'G', round: 7 }, { home: 'A', away: 'C', round: 8 }, { home: 'B', away: 'D', round: 9 },
-                    { home: 'E', away: 'G', rounded: 10 }, { home: 'A', away: 'D', round: 11 }, { home: 'B', away: 'E', round: 12 },
+                    { home: 'E', away: 'G', round: 10 }, { home: 'A', away: 'D', round: 11 }, { home: 'B', away: 'E', round: 12 },
                     { home: 'C', away: 'F', round: 13 }, { home: 'D', away: 'G', round: 14 }, { home: 'A', away: 'E', round: 15 },
                     { home: 'B', away: 'F', round: 16 }, { home: 'C', away: 'G', round: 17 }, { home: 'A', away: 'F', round: 18 },
                     { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'E', round: 20 }, { home: 'D', away: 'F', round: 21 }
@@ -1782,13 +1973,13 @@
                 ];
             } else if (N === 8) {
                 rawGroupMatches = [
-                    { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', rounded: 2 }, { home: 'E', away: 'F', round: 3 }, { home: 'G', away: 'H', round: 4 },
-                    { home: 'A', away: 'C', round: 5 }, { home: 'B', away: 'D', rounded: 6 }, { home: 'E', away: 'G', round: 7 }, { home: 'F', away: 'H', round: 8 },
-                    { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', rounded: 10 }, { home: 'E', away: 'H', round: 11 }, { home: 'F', away: 'G', round: 12 },
-                    { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', rounded: 15 }, { home: 'D', away: 'H', round: 16 },
+                    { home: 'A', away: 'B', round: 1 }, { home: 'C', away: 'D', round: 2 }, { home: 'E', away: 'F', round: 3 }, { home: 'G', away: 'H', round: 4 },
+                    { home: 'A', away: 'C', round: 5 }, { home: 'B', away: 'D', round: 6 }, { home: 'E', away: 'G', round: 7 }, { home: 'F', away: 'H', round: 8 },
+                    { home: 'A', away: 'D', round: 9 }, { home: 'B', away: 'C', round: 10 }, { home: 'E', away: 'H', round: 11 }, { home: 'F', away: 'G', round: 12 },
+                    { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'A', away: 'F', round: 17 }, { home: 'B', away: 'E', round: 18 }, { home: 'C', away: 'H', round: 19 }, { home: 'D', away: 'G', round: 20 },
-                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', rounded: 23 }, { home: 'D', away: 'F', round: 24 },
-                    { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', rounded: 27 }, { home: 'D', away: 'E', round: 28 }
+                    { home: 'A', away: 'G', round: 21 }, { home: 'B', away: 'H', round: 22 }, { home: 'C', away: 'E', round: 23 }, { home: 'D', away: 'F', round: 24 },
+                    { home: 'A', away: 'H', round: 25 }, { home: 'B', away: 'G', round: 26 }, { home: 'C', away: 'F', round: 27 }, { home: 'D', away: 'E', round: 28 }
                 ];
                 playoffTemplates = [
                     { type: 'QUALIFIER 1', homePlaceholder: 'Rank 1 Team', awayPlaceholder: 'Rank 2 Team', round: 29 },
@@ -1804,8 +1995,8 @@
                     { home: 'A', away: 'E', round: 13 }, { home: 'B', away: 'F', round: 14 }, { home: 'C', away: 'G', round: 15 }, { home: 'D', away: 'H', round: 16 },
                     { home: 'F', away: 'I', round: 17 }, { home: 'A', away: 'F', round: 18 }, { home: 'B', away: 'G', round: 19 }, { home: 'C', away: 'H', round: 20 },
                     { home: 'D', away: 'I', round: 21 }, { home: 'E', away: 'H', round: 22 }, { home: 'A', away: 'G', round: 23 }, { home: 'B', away: 'H', round: 24 },
-                    { home: 'C', away: 'I', rounded: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
-                    { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', rounded: 32 },
+                    { home: 'C', away: 'I', round: 25 }, { home: 'D', away: 'F', round: 26 }, { home: 'A', away: 'H', round: 27 }, { home: 'B', away: 'D', round: 28 },
+                    { home: 'C', away: 'E', round: 29 }, { home: 'G', away: 'I', round: 30 }, { home: 'A', away: 'I', round: 31 }, { home: 'B', away: 'E', round: 32 },
                     { home: 'C', away: 'F', round: 33 }, { home: 'D', away: 'G', round: 34 }, { home: 'E', away: 'I', round: 35 }, { home: 'F', away: 'H', round: 36 }
                 ];
                 playoffTemplates = [
@@ -1824,19 +2015,19 @@
                     { home: 'C', away: 'I', round: 16 }, { home: 'D', away: 'J', round: 17 }, { home: 'E', away: 'I', round: 18 },
                     { home: 'F', away: 'J', round: 19 }, { home: 'G', away: 'I', round: 20 }, { home: 'H', away: 'J', round: 21 },
                     { home: 'A', away: 'D', round: 22 }, { home: 'B', away: 'C', round: 23 }, { home: 'E', away: 'H', round: 24 },
-                    { home: 'F', away: 'G', rounded: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', round: 27 },
-                    { home: 'A', away: 'F', round: 28 }, { home: 'B', away: 'E', rounded: 29 }, { home: 'C', away: 'H', round: 30 },
-                    { home: 'D', away: 'G', rounded: 31 }, { home: 'I', away: 'B', rounded: 32 }, { home: 'J', away: 'A', round: 33 },
+                    { home: 'F', away: 'G', round: 25 }, { home: 'I', away: 'D', round: 26 }, { home: 'J', away: 'C', round: 27 },
+                    { home: 'A', away: 'F', round: 28 }, { home: 'B', away: 'E', round: 29 }, { home: 'C', away: 'H', round: 30 },
+                    { home: 'D', away: 'G', round: 31 }, { home: 'I', away: 'B', round: 32 }, { home: 'J', away: 'A', round: 33 },
                     { home: 'E', away: 'C', round: 34 }, { home: 'F', away: 'D', round: 35 }, { home: 'G', away: 'B', round: 36 },
                     { home: 'H', away: 'A', round: 37 }, { home: 'I', away: 'F', round: 38 }, { home: 'J', away: 'E', round: 39 },
-                    { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', rounded: 42 },
-                    { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', rounded: 45 },
-                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', rounded: 47 }, { home: 'I', away: 'E', round: 48 },
-                    { home: 'J', away: 'F', round: 49 }, { home: 'I', away: 'G', rounded: 50 }, { home: 'J', away: 'H', round: 51 },
+                    { home: 'C', away: 'A', round: 40 }, { home: 'D', away: 'B', round: 41 }, { home: 'G', away: 'E', round: 42 },
+                    { home: 'H', away: 'F', round: 43 }, { home: 'A', away: 'I', round: 44 }, { home: 'B', away: 'J', round: 45 },
+                    { home: 'I', away: 'C', round: 46 }, { home: 'J', away: 'D', round: 47 }, { home: 'I', away: 'E', round: 48 },
+                    { home: 'J', away: 'F', round: 49 }, { home: 'I', away: 'G', round: 50 }, { home: 'J', away: 'H', round: 51 },
                     { home: 'D', away: 'A', round: 52 }, { home: 'C', away: 'B', round: 53 }, { home: 'H', away: 'E', round: 54 },
-                    { home: 'G', away: 'F', rounded: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
+                    { home: 'G', away: 'F', round: 55 }, { home: 'D', away: 'I', round: 56 }, { home: 'C', away: 'J', round: 57 },
                     { home: 'F', away: 'A', round: 58 }, { home: 'E', away: 'B', round: 59 }, { home: 'H', away: 'C', round: 60 },
-                    { home: 'G', away: 'D', round: 61 }, { home: 'B', away: 'I', rounded: 62 }, { home: 'A', away: 'J', round: 63 },
+                    { home: 'G', away: 'D', round: 61 }, { home: 'B', away: 'I', round: 62 }, { home: 'A', away: 'J', round: 63 },
                     { home: 'C', away: 'E', round: 64 }, { home: 'D', away: 'F', round: 65 }, { home: 'B', away: 'G', round: 66 },
                     { home: 'A', away: 'H', round: 67 }, { home: 'F', away: 'I', round: 68 }, { home: 'E', away: 'J', round: 69 },
                     { home: 'B', away: 'A', round: 70 }
@@ -2129,7 +2320,7 @@
             });
 
             if (count === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-550 text-center py-4 font-semibold font-sans">No saved leagues found.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-555 text-center py-4 font-semibold font-sans">No saved leagues found.</p>`;
             }
         }
 
@@ -4579,7 +4770,7 @@
             });
 
             if (displayPlayers.length === 0) {
-                listContainer.innerHTML = `<p class="text-xs text-gray-500 text-center py-4 font-semibold font-sans">No records accumulated yet.</p>`;
+                listContainer.innerHTML = `<p class="text-xs text-gray-555 text-center py-4 font-semibold font-sans">No records accumulated yet.</p>`;
             }
         }
 
@@ -4619,7 +4810,7 @@
                                 <p class="text-[9px] text-gray-400 uppercase font-black tracking-wider">Match ${index + 1} &bull; ${match.type}</p>
                                 <div class="flex items-center space-x-2 font-bold text-white">
                                     <span>${generateShortName(match.homeTeam)}</span>
-                                    <span class="text-gray-500 font-black">vs</span>
+                                    <span class="text-gray-555 font-black">vs</span>
                                     <span>${generateShortName(match.awayTeam)}</span>
                                 </div>
                                 <p class="text-[9px] font-mono text-orange-400 font-bold">${dateStr} @ ${matchTimeStr}</p>
@@ -5027,7 +5218,7 @@
             
             function tryLoadNode(index) {
                 if (index >= nodes.length) {
-                    container.innerHTML = `<p class="text-[10px] text-gray-500 col-span-2 text-center py-4 font-semibold font-sans">No plans found in admin database.</p>`;
+                    container.innerHTML = `<p class="text-[10px] text-gray-555 col-span-2 text-center py-4 font-semibold font-sans">No plans found in admin database.</p>`;
                     return;
                 }
                 
@@ -5055,21 +5246,52 @@
 
             keys.forEach(key => {
                 const plan = plans[key];
-                // Support both keys (reward_rupees or reward, price)
                 const price = parseFloat(plan.price || 0);
                 const reward = parseFloat(plan.reward_rupees || plan.reward || 0);
                 
+                const disabledAttr = isFirewallBlocked ? "disabled" : "";
+                const opacityClass = isFirewallBlocked ? "opacity-40" : "";
+                
                 container.innerHTML += `
-                    <div onclick="selectPlanForPurchase('${key}', ${price}, ${reward})" class="bg-black border border-gray-800 rounded-xl p-3 text-center cursor-pointer hover:border-orange-500/50 transition">
+                    <div onclick="selectPlanForPurchase('${key}', ${price}, ${reward})" class="bg-black border border-gray-800 rounded-xl p-3 text-center cursor-pointer hover:border-orange-500/50 transition ${opacityClass}">
                         <span class="text-[8px] text-gray-400 uppercase tracking-widest font-black block font-sans">Credit wallet</span>
                         <h4 class="text-xs font-black text-white mt-1">₹${reward.toFixed(2)}</h4>
-                        <button class="mt-2.5 w-full py-1.5 bg-orange-600 hover:bg-orange-700 font-bold rounded-lg text-[9px] text-white transition font-bold font-sans">Buy at ₹${price.toFixed(2)}</button>
+                        <button ${disabledAttr} class="mt-2.5 w-full py-1.5 bg-orange-600 hover:bg-orange-700 font-bold rounded-lg text-[9px] text-white transition font-sans">${isFirewallBlocked ? 'Suspended' : `Buy at ₹${price.toFixed(2)}`}</button>
                     </div>
                 `;
             });
         }
 
+        // Update recharge packs display if firewall changes status live
+        function updatePlansBlockedUI() {
+            const container = document.getElementById("dynamic-plans-container");
+            if (!container) return;
+            const buttons = container.querySelectorAll("button");
+            const cards = container.children;
+
+            if (isFirewallBlocked) {
+                for (let card of cards) {
+                    card.classList.add("opacity-40");
+                }
+                buttons.forEach(btn => {
+                    btn.setAttribute("disabled", "true");
+                    btn.textContent = "Suspended";
+                });
+            } else {
+                for (let card of cards) {
+                    card.classList.remove("opacity-40");
+                }
+                fetchAndRenderRechargePlans();
+            }
+        }
+
         function selectPlanForPurchase(planId, price, reward) {
+            // Verify firewall state prior to initiating gateway
+            if (isFirewallBlocked) {
+                alert(`RECHARGE REQUIRED: IPC Firewall has suspended gateway transactions due to: ${firewallReason}`);
+                return;
+            }
+
             selectedActivePlan = { id: planId, price: price, reward: reward };
             planSelectedTime = Date.now(); // Capture dynamic requestTime on "Buy Plan" initialization click event
             
@@ -5293,6 +5515,151 @@
         function closeAuthGate() {
             document.getElementById("auth-gate-modal").classList.add("hidden");
         }
+
+        // Context-aware help ticket interface mechanics
+        function openHelpReportModal() {
+            document.getElementById("help-report-modal").classList.remove("hidden");
+            document.getElementById("report-issue-type").value = "Deleted League Restore";
+            document.getElementById("report-description").value = "";
+            handleIssueTypeChange();
+        }
+
+        function closeHelpReportModal() {
+            document.getElementById("help-report-modal").classList.add("hidden");
+        }
+
+        function handleIssueTypeChange() {
+            const issueType = document.getElementById("report-issue-type").value;
+            const container = document.getElementById("report-context-container");
+            const area = document.getElementById("report-context-area");
+            
+            if (!container || !area) return;
+
+            if (issueType === "Deleted League Restore") {
+                container.classList.remove("hidden");
+                area.innerHTML = `<p class="text-[10px] text-gray-500 py-2 font-semibold">Querying deleted archives...</p>`;
+                
+                db.ref('deleted_leagues').once('value').then(snap => {
+                    area.innerHTML = "";
+                    let found = false;
+                    snap.forEach(child => {
+                        const val = child.val();
+                        if (val && val.metadata) {
+                            const ownerId = val.metadata.ownerId || val.metadata.creatorUid || "";
+                            if (ownerId === currentUser.uid) {
+                                found = true;
+                                const leagueId = val.metadata.id || child.key;
+                                const name = val.metadata.name || "Unnamed League";
+                                const dateStr = val.metadata.createdAt ? new Date(val.metadata.createdAt).toLocaleDateString('en-IN') : "N/A";
+                                area.innerHTML += `
+                                    <label class="flex items-center space-x-2.5 p-2 bg-gray-900/60 rounded-lg border border-gray-800 cursor-pointer">
+                                        <input type="radio" name="selected-ref-id" value="${leagueId}" class="accent-orange-500">
+                                        <div class="text-[10px] text-white">
+                                            <p class="font-bold">${name}</p>
+                                            <p class="text-[8px] text-gray-400">ID: ${leagueId} | Deleted: ${dateStr}</p>
+                                        </div>
+                                    </label>
+                                `;
+                            }
+                        }
+                    });
+                    if (!found) {
+                        area.innerHTML = `<p class="text-[10px] text-red-500 text-center py-2 font-semibold">No deleted leagues found under your UID.</p>`;
+                    }
+                }).catch(err => {
+                    area.innerHTML = `<p class="text-[10px] text-red-500 text-center py-2 font-semibold">Error searching archives.</p>`;
+                });
+
+            } else if (issueType === "Pending Payment Issue") {
+                container.classList.remove("hidden");
+                area.innerHTML = `<p class="text-[10px] text-gray-555 py-2 font-semibold">Querying pending payments...</p>`;
+
+                db.ref('payments').once('value').then(snap => {
+                    area.innerHTML = "";
+                    let found = false;
+                    snap.forEach(child => {
+                        const val = child.val();
+                        if (val && val.userId === currentUser.uid) {
+                            const status = val.status || "";
+                            if (status === "pending_sms" || status === "on_hold_5_days") {
+                                found = true;
+                                const paymentId = val.paymentId || child.key;
+                                const amount = val.price || val.reward || 0;
+                                const dateStr = val.timestamp ? new Date(val.timestamp).toLocaleDateString('en-IN') : "N/A";
+                                area.innerHTML += `
+                                    <label class="flex items-center space-x-2.5 p-2 bg-gray-900/60 rounded-lg border border-gray-800 cursor-pointer">
+                                        <input type="radio" name="selected-ref-id" value="${paymentId}" class="accent-orange-500">
+                                        <div class="text-[10px] text-white">
+                                            <p class="font-bold">Transaction: ₹${amount.toFixed(2)}</p>
+                                            <p class="text-[8px] text-gray-400">ID: ${paymentId} | Status: <span class="text-orange-400">${status}</span> | Date: ${dateStr}</p>
+                                        </div>
+                                    </label>
+                                `;
+                            }
+                        }
+                    });
+                    if (!found) {
+                        area.innerHTML = `<p class="text-[10px] text-red-500 text-center py-2 font-semibold">No pending payments found under your UID.</p>`;
+                    }
+                }).catch(err => {
+                    area.innerHTML = `<p class="text-[10px] text-red-500 text-center py-2 font-semibold">Error searching transactions.</p>`;
+                });
+
+            } else {
+                container.classList.add("hidden");
+                area.innerHTML = "";
+            }
+        }
+
+        function submitReport() {
+            if (!currentUser) return;
+            const issueType = document.getElementById("report-issue-type").value;
+            const description = document.getElementById("report-description").value.trim();
+            
+            if (!description) {
+                alert("Please write a description explaining the issue.");
+                return;
+            }
+
+            // Fetch reference radio value if context container is visible
+            let referenceId = "";
+            const contextContainer = document.getElementById("report-context-container");
+            if (!contextContainer.classList.contains("hidden")) {
+                const selectedRadio = document.querySelector('input[name="selected-ref-id"]:checked');
+                if (selectedRadio) {
+                    referenceId = selectedRadio.value;
+                } else {
+                    const radios = document.getElementsByName("selected-ref-id");
+                    if (radios.length > 0) {
+                        alert("Please select a specific league or transaction referencing your issue.");
+                        return;
+                    }
+                }
+            }
+
+            const reportId = 'report_' + Date.now();
+            const payload = {
+                reportId: reportId,
+                userId: currentUser.uid,
+                username: currentUser.displayName || "Google User",
+                issueType: issueType,
+                referenceId: referenceId,
+                description: description,
+                status: "pending",
+                adminMessage: "Awaiting response",
+                timestamp: Date.now()
+            };
+
+            db.ref('reports/' + reportId).set(payload)
+                .then(() => {
+                    alert("Ticket submitted successfully! Our systems will manually verify your request shortly.");
+                    closeHelpReportModal();
+                })
+                .catch(err => {
+                    alert("Error submitting ticket: " + err.message);
+                });
+        }
     </script>
 </body>
 </html>
+
