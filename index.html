@@ -140,6 +140,16 @@
             0% { transform: translateY(0) rotate(0deg); opacity: 1; }
             100% { transform: translateY(350px) rotate(360deg); opacity: 0; }
         }
+
+        /* Banner Carousel Smooth Slide Styles */
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body class="text-white font-sans min-h-screen pb-24 selection:bg-orange-500 selection:text-white">
@@ -701,6 +711,13 @@
                     </div>
                 </div>
 
+                <!-- Feature 2: In-House Custom Banner Ads Carousel (Below Match/Video Player) -->
+                <div id="banner-ads-carousel-container" class="hidden bg-gray-950 border-b border-gray-800 relative overflow-hidden h-20">
+                    <div id="banner-ads-carousel-wrapper" class="carousel-track h-full">
+                        <!-- Dynamically populated banner ad slides -->
+                    </div>
+                </div>
+
                 <!-- Match Archives & Video Playback Section -->
                 <div id="video-archive-block-container" class="hidden bg-gray-900 border-b border-gray-800 p-3.5 space-y-2">
                     <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 flex items-center space-x-1.5 font-sans">
@@ -814,6 +831,26 @@
     </main>
 
     <!-- Global Modals Section -->
+
+    <!-- Feature 3: Full-Screen Break Ad Overlay (Match Events) -->
+    <div id="break-ad-modal" class="hidden fixed inset-0 bg-black/95 z-[90] flex flex-col items-center justify-center p-4 text-center font-sans animate-fade-in">
+        <div class="relative w-full max-w-sm bg-gray-900 border border-orange-500/30 rounded-2xl overflow-hidden p-4 space-y-3 shadow-2xl flex flex-col items-center">
+            <div class="w-full flex justify-between items-center text-[9px] text-orange-400 uppercase font-black tracking-widest border-b border-gray-800 pb-2">
+                <span>📢 Match Break Sponsor</span>
+                <span id="break-ad-event-tag">Match Event</span>
+            </div>
+            <div class="w-full aspect-video bg-black rounded-xl overflow-hidden border border-gray-800 flex items-center justify-center relative cursor-pointer" id="break-ad-click-area">
+                <img id="break-ad-image" src="" class="w-full h-full object-cover" alt="Break Sponsor Ad">
+            </div>
+            <div class="w-full space-y-1 text-left">
+                <h4 id="break-ad-title" class="text-xs font-black text-white truncate">Sponsor Highlight</h4>
+                <p id="break-ad-sub" class="text-[9px] text-gray-400 font-semibold line-clamp-2">Tap banner to visit official sponsor page.</p>
+            </div>
+            <button onclick="dismissBreakAdModal()" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition shadow-lg">
+                Continue Match
+            </button>
+        </div>
+    </div>
     
     <!-- Recharge UPI Payment Gateway Modal -->
     <div id="upi-payment-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
@@ -1085,7 +1122,14 @@
                 </div>
 
                 <div>
-                    <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Detailed Description</label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold">Detailed Description</label>
+                        <!-- Feature 1: AI Report Message Generator Button -->
+                        <button type="button" onclick="generateAiReportText()" class="px-2.5 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg text-[9px] font-extrabold flex items-center space-x-1 transition shadow">
+                            <i class="fa-solid fa-wand-magic-sparkles text-[9px]"></i>
+                            <span>🤖 Generate Text with AI</span>
+                        </button>
+                    </div>
                     <textarea id="report-description" rows="3" placeholder="Explain the problem in detail so our audit team can resolve it..." class="w-full bg-black border border-gray-800 rounded-xl py-2 px-3 text-xs text-white font-semibold focus:outline-none focus:border-orange-500"></textarea>
                 </div>
 
@@ -1112,6 +1156,62 @@
                 <p id="resolution-alert-message" class="text-xs text-gray-300 font-semibold leading-relaxed">Your ticket has been fully processed and corrected by the administration team.</p>
             </div>
             <button id="btn-complete-resolution" class="w-full py-2.5 bg-green-600 hover:bg-green-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition shadow-lg">Close & Complete</button>
+        </div>
+    </div>
+
+    <!-- Feature 4: Floating Personal AI Assistant Widget -->
+    <div id="ai-assistant-btn" onclick="toggleAiAssistantModal()" class="fixed bottom-20 right-4 z-40 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 text-white p-3 rounded-full shadow-2xl flex items-center justify-center cursor-pointer border-2 border-white/20 hover:scale-110 active:scale-95 transition-all">
+        <i class="fa-solid fa-robot text-lg animate-bounce"></i>
+        <span class="absolute -top-1 -right-1 bg-red-600 text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase border border-white">AI</span>
+    </div>
+
+    <!-- Feature 4: User Panel Personal AI Assistant Modal -->
+    <div id="ai-assistant-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
+        <div class="bg-gray-900 border border-orange-500/30 rounded-2xl w-full max-w-sm h-[480px] flex flex-col shadow-2xl font-sans overflow-hidden">
+            <!-- AI Header -->
+            <div class="bg-gradient-to-r from-gray-900 via-orange-950/40 to-gray-900 p-3.5 border-b border-gray-800 flex justify-between items-center">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 flex items-center justify-center text-black font-black text-sm shadow">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-black text-white flex items-center space-x-1">
+                            <span>IPC Personal Assistant</span>
+                            <span class="bg-orange-600/30 text-orange-400 text-[8px] px-1.5 py-0.2 rounded border border-orange-500/20">Hinglish AI</span>
+                        </h3>
+                        <p class="text-[8px] text-gray-400 font-semibold">Account status & platform rule guide</p>
+                    </div>
+                </div>
+                <button onclick="toggleAiAssistantModal()" class="text-gray-400 hover:text-white text-xs font-bold bg-gray-800 px-2 py-1 rounded-lg">Close</button>
+            </div>
+
+            <!-- AI Chat Messages Area -->
+            <div id="ai-chat-messages" class="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs">
+                <!-- Welcome Bot Message -->
+                <div class="flex items-start space-x-2 max-w-[85%]">
+                    <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-bold">AI</div>
+                    <div class="bg-gray-800 border border-gray-700/80 text-gray-200 p-2.5 rounded-2xl rounded-tl-none text-[11px] leading-relaxed shadow">
+                        Namaste! Main aapka Personal IPC AI Assistant hoon. 🏏<br>
+                        Aap mujhse apne account balance, withdrawal status, league creation, cashback ya rules ke baare mein pooch sakte hain!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Suggestion Pills -->
+            <div class="px-3 py-1.5 bg-black/40 border-t border-gray-850 flex items-center space-x-1.5 overflow-x-auto hide-scrollbar text-[9px]">
+                <button onclick="sendAiQuickQuery('Mera wallet balance kitna hai?')" class="px-2 py-1 bg-gray-800 hover:bg-orange-600 hover:text-white text-gray-300 rounded-full font-bold flex-shrink-0 border border-gray-700 transition">💰 Wallet Balance</button>
+                <button onclick="sendAiQuickQuery('Withdrawal kaise karein?')" class="px-2 py-1 bg-gray-800 hover:bg-orange-600 hover:text-white text-gray-300 rounded-full font-bold flex-shrink-0 border border-gray-700 transition">💸 Withdrawal Rule</button>
+                <button onclick="sendAiQuickQuery('League create karne ki fee kya hai?')" class="px-2 py-1 bg-gray-800 hover:bg-orange-600 hover:text-white text-gray-300 rounded-full font-bold flex-shrink-0 border border-gray-700 transition">🏆 League Fee</button>
+                <button onclick="sendAiQuickQuery('Cashback kaise milta hai?')" class="px-2 py-1 bg-gray-800 hover:bg-orange-600 hover:text-white text-gray-300 rounded-full font-bold flex-shrink-0 border border-gray-700 transition">🎁 Cashback Rule</button>
+            </div>
+
+            <!-- AI Chat Input Box -->
+            <div class="p-2.5 bg-black border-t border-gray-800 flex items-center space-x-2">
+                <input type="text" id="ai-chat-input" placeholder="Ask AI about your account..." onkeydown="if(event.key === 'Enter') handleAiChatSubmit()" class="flex-1 bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-orange-500">
+                <button onclick="handleAiChatSubmit()" class="w-9 h-9 bg-orange-600 hover:bg-orange-700 text-white rounded-xl flex items-center justify-center font-bold text-xs transition shadow flex-shrink-0">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1224,6 +1324,13 @@
         let activeReportListenerRef = null;
         let reportHistoryListenerRef = null;
         
+        // Custom Ads Registry
+        let bannerAdsList = [];
+        let bannerCarouselTimer = null;
+        let bannerCurrentIndex = 0;
+        let fullScreenAdsList = [];
+        let currentBreakAdCallback = null;
+
         // Dynamic Cameraman Broadcasting states
         let localCameraStream = null;
         let activeViewerId = null;
@@ -1285,6 +1392,7 @@
                 checkAutomatedDataPurging();
                 fetchAndRenderRechargePlans();
                 listenToUserWalletAndStatus();
+                listenToCustomAds();
 
                 if (user) {
                     listenToFirewall();
@@ -1298,13 +1406,277 @@
                         userNotificationsRef.off();
                         userNotificationsRef = null;
                     }
-                    // Reset firewall visuals when unauthenticated
                     const banner = document.getElementById("firewall-alert-banner");
                     if (banner) banner.classList.add("hidden");
                 }
             });
             adjustTeamRosterInputs();
         });
+
+        // Feature 2 & 3: Custom Ads Listeners
+        function listenToCustomAds() {
+            // Listen to banner ads
+            db.ref('admin_config/custom_ads/banners').on('value', snapshot => {
+                const data = snapshot.val();
+                bannerAdsList = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const item = data[key];
+                        if (item && (item.active !== false)) {
+                            bannerAdsList.push({ id: key, ...item });
+                        }
+                    });
+                }
+                renderBannerAdsCarousel();
+            });
+
+            // Listen to full screen break ads
+            db.ref('admin_config/custom_ads/full_screen').on('value', snapshot => {
+                const data = snapshot.val();
+                fullScreenAdsList = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const item = data[key];
+                        if (item && (item.active !== false)) {
+                            fullScreenAdsList.push({ id: key, ...item });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Feature 2: Render & Auto-slide Banner Ads Carousel
+        function renderBannerAdsCarousel() {
+            const container = document.getElementById("banner-ads-carousel-container");
+            const wrapper = document.getElementById("banner-ads-carousel-wrapper");
+            if (!container || !wrapper) return;
+
+            if (bannerCarouselTimer) {
+                clearInterval(bannerCarouselTimer);
+                bannerCarouselTimer = null;
+            }
+
+            if (bannerAdsList.length === 0) {
+                container.classList.add("hidden");
+                wrapper.innerHTML = "";
+                return;
+            }
+
+            container.classList.remove("hidden");
+            wrapper.innerHTML = "";
+            bannerCurrentIndex = 0;
+
+            bannerAdsList.forEach(ad => {
+                const slide = document.createElement("div");
+                slide.className = "carousel-slide h-full cursor-pointer relative bg-black flex items-center justify-center overflow-hidden";
+                slide.onclick = () => {
+                    if (ad.redirectUrl) window.open(ad.redirectUrl, '_blank');
+                };
+
+                const img = document.createElement("img");
+                img.src = ad.imageUrl || ad.image || "https://via.placeholder.com/480x80?text=Sponsor+Ad";
+                img.className = "w-full h-full object-cover";
+                img.alt = ad.title || "Sponsor Banner";
+
+                slide.appendChild(img);
+                wrapper.appendChild(slide);
+            });
+
+            if (bannerAdsList.length > 1) {
+                bannerCarouselTimer = setInterval(() => {
+                    bannerCurrentIndex = (bannerCurrentIndex + 1) % bannerAdsList.length;
+                    wrapper.style.transform = `translateX(-${bannerCurrentIndex * 100}%)`;
+                }, 3000); // Rotate every 3 seconds with smooth 0.5s transition
+            } else {
+                wrapper.style.transform = `translateX(0%)`;
+            }
+        }
+
+        // Feature 3: Trigger Full-Screen Break Ad Overlay
+        function triggerBreakAdOverlay(eventTag, onDismissCallback) {
+            if (fullScreenAdsList.length === 0) {
+                if (onDismissCallback) onDismissCallback();
+                return;
+            }
+
+            // Pick a random or sequential full screen ad
+            const ad = fullScreenAdsList[Math.floor(Math.random() * fullScreenAdsList.length)];
+            currentBreakAdCallback = onDismissCallback;
+
+            const modal = document.getElementById("break-ad-modal");
+            const tagEl = document.getElementById("break-ad-event-tag");
+            const imgEl = document.getElementById("break-ad-image");
+            const titleEl = document.getElementById("break-ad-title");
+            const subEl = document.getElementById("break-ad-sub");
+            const clickArea = document.getElementById("break-ad-click-area");
+
+            if (tagEl) tagEl.textContent = eventTag || "Match Break";
+            if (imgEl) imgEl.src = ad.imageUrl || ad.image || "https://via.placeholder.com/360x200?text=Match+Sponsor";
+            if (titleEl) titleEl.textContent = ad.title || "Official Match Sponsor";
+            if (subEl) subEl.textContent = ad.subtitle || "Tap banner to visit sponsor website.";
+
+            if (clickArea) {
+                clickArea.onclick = () => {
+                    if (ad.redirectUrl) window.open(ad.redirectUrl, '_blank');
+                };
+            }
+
+            if (modal) modal.classList.remove("hidden");
+        }
+
+        function dismissBreakAdModal() {
+            const modal = document.getElementById("break-ad-modal");
+            if (modal) modal.classList.add("hidden");
+            if (currentBreakAdCallback) {
+                const cb = currentBreakAdCallback;
+                currentBreakAdCallback = null;
+                cb();
+            }
+        }
+
+        // Feature 4: User Panel Personal AI Assistant
+        function toggleAiAssistantModal() {
+            const modal = document.getElementById("ai-assistant-modal");
+            if (!modal) return;
+            if (modal.classList.contains("hidden")) {
+                modal.classList.remove("hidden");
+            } else {
+                modal.classList.add("hidden");
+            }
+        }
+
+        function sendAiQuickQuery(queryText) {
+            const input = document.getElementById("ai-chat-input");
+            if (input) input.value = queryText;
+            handleAiChatSubmit();
+        }
+
+        function handleAiChatSubmit() {
+            const input = document.getElementById("ai-chat-input");
+            const messagesContainer = document.getElementById("ai-chat-messages");
+            if (!input || !messagesContainer) return;
+
+            const userText = input.value.trim();
+            if (!userText) return;
+
+            // Render User Message
+            messagesContainer.innerHTML += `
+                <div class="flex items-start justify-end space-x-2">
+                    <div class="bg-orange-600 text-white p-2.5 rounded-2xl rounded-tr-none text-[11px] max-w-[85%] leading-relaxed shadow font-semibold">
+                        ${escapeHtml(userText)}
+                    </div>
+                </div>
+            `;
+
+            input.value = "";
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Process response contextually based on user data & rules
+            setTimeout(() => {
+                const aiReply = generateAiAssistantResponse(userText);
+                messagesContainer.innerHTML += `
+                    <div class="flex items-start space-x-2 max-w-[85%] animate-fade-in">
+                        <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-bold">AI</div>
+                        <div class="bg-gray-800 border border-gray-700/80 text-gray-200 p-2.5 rounded-2xl rounded-tl-none text-[11px] leading-relaxed shadow">
+                            ${aiReply}
+                        </div>
+                    </div>
+                `;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 300);
+        }
+
+        function generateAiAssistantResponse(query) {
+            const text = query.toLowerCase();
+
+            // Fetch user context
+            const name = currentUser ? (currentUser.displayName || "User") : "Guest";
+            const depBal = document.getElementById("dropdown-deposit-balance")?.textContent || "0.00";
+            const withBal = document.getElementById("dropdown-withdrawal-balance")?.textContent || "0.00";
+            const claimable = document.getElementById("pending-cashback-indicator")?.textContent || "0.00";
+
+            if (!currentUser) {
+                return `Aap abhi Guest Mode mein hain. Apne personal account stats, wallet balance, aur tournament features use karne ke liye pehle Google Sign-In karein! 🔑`;
+            }
+
+            if (text.includes("balance") || text.includes("paise") || text.includes("rupee") || text.includes("wallet")) {
+                return `Hello ${name}! 💳<br>Aapka current wallet summary:<br>• <strong>Deposit Balance:</strong> ₹${depBal}<br>• <strong>Withdrawal Balance:</strong> ₹${withBal}<br>• <strong>Claimable Cashback:</strong> ₹${claimable}`;
+            }
+
+            if (text.includes("withdraw") || text.includes("nikale") || text.includes("payout")) {
+                return `Withdrawal ke baare mein jankari: 💸<br>1. Aapka Withdrawal Balance: <strong>₹${withBal}</strong>.<br>2. Wallet header pe click karke <strong>'Withdraw Money'</strong> select karein.<br>3. Apni UPI ID aur registered name fill karke request submit karein. Payout jaldi hi process ho jayega!`;
+            }
+
+            if (text.includes("deposit") || text.includes("recharge") || text.includes("add money")) {
+                return `Recharge Pack buy karne ke liye: 💳<br>1. Profile tab pe jaayein aur <strong>'₹ Wallet Recharge Pack'</strong> section dekhein.<br>2. Apno pasand ka pack chunein, UPI app ya QR scan se payment karein. System instantly balance credit kar dega!`;
+            }
+
+            if (text.includes("league") && (text.includes("fee") || text.includes("cost") || text.includes("price") || text.includes("charges"))) {
+                return `League Creation Rules: 🏆<br>1. League create karne ki fee <strong>₹5 per match</strong> auto-deduct hoti hai aapke deposit wallet se.<br>2. Example: 4 Teams (10 Matches total) = ₹50.00.<br>3. Maximun 20 active leagues aek time par allowed hain.`;
+            }
+
+            if (text.includes("cashback") || text.includes("claim")) {
+                return `Cashback Drawer Rules: 🎁<br>1. Recharges pe aapko 1% - 10% tak random cashback milta hai.<br>2. Claimable Cashback: <strong>₹${claimable}</strong>.<br>3. Profile tab par <strong>'Claim'</strong> button dabate hi cashback aapke Withdrawal Balance mein add ho jata hai!`;
+            }
+
+            if (text.includes("cameraman") || text.includes("camera") || text.includes("broadcast")) {
+                return `Cameraman Broadcasting Guide: 📹<br>1. Tournament owner Broadcast tab se 6-digit key generate karta hai.<br>2. Profile tab par 'Register as Cameraman' mein key daalkar Link karein.<br>3. Aapka mobile camera match streaming chalu kar dega!`;
+            }
+
+            if (text.includes("rule") || text.includes("match") || text.includes("super over")) {
+                return `Match & Scoring Rules: 🏏<br>1. Over end hone par bowler change mandatory hai.<br>2. Wicket girne par new batsman select karna hota hai.<br>3. Tie match mein automatically Super Over trigger hota hai!`;
+            }
+
+            if (text.includes("help") || text.includes("support") || text.includes("ticket") || text.includes("report")) {
+                return `Help & Support: ❓<br>Agar aapko koi issue hai toh Profile -> <strong>'Help & Report Issue'</strong> button par click karein. Wahan se 'Deleted League Restore', 'Pending Payment' ya 'Coin Not Added' tickets submit kar sakte hain!`;
+            }
+
+            return `Ji ${name}! Main aapke IPC account, wallet balances (Deposit: ₹${depBal}, Withdrawal: ₹${withBal}), cashback claims, league creation, aur platform rules se judi help kar sakta hoon. Kuch aur poochna chahte hain? 😊`;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        // Feature 1: AI Report Description Generator Button
+        function generateAiReportText() {
+            const issueType = document.getElementById("report-issue-type").value;
+            const descArea = document.getElementById("report-description");
+            if (!descArea) return;
+
+            const selectedRadio = document.querySelector('input[name="selected-ref-id"]:checked');
+            let selectedLabelText = "";
+            if (selectedRadio) {
+                const parentLabel = selectedRadio.closest('label');
+                if (parentLabel) selectedLabelText = parentLabel.textContent.replace(/\s+/g, ' ').trim();
+            }
+
+            let generatedMsg = "";
+
+            if (issueType === "Deleted League Restore") {
+                if (selectedLabelText) {
+                    generatedMsg = `Respected Support Team, Meri galti se league delete ho gayi hai (${selectedLabelText}). Kripya is deleted league ko mere account par restore kar dijiye. Advance mein thank you!`;
+                } else {
+                    generatedMsg = `Respected Support Team, Meri galti se meri created tournament league delete ho gayi hai. Kripya is deleted league ko check karke mere UID par restore karne ki kripya karein. Dhanyawad!`;
+                }
+            } else if (issueType === "Pending Payment Issue") {
+                if (selectedLabelText) {
+                    generatedMsg = `Respected Support Team, Maine capital withdrawal request daali thi (${selectedLabelText}) par abhi tak status pending dikha raha hai. Kripya is payout request ko verify karke clearance approve karein. Thank you!`;
+                } else {
+                    generatedMsg = `Respected Support Team, Mera capital withdrawal request pending state par stuck hai. Kripya mere payout request ko verify karke mere UPI account par transfer kijiye. Dhanyawad!`;
+                }
+            } else if (issueType === "Coin Not Added") {
+                if (selectedLabelText) {
+                    generatedMsg = `Respected Support Team, Maine recharge pack purchase kiya tha (${selectedLabelText}) par abhi tak mere wallet mein deposit coins add nahi hue hain. Kripya transaction verify karke coins credit karein. Thank you!`;
+                } else {
+                    generatedMsg = `Respected Support Team, Mera wallet recharge transaction complete hone ke bawajood wallet mein coins credit nahi hue hain. Kripya payment verify karke coins add karein. Dhanyawad!`;
+                }
+            } else {
+                generatedMsg = `Respected Support Team, Mujhe platform use karne mein dikkat aa rahi hai. Kripya mere account details ko audit karke issue resolve karein. Dhanyawad!`;
+            }
+
+            descArea.value = generatedMsg;
+        }
 
         // Establish real-time listener to check IPC Firewall rules
         function listenToFirewall() {
@@ -1321,7 +1693,6 @@
                     isFirewallBlocked = blockPayments;
                     firewallReason = blockReason;
 
-                    // Toggle alert banner inside recharge section dynamically
                     if (banner) {
                         if (blockPayments) {
                             banner.innerHTML = `⚠️ IPC Firewall Alert: Payments are suspended. Reason: ${blockReason}`;
@@ -1331,7 +1702,6 @@
                         }
                     }
 
-                    // Force lockdown verification check update on current recharge UI elements
                     updatePlansBlockedUI();
                 } else {
                     if (banner) banner.classList.add("hidden");
@@ -1356,7 +1726,6 @@
                     if (modal && messageEl && completeBtn) {
                         messageEl.textContent = data.message || "Your reported issue has been corrected by the admin panel team.";
                         
-                        // Attach clean deletion click handler inside closure
                         completeBtn.onclick = function() {
                             db.ref('user_notifications/' + uid + '/' + snapshot.key).remove()
                                 .then(() => {
@@ -1432,7 +1801,7 @@
             }
         }
 
-        // 5. Google Authentication Integration Functions with First-Time Welcome Bonus
+        // 5. Google Authentication Integration Functions
         function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider)
@@ -1442,7 +1811,6 @@
                     const userRef = db.ref(`users/${userId}`);
                     userRef.once('value').then(snap => {
                         if (!snap.exists()) {
-                            // First-time welcome bonus logic via secure set / initialize
                             const welcomeBonus = Math.floor(Math.random() * 100) + 1;
                             userRef.set({
                                 username: user.displayName || "Google User",
@@ -1471,7 +1839,6 @@
                 });
         }
 
-        // Guest profile initialization with zero welcome credit
         function loginAsGuest() {
             const rand = Math.floor(1000 + Math.random() * 9000);
             const guestUid = `guest_${rand}_${Date.now()}`;
@@ -1482,7 +1849,6 @@
                 photoURL: "https://img.icons8.com/color/150/cricket.png"
             };
             
-            // Set guest session inside sessionStorage
             sessionStorage.setItem("guest_ipc_session", JSON.stringify(guestUser));
             currentUser = guestUser;
 
@@ -1503,7 +1869,6 @@
             });
         }
 
-        // Logout
         function logout() {
             sessionStorage.removeItem("guest_ipc_session");
             auth.signOut().then(() => {
@@ -1523,7 +1888,6 @@
             const rechargeSection = document.getElementById("recharge-wallet-section");
             const helpReportContainer = document.getElementById("help-report-btn-container");
 
-            // Look up guest session if present
             const guestSession = sessionStorage.getItem("guest_ipc_session");
             if (guestSession) {
                 currentUser = JSON.parse(guestSession);
@@ -1567,7 +1931,6 @@
             }
         }
 
-        // Live syncing of wallet balances and auto recharge statuses
         function listenToUserWalletAndStatus() {
             if (!currentUser) return;
             db.ref(`users/${currentUser.uid}`).on('value', snap => {
@@ -1577,7 +1940,6 @@
                     const withdrawBal = val.withdrawal_balance || 0;
                     const pendingCashback = val.pending_cashback_claim || 0;
 
-                    // Update UI components
                     document.getElementById("wallet-balance-indicator").textContent = depositBal.toFixed(2);
                     document.getElementById("dropdown-deposit-balance").textContent = depositBal.toFixed(2);
                     document.getElementById("dropdown-withdrawal-balance").textContent = withdrawBal.toFixed(2);
@@ -1593,7 +1955,6 @@
                         }
                     }
 
-                    // Show successful recharge popup / confetti overlay
                     if (val.payment_status === "SUCCESS") {
                         showPaymentSuccessPopup();
                     }
@@ -1601,7 +1962,6 @@
             });
         }
 
-        // Wallet Dropdown toggle mechanics
         function toggleWalletDropdown() {
             const menu = document.getElementById("wallet-dropdown-menu");
             if (menu) menu.classList.toggle("hidden");
@@ -1626,7 +1986,6 @@
             document.getElementById("withdrawal-modal").classList.add("hidden");
         }
 
-        // Capital Settlement Withdrawal request submit
         function submitWithdrawalRequest() {
             const amountInput = document.getElementById("withdraw-amount-input");
             const upiInput = document.getElementById("withdraw-upi-input");
@@ -1655,7 +2014,6 @@
                     return;
                 }
 
-                // Deduct from withdrawal balance via transaction safely
                 userRef.child('withdrawal_balance').transaction(currentBal => {
                     return (currentBal || 0) - amount;
                 }).then(() => {
@@ -1682,7 +2040,6 @@
             });
         }
 
-        // Google / Deposit claims cashback logic (Secure transaction on users/UID)
         function claimCashbackToWithdrawal() {
             if (!currentUser) return;
             const userRef = db.ref(`users/${currentUser.uid}`);
@@ -1707,12 +2064,10 @@
             });
         }
 
-        // 6. Search density sorting engine
         function handleSearch() {
             renderLeaguesList();
         }
 
-        // Dedicated helper function to load and play audio commentaries
         function playAudioCommentary(fileName) {
             if (!fileName) return;
             const audio = new Audio(fileName);
@@ -1730,7 +2085,6 @@
             return term.length / text.length;
         }
 
-        // Auto-Shortname Generator
         function generateShortName(fullName) {
             if (!fullName) return "IPC";
             const words = fullName.trim().split(/\s+/);
@@ -1740,7 +2094,6 @@
             return words.map(w => w[0]).join("").toUpperCase();
         }
 
-        // Calculate League End Date
         function calculateLeagueEndDate(startDateStr, roundsCount) {
             if (!startDateStr) return "N/A";
             const startDate = new Date(startDateStr);
@@ -1780,12 +2133,10 @@
             return true;
         }
 
-        // Helper to compute exact target scheduled timestamp of any match round offset
         function getMatchScheduledTimestamp(league, matchIndex) {
             const match = league.fixtures[matchIndex];
             if (!match) return 0;
             const startDateStr = league.metadata.startDate;
-            // Use match-specific customTime if it exists, otherwise fall back to global league startTime
             const startTimeStr = match.customTime || league.metadata.startTime || "18:05";
             
             const startDate = new Date(startDateStr);
@@ -1799,7 +2150,6 @@
             return new Date(matchTargetStr).getTime();
         }
 
-        // 7. Dynamic Team Input Matrix with Captain Designation radio button
         function adjustTeamRosterInputs() {
             const teamCountInput = document.getElementById("league-teams-count");
             let count = parseInt(teamCountInput.value) || 4;
@@ -1878,7 +2228,6 @@
             }
         }
 
-        // Real IPL Playoff & Group fixtures algorithm
         function generateIplStyleFixtures(teams, N) {
             const getTeam = (indexChar) => {
                 const idx = indexChar.charCodeAt(0) - 65; 
@@ -2065,7 +2414,6 @@
             return compiledFixtures;
         }
 
-        // Prepopulate player stats on creation cleanly with automatic player name fallback
         function submitNewLeague() {
             const name = document.getElementById("league-name-input").value.trim();
             const teamCount = parseInt(document.getElementById("league-teams-count").value);
@@ -2074,7 +2422,6 @@
             const startDate = document.getElementById("match-start-date").value;
             const startTime = document.getElementById("match-start-time").value;
 
-            // 1. Case-insensitive check / unique league name check
             const nameLower = name.toLowerCase();
             const duplicate = Object.values(allLeagues).some(l => l.metadata && l.metadata.name && l.metadata.name.toLowerCase() === nameLower);
             if (duplicate) {
@@ -2082,7 +2429,6 @@
                 return;
             }
 
-            // 2. Max 20 active/registered leagues guardrail check
             const leagueKeys = Object.keys(allLeagues);
             if (leagueKeys.length >= 20) {
                 let oldestCreatedAt = Date.now();
@@ -2094,7 +2440,7 @@
                         }
                     }
                 });
-                const expirationTime = oldestCreatedAt + (10 * 24 * 3600 * 1000); // Purges after 10 days
+                const expirationTime = oldestCreatedAt + (10 * 24 * 3600 * 1000); 
                 const expDate = new Date(expirationTime);
                 const expDateStr = expDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 alert(`Maximum limit of 20 leagues reached! Aap nayi league ${expDateStr} ke baad create kar payenge jab purani league delete hogi.`);
@@ -2109,7 +2455,6 @@
             for (let i = 1; i <= teamCount; i++) {
                 const tName = document.getElementById(`team-${i}-name`).value.trim() || `Team ${i}`;
                 
-                // Check designated captain radio values
                 const captainRadio = document.querySelector(`input[name="team-${i}-captain"]:checked`);
                 const captainIdx = captainRadio ? parseInt(captainRadio.value) : 1;
 
@@ -2131,7 +2476,6 @@
                         isCaptain: (j === captainIdx)
                     });
 
-                    // Pre-initialize player stats to prevent empty single person awards!
                     playerStats[pName] = {
                         runs: 0,
                         wickets: 0,
@@ -2149,7 +2493,6 @@
             const totalMatches = fixtures.length;
             const totalCost = totalMatches * 5;
 
-            // Safe Wallet transaction auto-deduction check prior to compiling
             const userRef = db.ref(`users/${currentUser.uid}`);
             userRef.once('value').then(userSnap => {
                 const userData = userSnap.val() || {};
@@ -2161,7 +2504,6 @@
                     return;
                 }
 
-                // Balance is sufficient, deduct cost safely from user node
                 userRef.child('rupee_balance').transaction(currentBal => {
                     return (currentBal || 0) - totalCost;
                 }).then(() => {
@@ -2210,14 +2552,11 @@
             });
         }
 
-        // Saved Leagues Local Management
-        // Automatically stores selected leagues inside native client storage
         function isLeagueSaved(leagueId) {
             const saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
             return saved.includes(leagueId);
         }
 
-        // Toggle Save League
         function toggleSaveLeague(leagueId) {
             let saved = JSON.parse(localStorage.getItem("ipc_saved_leagues") || "[]");
             if (saved.includes(leagueId)) {
@@ -2315,7 +2654,6 @@
             }
         }
 
-        // 8. Dynamic Firebase State Listeners
         function fetchLeagues() {
             db.ref('leagues').on('value', snapshot => {
                 allLeagues = snapshot.val() || {};
@@ -2334,7 +2672,6 @@
             });
         }
 
-        // Bulletproof Leagues listing to prevent crashes if metadata is partially empty
         function renderLeaguesList() {
             const grid = document.getElementById("leagues-grid");
             const emptyState = document.getElementById("empty-leagues-state");
@@ -2425,7 +2762,6 @@
             });
         }
 
-        // 9. Scorer Console Logic ("Your Created" Tab Management)
         function renderManagedLeagues() {
             const container = document.getElementById("managed-leagues-container");
             const emptyState = document.getElementById("empty-managed-state");
@@ -2471,7 +2807,6 @@
                                 </select>
                             </div>
 
-                            <!-- Dynamic Countdown and Console trigger button wrapper -->
                             <div class="space-y-2 pt-1 font-sans">
                                 <div id="countdown-banner-${key}" class="hidden text-center py-2 bg-black border border-red-500/20 rounded-xl shadow-inner font-bold">
                                     <p class="text-[9px] text-red-500 font-black uppercase tracking-widest">Awaiting scheduled start time</p>
@@ -2519,7 +2854,6 @@
                         const match = league.fixtures[selectedIdx];
                         if (!match) return;
 
-                        // Calculate scheduled start offset timestamp
                         const targetTime = getMatchScheduledTimestamp(league, selectedIdx);
                         const now = Date.now();
 
@@ -2577,8 +2911,6 @@
             document.getElementById("scorer-console-view").classList.remove("hidden");
             document.getElementById("managed-leagues-container").classList.add("hidden");
 
-            // Match Resume Feature (State Persistence)
-            // If the match is already active in database, restore scorer state instantly
             if (league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedScorerMatchIndex) {
                 const lm = league.liveMatch;
                 if (!lm.striker || !lm.nonStriker || !lm.currentBowler) {
@@ -2594,7 +2926,6 @@
                     attachLiveScorerMetricsListener();
                 }
             } else {
-                // Setup Coin Toss Selection Items
                 const tossSelect = document.getElementById("toss-winner-select");
                 tossSelect.innerHTML = `
                     <option value="${match.homeTeam}">${match.homeTeam}</option>
@@ -2612,7 +2943,6 @@
         function exitScorerConsole() {
             stopDirectScorerCam();
             
-            // Cleanup state and cleanly unbind listeners before exiting
             if (selectedScorerLeagueId) {
                 db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).off('value');
             }
@@ -2630,14 +2960,12 @@
             const side = Math.random() < 0.5 ? "heads" : "tails";
             coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none animate-none";
             
-            // Hyper-fast transition flip
             if (side === "heads") {
                 coin.classList.add("animate-flip-heads");
             } else {
                 coin.classList.add("animate-flip-tails");
             }
 
-            // High-speed response coin toss completed in 350ms
             setTimeout(() => {
                 const winner = document.getElementById("toss-winner-select").value;
                 const decision = document.getElementById("toss-decision-select").value;
@@ -2743,21 +3071,19 @@
             if (!selectedScorerLeagueId) return;
             
             const liveMatchRef = db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`);
-            liveMatchRef.off('value'); // Prevent duplicate listeners
+            liveMatchRef.off('value'); 
             
             liveMatchRef.on('value', snapshot => {
                 const data = snapshot.val();
                 if (!data) return;
 
-                // Real-time Scorer commentary sound trigger
                 if (data.audioPlay && data.audioPlay.t > lastPlayedAudioTimestamp) {
                     lastPlayedAudioTimestamp = data.audioPlay.t;
                     playAudioCommentary(data.audioPlay.file);
                 }
 
-                // AUTOMATIC WINNER EXIT
                 if (data.needsCompletionSave) {
-                    liveMatchRef.off('value'); // Unbind immediately!
+                    liveMatchRef.off('value'); 
                     const league = allLeagues[selectedScorerLeagueId];
                     db.ref(`leagues/${selectedScorerLeagueId}/liveMatch/active`).set(false).then(() => {
                         saveCompletedMatchOutcome(league, data.outcome, data);
@@ -2766,7 +3092,7 @@
                 }
 
                 if (data.active === false && !data.needsCompletionSave) {
-                    liveMatchRef.off('value'); // Unbind immediately!
+                    liveMatchRef.off('value'); 
                     alert(`Match completed! Redirecting from Control Console. Result: ${data.outcome || "Finished"}`);
                     exitScorerConsole();
                     return;
@@ -2800,7 +3126,6 @@
                     }
                 }
 
-                // Super Over Trigger Panel Visibility (Fixed parent visibility bug cleanly)
                 if (data.needsSuperOverTrigger) {
                     document.getElementById("super-over-trigger-container").classList.remove("hidden");
                     document.getElementById("scorer-controls").classList.add("hidden");
@@ -2820,7 +3145,6 @@
             });
         }
 
-        // Action scoring events logic with Strike Rotation (1, 3, 5 Swap Striker)
         function scoreBalls(runs) {
             const league = allLeagues[selectedScorerLeagueId];
             if (!league) return;
@@ -2863,19 +3187,17 @@
                         data.overLog.push(runs);
                     }
 
-                    // Strike Rotation: 1, 3, 5 runs rotates strike
                     if (runs === 1 || runs === 3 || runs === 5) {
                         const temp = data.striker;
                         data.striker = data.nonStriker;
                         data.nonStriker = temp;
                     }
 
-                    // Over finished bowler switch check
                     const overCompleted = Math.floor(data.overs) > Math.floor(prevOvers);
                     if (overCompleted) {
                         data.previousBowler = data.currentBowler;
                         data.needsBowlerChange = true;
-                        data.overLog = []; // Over log reset every completed over!
+                        data.overLog = []; 
                     }
 
                     let eventText = `${runs} RUNS`;
@@ -2890,7 +3212,6 @@
 
                     data.lastEvent = { text: eventText, type: eventType, timestamp: Date.now() };
 
-                    // Commentary audio mapping for Main Event controller runs
                     let audioFile = "dotball.wav";
                     if (runs === 1) audioFile = "1.wav";
                     else if (runs === 2) audioFile = "2.wav";
@@ -2900,7 +3221,6 @@
                     else if (runs === 6) audioFile = "6.wav";
                     data.audioPlay = { file: audioFile, t: Date.now() };
 
-                    // Automatic Inning Termination Check
                     evaluateMatchProgress(data, league);
                 }
                 return data;
@@ -2914,7 +3234,10 @@
 
                     if (data.needsBowlerChange && data.active && !data.needsSuperOverTrigger && !data.needsInning2Lineup) {
                         setTimeout(() => {
-                            openBowlerChangeModal(data);
+                            // Feature 3: Full-Screen Break Ad Overlay on Over Change
+                            triggerBreakAdOverlay("Over Completed 🔄", () => {
+                                openBowlerChangeModal(data);
+                            });
                         }, 50);
                     }
                 }
@@ -2975,12 +3298,11 @@
                         if (overCompleted) {
                             data.previousBowler = data.currentBowler;
                             data.needsBowlerChange = true;
-                            data.overLog = []; // Over log reset every completed over!
+                            data.overLog = []; 
                         }
 
                         data.lastEvent = { text: `${parsed} RUNS`, type: "default", timestamp: Date.now() };
 
-                        // Commentary audio mapping for custom runs
                         let audioFile = "dotball.wav";
                         if (parsed === 1) audioFile = "1.wav";
                         else if (parsed === 2) audioFile = "2.wav";
@@ -2998,7 +3320,10 @@
                         const data = snapshot.val();
                         if (data.needsBowlerChange && data.active && !data.needsSuperOverTrigger && !data.needsInning2Lineup) {
                             setTimeout(() => {
-                                openBowlerChangeModal(data);
+                                // Feature 3: Full-Screen Break Ad Overlay on Over Change
+                                triggerBreakAdOverlay("Over Completed 🔄", () => {
+                                    openBowlerChangeModal(data);
+                                });
                             }, 50);
                         }
                     }
@@ -3006,13 +3331,11 @@
             }
         }
 
-        // Updated scoreExtra logic with No Ball Runs Selection Modal
         function scoreExtra(type) {
             const league = allLeagues[selectedScorerLeagueId];
             if (!league) return;
 
             if (type === 'NB') {
-                // Open No Ball runs picker modal directly (replaces manual prompt)
                 document.getElementById('no-ball-runs-modal').classList.remove('hidden');
             } else {
                 db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).transaction(data => {
@@ -3052,7 +3375,6 @@
             }
         }
 
-        // Handles No Ball runs calculation dynamically on button click (Penalty + runsScored)
         function commitNoBallRuns(runsScored) {
             document.getElementById('no-ball-runs-modal').classList.add('hidden');
             const league = allLeagues[selectedScorerLeagueId];
@@ -3109,7 +3431,6 @@
 
                     data.lastEvent = { text: animText, type: eventType, timestamp: Date.now() };
 
-                    // Commentary audio mapping for No Ball Runs Selection Modal
                     let audioFile = "nb.wav";
                     if (runsScored === 4) audioFile = "nb4.wav";
                     else if (runsScored === 6) audioFile = "nb6.wav";
@@ -3121,7 +3442,6 @@
             });
         }
 
-        // Bulletproof implementation of Wicket Modal launcher
         function openWicketModal() {
             try {
                 const modal = document.getElementById("wicket-modal");
@@ -3289,7 +3609,10 @@
                         if (data.needsInning2Lineup) return;
                         if (data.needsBatsmanReplacement) {
                             setTimeout(() => {
-                                openBatsmanReplacementModal(data);
+                                // Feature 3: Full-Screen Break Ad Overlay on Wicket Fall
+                                triggerBreakAdOverlay("Wicket Fall ☝️", () => {
+                                    openBatsmanReplacementModal(data);
+                                });
                             }, 50);
                         }
                     }
@@ -3595,7 +3918,10 @@
             }).then(() => {
                 db.ref(`leagues/${league.metadata.id}/playerStats`).set(updatedPlayerStats).then(() => {
                     autoAdvancePlayoffs(league.metadata.id, league);
-                    exitScorerConsole();
+                    // Feature 3: Trigger Full-Screen Break Ad on Match Finish
+                    triggerBreakAdOverlay("Match Completed 🏆", () => {
+                        exitScorerConsole();
+                    });
                 });
             });
         }
@@ -3638,7 +3964,7 @@
                             const overBowledDecimal = score2.completed ? limit : overToDecimal(score2.overs);
 
                             standingsMap[team1].oversFaced += overFacedDecimal;
-                            standingsMap[team2].oversBowled += overFacedDecimal;
+                            standingsMap[team2].oversBowled += overBowledDecimal;
 
                             standingsMap[team2].oversFaced += overBowledDecimal;
                             standingsMap[team1].oversBowled += overBowledDecimal;
@@ -4814,7 +5140,7 @@
                                 const overBowledDecimal = score2.completed ? limit : overToDecimal(score2.overs);
 
                                 standings[team1].oversFaced += overFacedDecimal;
-                                standings[team2].oversBowled += overFacedDecimal;
+                                standings[team2].oversBowled += overBowledDecimal;
 
                                 standings[team2].oversFaced += overBowledDecimal;
                                 standings[team1].oversBowled += overBowledDecimal;
@@ -4909,7 +5235,6 @@
             }
         }
 
-        // 11. Share Camera Key Generators
         function populateShareCameraDropdown() {
             const select = document.getElementById("camera-association-select");
             if (!select) return;
@@ -5068,7 +5393,6 @@
             });
         }
 
-        // 12. Client-side Database Purging
         function checkAutomatedDataPurging() {
             Object.keys(allLeagues).forEach(key => {
                 const league = allLeagues[key];
@@ -5439,7 +5763,6 @@
             document.getElementById("auth-gate-modal").classList.add("hidden");
         }
 
-        // Context-aware help ticket interface mechanics
         function openHelpReportModal() {
             document.getElementById("help-report-modal").classList.remove("hidden");
             switchReportTab('new');
@@ -5569,8 +5892,8 @@
                     snap.forEach(child => {
                         const val = child.val();
                         if (val) {
-                            const ownerId = (val.metadata && (val.metadata.creatorUid || val.metadata.ownerId)) || val.creatorUid || val.ownerId || "";
-                            if (currentUser && ownerId === currentUser.uid) {
+                            const creatorUid = (val.metadata && val.metadata.creatorUid) || val.creatorUid || "";
+                            if (currentUser && creatorUid === currentUser.uid) {
                                 found = true;
                                 const leagueId = (val.metadata && val.metadata.id) || child.key;
                                 const name = (val.metadata && val.metadata.name) || val.name || "Unnamed League";
@@ -5636,7 +5959,7 @@
                         const val = child.val();
                         if (val && currentUser && val.userId === currentUser.uid) {
                             const status = val.status || "";
-                            if (status === "pending_sms" || status === "on_hold_5_days" || status === "pending" || status === "new") {
+                            if (status === "pending_sms" || status === "on_hold_5_days") {
                                 found = true;
                                 const paymentId = val.paymentId || child.key;
                                 const amount = val.price || val.reward || 0;
