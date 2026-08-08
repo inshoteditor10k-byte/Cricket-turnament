@@ -22,9 +22,10 @@
             background-color: #030712; /* gray-950 */
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
             position: relative;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Strictly prevent left-right horizontal overflow movement */
         }
         
+        /* Custom styles for broadcast-quality overlays and coin flip animations */
         @keyframes flip-heads {
             0% { transform: rotateY(0); }
             100% { transform: rotateY(1800deg); }
@@ -47,6 +48,7 @@
             scrollbar-width: none;
         }
 
+        /* Responsive Mobile Video Rotation Frame Support */
         .rotated-landscape-frame {
             transform: rotate(90deg);
             transform-origin: center;
@@ -58,6 +60,7 @@
             z-index: 100;
         }
 
+        /* Global override to force black background, white text and dark-mode native pickers */
         input, select, textarea, input[type="date"], input[type="time"] {
             background-color: #000000 !important;
             color: #ffffff !important;
@@ -554,7 +557,7 @@
                     </div>
                 </div>
 
-                <!-- UPI Rupee Wallet Recharge Grid (Dynamically Configured with Firewall Alert) -->
+                <!-- UPI Rupee Wallet Recharge Grid -->
                 <div id="recharge-wallet-section" class="hidden border-t border-gray-855 pt-5 space-y-3">
                     <div class="flex items-center justify-between">
                         <h3 class="text-xs font-black text-orange-500 uppercase tracking-wider font-sans">₹ Wallet Recharge Pack</h3>
@@ -1133,8 +1136,8 @@
         </div>
     </div>
 
-    <!-- Feature 4: Floating Personal AI Assistant Widget ("SHAILESH AI") -->
-    <div id="ai-assistant-btn" onclick="toggleShaileshAiModal()" class="fixed bottom-20 right-4 z-40 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 text-white p-3 rounded-full shadow-2xl flex items-center justify-center cursor-pointer border-2 border-white/20 hover:scale-110 active:scale-95 transition-all">
+    <!-- Feature 4: Floating Personal AI Assistant Widget ("SHAILESH AI") - Bottom Left -->
+    <div id="ai-assistant-btn" onclick="toggleShaileshAiModal()" class="fixed bottom-20 left-4 z-40 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 text-white p-3 rounded-full shadow-2xl flex items-center justify-center cursor-pointer border-2 border-white/20 hover:scale-110 active:scale-95 transition-all">
         <i class="fa-solid fa-robot text-lg animate-bounce"></i>
         <span class="absolute -top-1 -right-1 bg-red-600 text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase border border-white">AI</span>
     </div>
@@ -1150,9 +1153,9 @@
                     <div>
                         <h3 class="text-xs font-black text-white flex items-center space-x-1">
                             <span>SHAILESH AI</span>
-                            <span class="bg-orange-600/30 text-orange-400 text-[8px] px-1.5 py-0.2 rounded border border-orange-500/20">IPC Assistant</span>
+                            <span class="bg-orange-600/30 text-orange-400 text-[8px] px-1.5 py-0.2 rounded border border-orange-500/20">Gemini Powered</span>
                         </h3>
-                        <p class="text-[8px] text-gray-400 font-semibold">Account stats & platform info guide</p>
+                        <p class="text-[8px] text-gray-400 font-semibold">Dynamic Personal Assistant</p>
                     </div>
                 </div>
                 <button onclick="toggleShaileshAiModal()" class="text-gray-400 hover:text-white text-xs font-bold bg-gray-800 px-2 py-1 rounded-lg">Close</button>
@@ -1162,8 +1165,8 @@
                 <div class="flex items-start space-x-2 max-w-[85%]">
                     <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-bold">AI</div>
                     <div class="bg-gray-800 border border-gray-700/80 text-gray-200 p-2.5 rounded-2xl rounded-tl-none text-[11px] leading-relaxed shadow">
-                        Namaste! Main Shailesh AI hoon, aapka Personal IPC Assistant. 🏏<br>
-                        Aap mujhse apne wallet balance, withdrawal status, tournament stats ya platform rules ke baare mein pooch sakte hain!
+                        Namaste! Main Shailesh AI hoon, aapka Personal IPC Gemini Assistant. 🏏<br>
+                        Aap mujhse apne wallet balance, withdrawal status, tournament stats, match dates ya platform rules ke baare mein pooch sakte hain!
                     </div>
                 </div>
             </div>
@@ -1297,6 +1300,9 @@
         let fullScreenAdsList = [];
         let currentBreakAdCallback = null;
 
+        // Dynamic Gemini AI Key
+        let geminiApiKey = "";
+
         // Dynamic Cameraman Broadcasting states
         let localCameraStream = null;
         let activeViewerId = null;
@@ -1334,6 +1340,11 @@
         db.ref('admin_config/upi_id').on('value', snap => { if (snap.val()) adminUpiId = snap.val(); });
         db.ref('config/upi_id').on('value', snap => { if (snap.val()) adminUpiId = snap.val(); });
         db.ref('settings/upi_id').on('value', snap => { if (snap.val()) adminUpiId = snap.val(); });
+
+        // Listen for Admin Gemini API key dynamically from admin_config/ai_config/api_key
+        db.ref('admin_config/ai_config/api_key').on('value', snap => {
+            if (snap.val()) geminiApiKey = snap.val().trim();
+        });
 
         // Countdown variables for dynamic recharge listener
         let currentPaymentId = null;
@@ -1494,7 +1505,7 @@
             }
         }
 
-        // Feature 4: User Panel Personal AI Assistant ("SHAILESH AI")
+        // Feature 4: User Panel Personal AI Assistant ("SHAILESH AI") - Dynamic Gemini API
         function toggleShaileshAiModal() {
             const modal = document.getElementById("ai-assistant-modal");
             if (!modal) return;
@@ -1511,7 +1522,7 @@
             handleShaileshAiSubmit();
         }
 
-        function handleShaileshAiSubmit() {
+        async function handleShaileshAiSubmit() {
             const input = document.getElementById("ai-chat-input");
             const messagesContainer = document.getElementById("ai-chat-messages");
             if (!input || !messagesContainer) return;
@@ -1519,6 +1530,7 @@
             const userText = input.value.trim();
             if (!userText) return;
 
+            // Display User Message
             messagesContainer.innerHTML += `
                 <div class="flex items-start justify-end space-x-2">
                     <div class="bg-orange-600 text-white p-2.5 rounded-2xl rounded-tr-none text-[11px] max-w-[85%] leading-relaxed shadow font-semibold">
@@ -1530,61 +1542,66 @@
             input.value = "";
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            setTimeout(() => {
-                generateShaileshAiResponse(userText, (aiReply) => {
-                    messagesContainer.innerHTML += `
-                        <div class="flex items-start space-x-2 max-w-[85%] animate-fade-in">
-                            <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-bold">AI</div>
-                            <div class="bg-gray-800 border border-gray-700/80 text-gray-200 p-2.5 rounded-2xl rounded-tl-none text-[11px] leading-relaxed shadow">
-                                ${aiReply}
-                            </div>
-                        </div>
-                    `;
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                });
-            }, 300);
+            // Loading indicator placeholder
+            const loadingMsgId = 'ai-loading-' + Date.now();
+            messagesContainer.innerHTML += `
+                <div id="${loadingMsgId}" class="flex items-start space-x-2 max-w-[85%] animate-fade-in">
+                    <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-bold">AI</div>
+                    <div class="bg-gray-800 border border-gray-700/80 text-gray-300 p-2.5 rounded-2xl rounded-tl-none text-[11px] leading-relaxed shadow flex items-center space-x-2">
+                        <i class="fa-solid fa-spinner animate-spin text-orange-500"></i>
+                        <span>Shailesh AI is thinking...</span>
+                    </div>
+                </div>
+            `;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            const aiReply = await callGeminiAiApi(userText);
+
+            const loadingEl = document.getElementById(loadingMsgId);
+            if (loadingEl) loadingEl.remove();
+
+            messagesContainer.innerHTML += `
+                <div class="flex items-start space-x-2 max-w-[85%] animate-fade-in">
+                    <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-bold">AI</div>
+                    <div class="bg-gray-800 border border-gray-700/80 text-gray-200 p-2.5 rounded-2xl rounded-tl-none text-[11px] leading-relaxed shadow">
+                        ${aiReply}
+                    </div>
+                </div>
+            `;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        function generateShaileshAiResponse(query, callback) {
-            const text = query.toLowerCase();
-            const name = currentUser ? (currentUser.displayName || "User") : "Guest";
-
+        async function callGeminiAiApi(userPrompt) {
             if (!currentUser) {
-                callback(`Aap abhi Guest Mode mein hain. Apne personal account stats, wallet balance, aur tournament features use karne ke liye pehle Google Sign-In karein! 🔑`);
-                return;
+                return `Aap abhi Guest Mode mein hain. Apne personal account stats, wallet balance, aur tournament features use karne ke liye pehle Google Sign-In karein! 🔑`;
             }
 
-            // Security Check: Strictly prevent querying other users' private email IDs, passwords, or personal details
-            if (text.includes("email") || text.includes("password") || text.includes("private") || text.includes("dusre ka account") || text.includes("dusre user")) {
-                callback(`⚠️ <strong>Security Policy:</strong> Shailesh AI kisi bhi doosre user ke private personal details (Email ID, Password, Phone Number) share nahi kar sakta. Aap sirf apne account stats aur public tournament information pooch sakte hain.`);
-                return;
+            // Security Check
+            const lowerText = userPrompt.toLowerCase();
+            if (lowerText.includes("password") || lowerText.includes("private email") || lowerText.includes("dusre ka account")) {
+                return `⚠️ <strong>Security Policy:</strong> Shailesh AI kisi bhi doosre user ke private personal details (Email ID, Password, Phone Number) share nahi kar sakta. Aap sirf apne account stats aur public tournament information pooch sakte hain.`;
             }
 
+            if (!geminiApiKey) {
+                return `⚠️ Gemini API Key is not configured by admin in Firebase (at admin_config/ai_config/api_key). Please ask admin to set up the API key.`;
+            }
+
+            // Construct User Personal Context
             const depBal = document.getElementById("dropdown-deposit-balance")?.textContent || "0.00";
             const withBal = document.getElementById("dropdown-withdrawal-balance")?.textContent || "0.00";
             const claimable = document.getElementById("pending-cashback-indicator")?.textContent || "0.00";
+            const userName = currentUser.displayName || "User";
 
-            if (text.includes("balance") || text.includes("paise") || text.includes("rupee") || text.includes("wallet")) {
-                callback(`Hello ${name}! 💳<br>Aapka current wallet summary:<br>• <strong>Deposit Balance:</strong> ₹${depBal}<br>• <strong>Withdrawal Balance:</strong> ₹${withBal}<br>• <strong>Claimable Cashback:</strong> ₹${claimable}`);
-                return;
-            }
+            let userLeaguesSummary = [];
+            let teamMatchesMap = {};
+            let totalActiveLeagues = Object.keys(allLeagues).length;
 
-            if (text.includes("withdraw") || text.includes("nikale") || text.includes("payout")) {
-                callback(`Withdrawal Process: 💸<br>1. Aapka Withdrawal Balance: <strong>₹${withBal}</strong>.<br>2. Wallet header pe click karke <strong>'Withdraw Money'</strong> select karein.<br>3. Apni UPI ID aur registered name fill karke request submit karein. Payout verify karke process kar diya jayega!`);
-                return;
-            }
-
-            if (text.includes("deposit") || text.includes("recharge") || text.includes("add money")) {
-                callback(`Recharge Pack Purchase: 💳<br>1. Profile tab pe jaayein aur <strong>'₹ Wallet Recharge Pack'</strong> section dekhein.<br>2. Apno pasand ka pack chunein, UPI app ya QR scan se payment karein. Verification ke baad instant credit ho jata hai!`);
-                return;
-            }
-
-            if (text.includes("team") || text.includes("kitni baar kheli") || text.includes("matches played") || text.includes("stats")) {
-                let totalLeagues = Object.keys(allLeagues).length;
-                let teamMatchesMap = {};
-
-                Object.values(allLeagues).forEach(league => {
-                    if (league && league.fixtures) {
+            Object.values(allLeagues).forEach(league => {
+                if (league && league.metadata) {
+                    if (league.metadata.ownerId === currentUser.uid) {
+                        userLeaguesSummary.push(`- League: ${league.metadata.name} (Start: ${league.metadata.startDate}, Overs: ${league.metadata.oversLimit})`);
+                    }
+                    if (league.fixtures) {
                         league.fixtures.forEach(fix => {
                             if (fix.status === "COMPLETED") {
                                 teamMatchesMap[fix.homeTeam] = (teamMatchesMap[fix.homeTeam] || 0) + 1;
@@ -1592,45 +1609,81 @@
                             }
                         });
                     }
+                }
+            });
+
+            let teamStatsText = Object.keys(teamMatchesMap).map(t => `${t}: ${teamMatchesMap[t]} completed matches`).slice(0, 10).join(", ") || "No matches completed yet";
+
+            const systemContextPrompt = `You are "SHAILESH AI", an intelligent, polite, and helpful Personal Assistant for the India Play Cricket (IPC) web platform.
+Respond in natural, friendly Hinglish (Hindi written in Roman script mixed with simple English) or English depending on user query language.
+
+CURRENT USER CONTEXT:
+- Name: ${userName}
+- UID: ${currentUser.uid}
+- Wallet Deposit Balance: ₹${depBal}
+- Wallet Withdrawal Balance: ₹${withBal}
+- Claimable Cashback: ₹${claimable}
+- User's Created Leagues: ${userLeaguesSummary.length > 0 ? userLeaguesSummary.join("\n") : "None created yet"}
+- Total Platform Leagues: ${totalActiveLeagues}
+- Team Played Matches Summary: ${teamStatsText}
+
+PLATFORM RULES & INFORMATION:
+- League Creation Fee: ₹5 per match auto-deducted from Deposit Wallet. Max 20 active leagues per user.
+- Wallet Recharge: Profile tab -> Wallet Recharge Pack -> UPI Apps / QR Scanner.
+- Capital Withdrawal: Wallet Header -> Withdraw Money -> Destination UPI ID & Name. Minimum withdrawal depends on available withdrawal balance.
+- Cashback Drawer: 1% to 10% random bonus on verified deposits, claimable directly to Withdrawal balance.
+- Help Desk: Profile tab -> Help & Report Issue. Submit tickets for Deleted League Restore, Pending Payments, Coin Not Added.
+
+SECURITY INSTRUCTION:
+Do NOT reveal private emails, passwords, or private transaction details of other users under any circumstances.
+
+User Query: "${userPrompt}"
+
+Answer directly, politely, and concisely in formatted HTML (using <strong>, <br>, bullet points • if appropriate):`;
+
+            try {
+                const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-goog-api-key': geminiApiKey
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                role: 'user',
+                                parts: [{ text: systemContextPrompt }]
+                            }
+                        ]
+                    })
                 });
 
-                let teamStatsList = Object.keys(teamMatchesMap).map(t => `• <strong>${t}:</strong> ${teamMatchesMap[t]} matches`).slice(0, 5).join("<br>");
-
-                if (!teamStatsList) {
-                    teamStatsList = "Abhi tak kisi team ne completed match nahi khela hai.";
+                if (!response.ok) {
+                    const errData = await response.json();
+                    console.error("Gemini API Error: ", errData);
+                    return `⚠️ Could not fetch AI response (${response.status}). Please check if Gemini API key at admin_config/ai_config/api_key is valid.`;
                 }
 
-                callback(`📊 <strong>Tournament Team Play Stats:</strong><br>Total Active Leagues: ${totalLeagues}<br><br>Top Teams (Completed Matches):<br>${teamStatsList}`);
-                return;
+                const data = await response.json();
+                const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (rawReply) {
+                    return rawReply.replace(/\n/g, '<br>');
+                } else {
+                    return `Mera javab process karne mein dikkat aayi. Kripya dobara try karein.`;
+                }
+            } catch (err) {
+                console.error("Gemini Fetch Exception: ", err);
+                return `⚠️ Network Error: Gemini AI connection failed. (${err.message})`;
             }
-
-            if (text.includes("league") || text.includes("rule") || text.includes("fee") || text.includes("price")) {
-                callback(`Tournament & League Rules: 🏆<br>1. League creation fee: <strong>₹5 per match</strong> (Deposit wallet se deduct hota hai).<br>2. Maximum 20 active leagues aek time par allowed hain.<br>3. Over end hone par bowler change mandatory hai.<br>4. Tie match mein automatically Super Over trigger hota hai!`);
-                return;
-            }
-
-            if (text.includes("cashback") || text.includes("claim")) {
-                callback(`Cashback Drawer Rules: 🎁<br>1. Verified recharges pe 1% - 10% tak random cashback milta hai.<br>2. Claimable Cashback: <strong>₹${claimable}</strong>.<br>3. Profile tab par 'Claim' button dabate hi cashback aapke Withdrawal Balance mein add ho jata hai!`);
-                return;
-            }
-
-            if (text.includes("user count") || text.includes("total user") || text.includes("platform stats")) {
-                db.ref('users').once('value', snap => {
-                    const userCount = snap.exists() ? snap.numChildren() : 0;
-                    callback(`🌐 <strong>IPC Platform Public Summary:</strong><br>• Total Registered Users: <strong>${userCount}</strong><br>• Total Active Leagues: <strong>${Object.keys(allLeagues).length}</strong>`);
-                });
-                return;
-            }
-
-            callback(`Ji ${name}! Main Shailesh AI hoon, aapka Personal IPC Assistant. Main aapke wallet balance (Deposit: ₹${depBal}, Withdrawal: ₹${withBal}), team stats, cashback claims, league rules aur withdrawal status mein help kar sakta hoon. Aap mujhse pooch sakte hain! 😊`);
         }
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
 
-        // Feature 1: AI Report Description Generator Button
-        function generateAiReportText() {
+        // Feature 1: AI Report Description Generator Button (Powered by Gemini / Context)
+        async function generateAiReportText() {
             const issueType = document.getElementById("report-issue-type").value;
             const descArea = document.getElementById("report-description");
             if (!descArea) return;
@@ -1642,26 +1695,48 @@
                 if (parentLabel) selectedLabelText = parentLabel.textContent.replace(/\s+/g, ' ').trim();
             }
 
-            let generatedMsg = "";
+            descArea.value = "🤖 Generating Hinglish ticket text with Gemini AI...";
 
+            if (geminiApiKey) {
+                try {
+                    const prompt = `Generate a polite, clear, and well-structured support ticket description in Hinglish for India Play Cricket support desk.
+Issue Type: "${issueType}"
+Reference Details: "${selectedLabelText || 'Not selected specifically'}"
+User Name: "${currentUser ? (currentUser.displayName || 'User') : 'User'}"
+
+Write ONLY 2-3 short polite sentences explaining the issue and requesting fast support.`;
+
+                    const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+                    const res = await fetch(apiEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-goog-api-key': geminiApiKey },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+                    const resData = await res.json();
+                    const aiGenerated = resData.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (aiGenerated) {
+                        descArea.value = aiGenerated.trim();
+                        return;
+                    }
+                } catch (e) {
+                    console.error("AI Report Gen Exception:", e);
+                }
+            }
+
+            // Fallback template generator
+            let generatedMsg = "";
             if (issueType === "Deleted League Restore") {
-                if (selectedLabelText) {
-                    generatedMsg = `Respected Support Team, Meri galti se league delete ho gayi hai (${selectedLabelText}). Kripya is deleted league ko mere account par restore kar dijiye. Advance mein thank you!`;
-                } else {
-                    generatedMsg = `Respected Support Team, Meri galti se meri created tournament league delete ho gayi hai. Kripya is deleted league ko check karke mere UID par restore karne ki kripya karein. Dhanyawad!`;
-                }
+                generatedMsg = selectedLabelText 
+                    ? `Respected Support Team, Meri galti se league delete ho gayi hai (${selectedLabelText}). Kripya is deleted league ko mere account par restore kar dijiye. Advance mein thank you!`
+                    : `Respected Support Team, Meri galti se meri created tournament league delete ho gayi hai. Kripya is deleted league ko check karke mere UID par restore karne ki kripya karein. Dhanyawad!`;
             } else if (issueType === "Pending Payment Issue") {
-                if (selectedLabelText) {
-                    generatedMsg = `Respected Support Team, Maine capital withdrawal request daali thi (${selectedLabelText}) par abhi tak status pending dikha raha hai. Kripya is payout request ko verify karke clearance approve karein. Thank you!`;
-                } else {
-                    generatedMsg = `Respected Support Team, Mera capital withdrawal request pending state par stuck hai. Kripya mere payout request ko verify karke mere UPI account par transfer kijiye. Dhanyawad!`;
-                }
+                generatedMsg = selectedLabelText 
+                    ? `Respected Support Team, Maine capital withdrawal request daali thi (${selectedLabelText}) par abhi tak status pending dikha raha hai. Kripya is payout request ko verify karke clearance approve karein. Thank you!`
+                    : `Respected Support Team, Mera capital withdrawal request pending state par stuck hai. Kripya mere payout request ko verify karke mere UPI account par transfer kijiye. Dhanyawad!`;
             } else if (issueType === "Coin Not Added") {
-                if (selectedLabelText) {
-                    generatedMsg = `Respected Support Team, Maine recharge pack purchase kiya tha (${selectedLabelText}) par abhi tak mere wallet mein deposit coins add nahi hue hain. Kripya transaction verify karke coins credit karein. Thank you!`;
-                } else {
-                    generatedMsg = `Respected Support Team, Mera wallet recharge transaction complete hone ke bawajood wallet mein coins credit nahi hue hain. Kripya payment verify karke coins add karein. Dhanyawad!`;
-                }
+                generatedMsg = selectedLabelText 
+                    ? `Respected Support Team, Maine recharge pack purchase kiya tha (${selectedLabelText}) par abhi tak mere wallet mein deposit coins add nahi hue hain. Kripya transaction verify karke coins credit karein. Thank you!`
+                    : `Respected Support Team, Mera wallet recharge transaction complete hone ke bawajood wallet mein coins credit nahi hue hain. Kripya payment verify karke coins add karein. Dhanyawad!`;
             } else {
                 generatedMsg = `Respected Support Team, Mujhe platform use karne mein dikkat aa rahi hai. Kripya mere account details ko audit karke issue resolve karein. Dhanyawad!`;
             }
@@ -2895,7 +2970,7 @@
 
             const league = allLeagues[leagueId];
 
-            selectedScorerLeagueId = leagueId;
+            selectedScorerLeagueId =  leagueId;
             selectedScorerMatchIndex = parseInt(matchIndex);
             const match = league.fixtures[selectedScorerMatchIndex];
 
@@ -4598,7 +4673,7 @@
                     </table>
 
                     <div class="flex justify-between items-center bg-gradient-to-r from-gray-900 to-black px-3 py-2 rounded-xl border border-gray-800/85 mt-4">
-                        <span class="text-xs font-black uppercase text-orange-555 tracking-wider">🎳 ${oppTeamName} Bowling</span>
+                        <span class="text-xs font-black uppercase text-orange-555 tracking-wider"> bowling</span>
                     </div>
                     <table class="w-full text-left">
                         <thead>
