@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase v8 Compat SDKs (Standard v8 compatibility) -->
+    <!-- Firebase v8 Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -22,10 +22,9 @@
             background-color: #030712; /* gray-950 */
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
             position: relative;
-            overflow-x: hidden; /* Strictly prevent left-right horizontal overflow movement */
+            overflow-x: hidden;
         }
         
-        /* Custom styles for broadcast-quality overlays and coin flip animations */
         @keyframes flip-heads {
             0% { transform: rotateY(0); }
             100% { transform: rotateY(1800deg); }
@@ -48,7 +47,6 @@
             scrollbar-width: none;
         }
 
-        /* Responsive Mobile Video Rotation Frame Support */
         .rotated-landscape-frame {
             transform: rotate(90deg);
             transform-origin: center;
@@ -60,12 +58,11 @@
             z-index: 100;
         }
 
-        /* Global override to force black background, white text and dark-mode native pickers */
         input, select, textarea, input[type="date"], input[type="time"] {
             background-color: #000000 !important;
             color: #ffffff !important;
             border: 1px solid #374151 !important; /* gray-700 */
-            color-scheme: dark !important; /* Force native date/time pickers to use dark mode styling */
+            color-scheme: dark !important;
         }
         select option {
             background-color: #000000 !important;
@@ -79,7 +76,7 @@
             outline: none !important;
         }
 
-        /* TV Broadcast Feed Animation Overlay styling inside the video container */
+        /* TV Broadcast Feed Animation Overlay styling */
         .glow-six {
             background: linear-gradient(135deg, #10b981, #eab308);
             box-shadow: 0 0 35px #10b981, 0 0 70px #eab308;
@@ -140,7 +137,7 @@
             100% { transform: translateY(350px) rotate(360deg); opacity: 0; }
         }
 
-        /* Feature 2: Banner Carousel Smooth Slide Styles */
+        /* Banner Carousel Smooth Slide Styles */
         .carousel-track {
             display: flex;
             transition: transform 0.5s ease-in-out;
@@ -299,7 +296,7 @@
                             </div>
                         </div>
 
-                        <!-- Date & Time Picker Controls with dynamic calculations -->
+                        <!-- Date & Time Picker Controls -->
                         <div class="space-y-3">
                             <div>
                                 <label class="block text-[10px] font-bold uppercase tracking-widest mb-1.5 font-semibold text-gray-400">Match Start Date</label>
@@ -565,7 +562,7 @@
                     </div>
                     <p class="text-[9px] text-gray-400 font-bold font-sans">Support instantly via PhonePe, Paytm, and Google Pay QR scanner.</p>
                     
-                    <!-- IPC Firewall alert warning specifically placed right above the dynamic plans button structure -->
+                    <!-- IPC Firewall alert warning -->
                     <div id="firewall-alert-banner" class="hidden bg-red-600/20 border border-red-500/50 text-red-400 font-bold text-[10px] rounded-xl p-3 select-none text-left leading-normal animate-pulse">
                         ⚠️ SYSTEM ALERT: Payments and Recharges are currently blocked by IPC Firewall. Reason: Critical maintenance active. Please turn on internet or recharge to resume.
                     </div>
@@ -595,7 +592,7 @@
                         <i id="saved-leagues-chevron" class="fa-solid fa-chevron-down text-[10px]"></i>
                     </button>
                     <div id="saved-leagues-container" class="hidden space-y-4 pt-2">
-                        <!-- Populated dynamically with the standard home card format -->
+                        <!-- Populated dynamically -->
                     </div>
                 </div>
 
@@ -615,7 +612,6 @@
             <div class="bg-gray-900 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10 animate-fade-in font-sans">
                 <div class="flex items-center space-x-2 font-sans">
                     <span class="bg-red-600 text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded text-white animate-pulse shadow font-sans">LIVE</span>
-                    <!-- Real-Time Viewer Count Pill -->
                     <span class="bg-black/40 text-gray-300 text-[9px] px-2 py-0.5 rounded flex items-center space-x-1 font-mono">
                         <i class="fa-solid fa-eye text-orange-500"></i>
                         <span id="overlay-live-views" class="font-bold font-sans">1</span>
@@ -662,40 +658,33 @@
 
                     <!-- Dynamic TV Broadcast Graphic Overlay -->
                     <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent p-2.5 flex flex-col justify-end space-y-1">
-                        <!-- Row 1: Active Batsman & Bowler Stats Overlay -->
                         <div class="flex items-center justify-between text-[9px] font-bold tracking-tight gap-1 font-sans">
-                            <!-- Batting Bug -->
                             <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded flex items-center space-x-2 shadow font-sans">
                                 <span id="overlay-active-batsman-1" class="text-white">🏏 Striker: --</span>
                                 <span id="overlay-active-batsman-2" class="text-gray-400">--</span>
                             </div>
-                            <!-- Bowler Bug -->
                             <div class="bg-black/85 backdrop-blur-md border border-gray-800 px-2 py-0.5 rounded flex items-center space-x-1.5 shadow font-sans">
                                 <span id="overlay-free-hit-badge" class="hidden bg-yellow-400 text-black font-black text-[8px] px-1.5 py-0.5 rounded animate-pulse font-bold">FREE HIT</span>
                                 <span id="overlay-active-bowler" class="text-gray-300 font-sans">Bowler: --</span>
                             </div>
                         </div>
 
-                        <!-- Row 2: Scorecard Bug Banner -->
                         <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-amber-600 text-white rounded px-2 py-1 flex items-center justify-between font-black shadow-lg border border-orange-500 gap-1 text-[11px] font-sans">
                             <div class="flex items-center space-x-1.5 font-sans">
                                 <span id="overlay-teams-abbrev" class="tracking-wide text-[10px] bg-black/30 px-1.5 py-0.5 rounded text-white font-sans">T1 vs T2</span>
                                 <span id="overlay-innings-score" class="text-xs border-l border-white/20 pl-1.5 font-sans font-bold">0-0 <span class="text-[9px] font-semibold opacity-90 font-sans">(0.0)</span></span>
                                 <span id="overlay-match-limit" class="text-[8px] opacity-80 font-normal text-white font-sans">(5 Overs)</span>
                             </div>
-                            <!-- Current Over Delivery Log -->
                             <div class="flex items-center space-x-0.5" id="overlay-over-log">
-                                <!-- Dots or runs of current over -->
+                                <!-- Delivery log -->
                             </div>
                         </div>
 
-                        <!-- Row 3: Live Run Rates & Targets -->
                         <div class="flex justify-between items-center text-[8px] uppercase tracking-wider font-extrabold text-orange-400 px-1 font-sans">
                             <span id="overlay-run-rates" class="font-sans">CRR: --</span>
                             <span id="overlay-required-runs" class="text-white font-mono font-bold font-sans"></span>
                         </div>
 
-                        <!-- Playback Controller Seek Bar (Rewind Option buttons) -->
                         <div class="flex items-center space-x-1.5 pt-0.5 justify-start">
                             <button onclick="handleRewind(10)" class="px-1.5 py-0.5 bg-black/60 hover:bg-orange-600 text-[8px] font-black rounded border border-white/10 uppercase tracking-widest flex items-center space-x-0.5 text-white transition shadow font-sans">
                                 <i class="fa-solid fa-backward text-[6px]"></i> <span>Rewind 10s</span>
@@ -711,7 +700,7 @@
                 </div>
 
                 <!-- Feature 2: In-House Custom Banner Ads Carousel (Below Match/Video Player) -->
-                <div id="banner-ads-carousel-container" class="hidden bg-gray-950 border-b border-gray-800 relative overflow-hidden h-20">
+                <div id="banner-ads-carousel-container" class="hidden bg-gray-955 border-b border-gray-800 relative overflow-hidden h-20">
                     <div id="banner-ads-carousel-wrapper" class="carousel-track h-full">
                         <!-- Dynamically populated banner ad slides -->
                     </div>
@@ -728,7 +717,7 @@
                     </div>
                 </div>
 
-                <!-- Bottom: Dynamic Tabs (Fit nicely in single view) -->
+                <!-- Bottom: Dynamic Tabs -->
                 <div class="flex flex-col flex-1 bg-gray-900 overflow-hidden font-sans">
                     <div class="flex border-b border-gray-800 bg-black text-[10px] font-bold uppercase tracking-widest text-gray-400">
                         <button onclick="switchLiveTab('scorecard')" id="live-tab-btn-scorecard" class="flex-1 py-3 text-center border-b-2 border-orange-500 text-white font-black">Scorecard</button>
@@ -741,7 +730,7 @@
                     <div class="p-4 flex-1 overflow-y-auto font-sans">
                         <!-- Scorecard Tab Pane -->
                         <div id="live-panel-scorecard" class="space-y-4 animate-fade-in font-sans">
-                            <!-- Populated dynamically with detailed Cricbuzz style dual-innings scoreboard -->
+                            <!-- Scoreboard -->
                         </div>
 
                         <!-- Fixtures Tab Pane -->
@@ -776,7 +765,6 @@
                         <div id="live-panel-awards" class="hidden space-y-3 animate-fade-in font-sans">
                             <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans font-bold">Cap Leaders</h4>
                             <div class="space-y-2.5">
-                                <!-- Orange Cap Card -->
                                 <div onclick="openStatsLeaderboardModal('runs')" class="bg-amber-600/10 border border-amber-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-amber-500/40 transition shadow shadow-amber-500/5">
                                     <div>
                                         <span class="bg-amber-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded uppercase font-sans">Orange Cap</span>
@@ -788,7 +776,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Purple Cap Card -->
                                 <div onclick="openStatsLeaderboardModal('wickets')" class="bg-fuchsia-600/10 border border-fuchsia-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-fuchsia-500/40 transition shadow shadow-fuchsia-500/5">
                                     <div>
                                         <span class="bg-fuchsia-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase font-sans font-bold">Purple Cap</span>
@@ -800,7 +787,6 @@
                                     </div>
                                 </div>
 
-                                <!-- MVP Card -->
                                 <div onclick="openStatsLeaderboardModal('mvp')" class="bg-emerald-600/10 border border-emerald-500/20 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-emerald-500/40 transition shadow shadow-emerald-500/5">
                                     <div>
                                         <span class="bg-emerald-500 text-black text-[8px] font-black px-1.5 py-0.5 rounded uppercase font-sans font-bold">Tournament MVP</span>
@@ -818,7 +804,7 @@
                         <div id="live-panel-videos" class="hidden space-y-4 animate-fade-in font-sans">
                             <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-orange-500 font-sans font-bold">Match Broadcast Archive (60 hrs)</h4>
                             <div id="videos-tab-grid" class="grid grid-cols-2 gap-3 font-sans">
-                                <!-- Populated dynamically with exact same premium card layout! -->
+                                <!-- Populated dynamically -->
                             </div>
                         </div>
 
@@ -862,14 +848,12 @@
                 <button onclick="closePaymentModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg">Close</button>
             </div>
 
-            <!-- Selected package summary -->
             <div class="p-3 bg-black/45 border border-gray-800 rounded-xl">
                 <span class="text-[10px] text-gray-400 uppercase tracking-widest font-black block">Selected Package</span>
                 <h4 id="modal-plan-name" class="text-xs font-black text-white mt-1">₹50 Plan</h4>
                 <span class="text-orange-500 font-extrabold text-sm" id="modal-plan-price">Pay ₹50.00</span>
             </div>
 
-            <!-- Interactive Purchase Form Phase 1: Inputs -->
             <div id="payment-input-phase" class="space-y-3 text-left">
                 <div>
                     <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Your UPI ID (For Verification)</label>
@@ -882,9 +866,7 @@
                 <button onclick="submitPaymentInitiation()" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition shadow-lg">Proceed to Pay</button>
             </div>
 
-            <!-- Interactive Purchase Form Phase 2: Action Gateway Screen -->
             <div id="payment-gateway-phase" class="hidden space-y-3">
-                <!-- Launch UPI Deep Link URL for direct mobile redirection -->
                 <button onclick="launchDirectUpiPay()" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 font-bold rounded-xl text-xs uppercase tracking-wider text-white transition flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-mobile-screen"></i>
                     <span>Direct Pay (UPI Apps)</span>
@@ -892,13 +874,11 @@
 
                 <div class="text-[10px] text-gray-500 font-bold">OR</div>
 
-                <!-- Static public API generated scanning code -->
                 <div class="bg-white p-3 rounded-xl inline-block shadow-lg mx-auto">
                     <img id="upi-qr-image" src="" class="w-40 h-40 object-contain mx-auto" alt="UPI Scanning Code">
                 </div>
                 <p class="text-[9px] text-gray-400 font-semibold font-sans">Scan or screenshot this QR inside any UPI App to pay.</p>
                 
-                <!-- 2-Minute Live Verification Countdown Section -->
                 <div id="recharge-countdown-box" class="p-3 bg-black/60 border border-orange-500/20 rounded-xl space-y-2 mt-2 text-left">
                     <div class="flex items-center justify-between">
                         <span class="text-[9px] text-gray-400 uppercase tracking-widest font-black">Recharge Verification Status</span>
@@ -948,7 +928,6 @@
     <!-- Confetti Success Alert Dialog Overlay -->
     <div id="payment-success-confetti-modal" class="hidden fixed inset-0 bg-black/95 z-[70] flex flex-col items-center justify-center text-center p-4 font-sans animate-fade-in">
         <div class="relative w-full max-w-xs flex flex-col items-center justify-center">
-            <!-- Confetti animation container using simple CSS keyframes -->
             <div class="absolute inset-0 pointer-events-none overflow-hidden" id="confetti-container"></div>
             <div class="w-20 h-20 bg-green-500/20 text-green-400 border-2 border-green-500 rounded-full flex items-center justify-center text-5xl mb-4 animate-bounce">
                 <i class="fa-solid fa-circle-check"></i>
@@ -1044,7 +1023,7 @@
             <h4 class="text-md font-black text-orange-500 uppercase tracking-wider font-sans font-bold">Select Next Bowler</h4>
             <p class="text-[9px] text-gray-400 font-semibold font-sans">Note: Immediate previous bowler cannot bowl consecutive overs.</p>
             <select id="select-next-bowler" class="w-full bg-black border border-gray-800 rounded p-2 text-xs text-white font-bold font-sans">
-                <!-- Populated dynamically with non-consecutive bowling squad options -->
+                <!-- Populated dynamically -->
             </select>
             <button onclick="commitBowlerChange()" class="w-full py-2 bg-orange-600 hover:bg-orange-700 font-bold text-xs uppercase text-white transition shadow font-sans">Start Over</button>
         </div>
@@ -1056,7 +1035,7 @@
             <h4 class="text-md font-black text-red-500 uppercase tracking-wider font-sans font-bold">Batsman Dismissed!</h4>
             <p class="text-[9px] text-gray-400 font-semibold font-sans">Choose incoming batsman. Dismissed players cannot bat again.</p>
             <select id="select-incoming-batsman" class="w-full bg-black border border-gray-800 rounded p-2 text-xs text-white font-bold font-sans">
-                <!-- Populated with non-dismissed batting squad options -->
+                <!-- Populated dynamically -->
             </select>
             <button onclick="commitBatsmanReplacement()" class="w-full py-2 bg-red-655 hover:bg-red-700 font-bold text-xs uppercase text-white transition shadow font-sans">Confirm Batsman</button>
         </div>
@@ -1070,13 +1049,11 @@
                 <button onclick="closeStatsLeaderboardModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg transition font-semibold font-sans">Close</button>
             </div>
             
-            <!-- Modal filter toggle -->
             <div class="flex space-x-2 bg-black p-1 rounded-lg text-[10px] font-bold font-sans">
                 <button id="btn-leaderboard-top10" onclick="toggleLeaderboardScope('top10')" class="flex-1 py-1.5 rounded-md text-center bg-orange-600 text-white transition font-sans font-bold">Top 10</button>
                 <button id="btn-leaderboard-seeall" onclick="toggleLeaderboardScope('seeall')" class="flex-1 py-1.5 rounded-md text-center text-gray-400 transition font-sans font-bold">See All</button>
             </div>
 
-            <!-- List container -->
             <div class="max-h-[300px] overflow-y-auto space-y-2 pr-1 text-white font-sans" id="leaderboard-modal-list">
                 <!-- Sorted players list goes here -->
             </div>
@@ -1094,7 +1071,6 @@
                 <button onclick="closeHelpReportModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg">Close</button>
             </div>
 
-            <!-- Toggle Tabs for New Ticket vs Ticket History -->
             <div class="flex space-x-2 bg-black p-1 rounded-lg text-[10px] font-bold">
                 <button id="btn-report-tab-new" onclick="switchReportTab('new')" class="flex-1 py-1.5 rounded-md text-center bg-orange-600 text-white font-bold transition">New Ticket</button>
                 <button id="btn-report-tab-history" onclick="switchReportTab('history')" class="flex-1 py-1.5 rounded-md text-center text-gray-400 font-bold transition">My Tickets</button>
@@ -1112,18 +1088,17 @@
                     </select>
                 </div>
 
-                <!-- Dynamic context-aware query loader container -->
                 <div id="report-context-container" class="hidden space-y-2">
                     <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold mb-1">Select Reference Transaction / League</label>
                     <div id="report-context-area" class="max-h-[150px] overflow-y-auto bg-black/50 p-2 border border-gray-800 rounded-xl space-y-2">
-                        <!-- Dynamic radio button items will be injected here -->
+                        <!-- Dynamic radio items -->
                     </div>
                 </div>
 
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-[8px] text-gray-400 uppercase tracking-wider font-bold">Detailed Description</label>
-                        <!-- Feature 1: AI Report Message Generator Button -->
+                        <!-- Feature 1: AI Report Generator Button -->
                         <button type="button" onclick="generateAiReportText()" class="px-2.5 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg text-[9px] font-extrabold flex items-center space-x-1 transition shadow">
                             <i class="fa-solid fa-wand-magic-sparkles text-[9px]"></i>
                             <span>🤖 Generate Text with AI</span>
@@ -1167,7 +1142,6 @@
     <!-- Feature 4: User Panel Personal AI Assistant Modal ("SHAILESH AI") -->
     <div id="ai-assistant-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 font-sans animate-fade-in">
         <div class="bg-gray-900 border border-orange-500/30 rounded-2xl w-full max-w-sm h-[480px] flex flex-col shadow-2xl font-sans overflow-hidden">
-            <!-- AI Header -->
             <div class="bg-gradient-to-r from-gray-900 via-orange-950/40 to-gray-900 p-3.5 border-b border-gray-800 flex justify-between items-center">
                 <div class="flex items-center space-x-2.5">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 flex items-center justify-center text-black font-black text-sm shadow">
@@ -1184,9 +1158,7 @@
                 <button onclick="toggleShaileshAiModal()" class="text-gray-400 hover:text-white text-xs font-bold bg-gray-800 px-2 py-1 rounded-lg">Close</button>
             </div>
 
-            <!-- AI Chat Messages Area -->
             <div id="ai-chat-messages" class="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs">
-                <!-- Welcome Bot Message -->
                 <div class="flex items-start space-x-2 max-w-[85%]">
                     <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-bold">AI</div>
                     <div class="bg-gray-800 border border-gray-700/80 text-gray-200 p-2.5 rounded-2xl rounded-tl-none text-[11px] leading-relaxed shadow">
@@ -1196,7 +1168,6 @@
                 </div>
             </div>
 
-            <!-- Quick Suggestion Pills -->
             <div class="px-3 py-1.5 bg-black/40 border-t border-gray-850 flex items-center space-x-1.5 overflow-x-auto hide-scrollbar text-[9px]">
                 <button onclick="sendShaileshAiQuickQuery('Mera wallet balance kitna hai?')" class="px-2 py-1 bg-gray-800 hover:bg-orange-600 hover:text-white text-gray-300 rounded-full font-bold flex-shrink-0 border border-gray-700 transition">💰 Wallet Balance</button>
                 <button onclick="sendShaileshAiQuickQuery('Withdrawal kaise karein?')" class="px-2 py-1 bg-gray-800 hover:bg-orange-600 hover:text-white text-gray-300 rounded-full font-bold flex-shrink-0 border border-gray-700 transition">💸 Withdrawal Rule</button>
@@ -1204,7 +1175,6 @@
                 <button onclick="sendShaileshAiQuickQuery('League rules kya hain?')" class="px-2 py-1 bg-gray-800 hover:bg-orange-600 hover:text-white text-gray-300 rounded-full font-bold flex-shrink-0 border border-gray-700 transition">🏆 League Rules</button>
             </div>
 
-            <!-- AI Chat Input Box -->
             <div class="p-2.5 bg-black border-t border-gray-800 flex items-center space-x-2">
                 <input type="text" id="ai-chat-input" placeholder="Ask Shailesh AI..." onkeydown="if(event.key === 'Enter') handleShaileshAiSubmit()" class="flex-1 bg-gray-900 border border-gray-800 rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-orange-500">
                 <button onclick="handleShaileshAiSubmit()" class="w-9 h-9 bg-orange-600 hover:bg-orange-700 text-white rounded-xl flex items-center justify-center font-bold text-xs transition shadow flex-shrink-0">
@@ -1216,7 +1186,6 @@
 
     <!-- Cameraman Live Broadcast Overlay Container -->
     <div id="cameraman-live-overlay" class="hidden fixed inset-0 bg-black z-50 flex flex-col font-sans">
-        <!-- Header bar inside live match view -->
         <div class="bg-gray-955 px-4 py-3 border-b border-gray-800 flex justify-between items-center sticky top-0 z-10">
             <div class="flex items-center space-x-2">
                 <span class="bg-red-600 text-[9px] font-black tracking-widest px-1.5 py-0.5 rounded text-white animate-pulse shadow">CAMERAMAN</span>
@@ -1227,7 +1196,6 @@
                 <span>Disconnect</span>
             </button>
         </div>
-        <!-- Live stream device viewscreen feed -->
         <div class="flex-1 bg-black relative flex items-center justify-center overflow-hidden">
             <video id="cameraman-preview-video" class="w-full h-full object-cover" autoplay playsinline muted></video>
             <canvas id="cameraman-capture-canvas" class="hidden"></canvas>
@@ -1250,9 +1218,8 @@
                 <button onclick="closeMatchTimeEditorModal()" class="text-gray-400 hover:text-white text-[10px] font-bold bg-gray-800 px-2.5 py-1 rounded-lg transition font-semibold">Close</button>
             </div>
             
-            <!-- Dates & Custom Times List -->
             <div id="match-times-list-container" class="max-h-[300px] overflow-y-auto space-y-2.5 pr-1 text-white">
-                <!-- Programmatically populated list of match rounds, dates (read-only), and editable time inputs -->
+                <!-- Editable match time entries -->
             </div>
             
             <div class="pt-2 flex justify-end space-x-2 border-t border-gray-800">
@@ -1319,7 +1286,7 @@
         let editingTimeLeagueId = null;
         let lastPlayedAudioTimestamp = 0; 
         let selectedActivePlan = null;
-        let planSelectedTime = null; // Cache exact buy-click plan initiation time
+        let planSelectedTime = null; 
         let activeReportListenerRef = null;
         let reportHistoryListenerRef = null;
         
@@ -1350,10 +1317,7 @@
         let currentLeaderboardType = 'runs'; 
         let currentLeaderboardScope = 'top10'; 
         
-        // Keep track of last processed event timestamp to avoid repeat animation loops
         let lastSeenEventTimestamp = 0;
-
-        // Spectator Detailed Scorecard selected index track
         let spectatorSelectedMatchIndex = null;
 
         // IPC Firewall Real-Time Protection integration variables
@@ -1414,7 +1378,6 @@
 
         // Feature 2 & 3: Custom Ads Listeners
         function listenToCustomAds() {
-            // Listen to banner ads
             db.ref('admin_config/custom_ads/banners').on('value', snapshot => {
                 const data = snapshot.val();
                 bannerAdsList = [];
@@ -1429,7 +1392,6 @@
                 renderBannerAdsCarousel();
             });
 
-            // Listen to full screen break ads
             db.ref('admin_config/custom_ads/full_screen').on('value', snapshot => {
                 const data = snapshot.val();
                 fullScreenAdsList = [];
@@ -1485,7 +1447,7 @@
                 bannerCarouselTimer = setInterval(() => {
                     bannerCurrentIndex = (bannerCurrentIndex + 1) % bannerAdsList.length;
                     wrapper.style.transform = `translateX(-${bannerCurrentIndex * 100}%)`;
-                }, 3000); // Rotate every 3 seconds with smooth 0.5s transition
+                }, 3000); 
             } else {
                 wrapper.style.transform = `translateX(0%)`;
             }
@@ -1557,7 +1519,6 @@
             const userText = input.value.trim();
             if (!userText) return;
 
-            // Render User Message
             messagesContainer.innerHTML += `
                 <div class="flex items-start justify-end space-x-2">
                     <div class="bg-orange-600 text-white p-2.5 rounded-2xl rounded-tr-none text-[11px] max-w-[85%] leading-relaxed shadow font-semibold">
@@ -1569,7 +1530,6 @@
             input.value = "";
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Process response contextually based on user data & rules
             setTimeout(() => {
                 generateShaileshAiResponse(userText, (aiReply) => {
                     messagesContainer.innerHTML += `
@@ -1620,7 +1580,6 @@
             }
 
             if (text.includes("team") || text.includes("kitni baar kheli") || text.includes("matches played") || text.includes("stats")) {
-                let statsSummary = "";
                 let totalLeagues = Object.keys(allLeagues).length;
                 let teamMatchesMap = {};
 
@@ -1775,7 +1734,7 @@
             });
         }
 
-        // Toggle Video Rotation for Mobile Viewer Screen (Portrait / Landscape switch)
+        // Toggle Video Rotation for Mobile Viewer Screen
         function toggleVideoRotation() {
             const box = document.getElementById("live-camera-feed-box");
             if (!videoRotationMode) {
