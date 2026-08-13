@@ -1623,12 +1623,15 @@
 
             const systemContextPrompt = `You are "SHAILESH AI", an intelligent, polite personal assistant for the "India Play Cricket" (IPC) web platform.
 
-CRITICAL MANDATE 1 (OFF-TOPIC GUARDRAIL):
-If the user's question is NOT directly related to the India Play Cricket app, tournament rules, cricket matches, wallet balances, withdrawals, cashback, recharges, match schedules, player stats, or app features, YOU MUST NOT ANSWER IT AND REPLY EXACTLY WITH THIS TEXT AND NOTHING ELSE:
+CRITICAL MANDATE 1 (STRICT ZERO-EXTERNAL-KNOWLEDGE & ANTI-HALLUCINATION GUARDRAIL):
+- YOU MUST NEVER use real-world external knowledge (such as real-world Indian Premier League facts, real-world cricket players like Virat Kohli or MS Dhoni, or real-world sports stats).
+- If a user asks about "IPL" or any league, team, player, or rule, YOU MUST SEARCH ONLY the app's internal Firebase database context for leagues/teams/data created inside this app.
+- YOU MUST NEVER hallucinate real-world facts.
+- If the queried information is NOT found in the provided app database context, or if the user's question is unrelated to this app's internal data, YOU MUST NOT ANSWER IT AND REPLY EXACTLY WITH THIS TEXT AND NOTHING ELSE:
 Sorry, main sirf is app se related jawaab de sakta hoon.
 
 CRITICAL MANDATE 2 (PRIVACY GUARDRAIL):
-Under NO circumstances reveal other users' private email IDs, passwords, phone numbers, or account credentials.
+Under NO circumstances reveal other users' private email IDs, passwords, phone numbers, or private account credentials.
 
 USER CONTEXT:
 - Name: ${userName}
@@ -1640,7 +1643,7 @@ USER CONTEXT:
 - Total Platform Leagues: ${totalActiveLeagues}
 - Team Played Matches Summary: ${teamStatsText}
 
-PLATFORM RULES & INFO:
+PLATFORM RULES & INFO (Internal App Data):
 - League Creation Fee: ₹5 per match auto-deducted from Deposit Wallet. Max 20 active leagues per user.
 - Wallet Recharge: Profile tab -> Wallet Recharge Pack -> UPI Apps / QR Scanner.
 - Capital Withdrawal: Wallet Header / Profile -> Withdraw Money -> Destination UPI ID & Name.
@@ -2708,416 +2711,398 @@ Write ONLY 2-3 short polite sentences explaining the issue and requesting fast s
 
                     container.innerHTML += `
                         <div class="bg-gray-955 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition shadow-lg font-sans">
-                            <div class="flex items-center justify-between">
-                                ${activeLabel}
-                                <div class="flex items-center space-x-2">
-                                    <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2 py-0.5 rounded border border-orange-500/10">
-                                        ${shortName}
-                                    </span>
-                                    <button onclick="event.stopPropagation(); toggleSaveLeague('${key}')" class="focus:outline-none">
-                                        <i class="fa-solid fa-bell text-yellow-500 text-sm cursor-pointer ml-2"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${name}</h3>
-                            ${liveScoreHTML}
-                            <div class="flex justify-between items-center text-[10px] text-gray-400">
-                                <span class="font-semibold">Overs: ${oversLimit} | Teams: ${teamCount}</span>
-                                <span class="font-mono text-orange-400 font-bold">${startDate}</span>
-                            </div>
-                            <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-850 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow-lg">
-                                <span>View Broadcast</span>
-                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            <div class="flex items-center justify-between"> ${activeLabel}   {shortName}
+</span>
+<button onclick="event.stopPropagation(); toggleSaveLeague('{key}')"
+class="focus:outline-none">     ${name} ${liveScoreHTML}  Overs: ${oversLimit} |
+Teams: {teamCount}</span>
+<span class="font-mono text-orange-400 font-bold">{startDate}   View Broadcast  
+ `; } });
+
+        if (count === 0) {
+            container.innerHTML = `<p class="text-xs text-gray-555 text-center py-4 font-semibold font-sans">No saved leagues found.</p>`;
+        }
+    }
+
+    function fetchLeagues() {
+        db.ref('leagues').on('value', snapshot => {
+            allLeagues = snapshot.val() || {};
+            renderLeaguesList();
+            if (currentlySelectedLeagueId && allLeagues[currentlySelectedLeagueId]) {
+                syncLiveViewerState(allLeagues[currentlySelectedLeagueId]);
+            }
+            if (currentUser) {
+                renderProfileLeaguesList();
+            }
+            const savedContainer = document.getElementById("saved-leagues-container");
+            if (savedContainer && !savedContainer.classList.contains("hidden")) {
+                renderSavedLeaguesList();
+            }
+            purgeExpiredArchivedVideos();
+        });
+    }
+
+    function renderLeaguesList() {
+        const grid = document.getElementById("leagues-grid");
+        const emptyState = document.getElementById("empty-leagues-state");
+        if (!grid) return;
+
+        const searchBarInput = document.getElementById("search-bar");
+        const query = searchBarInput ? searchBarInput.value : "";
+
+        grid.innerHTML = "";
+        let items = [];
+
+        Object.keys(allLeagues).forEach(key => {
+            const league = allLeagues[key];
+            if (league && typeof league === 'object' && league.metadata) {
+                const density = calculateSearchDensity(league.metadata.name, query);
+                if (density !== -1) {
+                    items.push({ key, league, density });
+                }
+            }
+        });
+
+        items.sort((a, b) => b.density - a.density);
+
+        if (items.length === 0) {
+            if (emptyState) emptyState.classList.remove("hidden");
+            return;
+        }
+        if (emptyState) emptyState.classList.add("hidden");
+
+        items.forEach(item => {
+            const key = item.key;
+            const league = item.league;
+            const activeLabel = (league.liveMatch && league.liveMatch.active) 
+                ? `<span class="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse shadow font-bold">LIVE</span>` 
+                : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
+
+            const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
+            const teamCount = league.teams ? league.teams.length : 0;
+            const startDate = league.metadata ? (league.metadata.startDate || "N/A") : "N/A";
+            const shortName = league.metadata ? (league.metadata.shortName || generateShortName(league.metadata.name)) : "IPC";
+            const name = league.metadata ? (league.metadata.name || "Unnamed League") : "Unnamed League";
+
+            const isSaved = isLeagueSaved(key);
+            const bellClass = isSaved ? "fa-solid fa-bell text-yellow-500 text-sm cursor-pointer ml-2" : "fa-regular fa-bell text-gray-400 hover:text-yellow-500 text-sm cursor-pointer ml-2";
+
+            let liveScoreHTML = "";
+            if (league.liveMatch && league.liveMatch.active) {
+                const lm = league.liveMatch;
+                liveScoreHTML = `
+                    <div class="bg-black p-2.5 rounded-xl border border-red-500/20 my-2 shadow-inner font-sans">
+                        <div class="flex justify-between items-center text-[10px] text-gray-400 font-semibold font-sans">
+                            <span>🏏 ${lm.battingTeam}</span>
+                            <span>vs ${lm.bowlingTeam}</span>
+                        </div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-xs font-black text-white">${lm.runs} - ${lm.wickets} <span class="text-[9px] text-gray-400">(${lm.overs})</span></span>
+                            <span class="text-[9px] text-red-500 font-bold animate-pulse font-sans">LIVE NOW</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            grid.innerHTML += `
+                <div class="bg-gray-900 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition shadow-xl font-sans">
+                    <div class="flex items-center justify-between">
+                        ${activeLabel}
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2 py-0.5 rounded border border-orange-500/10">
+                                ${shortName}
+                            </span>
+                            <button onclick="event.stopPropagation(); toggleSaveLeague('${key}')" class="focus:outline-none">
+                                <i class="${bellClass}"></i>
                             </button>
                         </div>
-                    `;
+                    </div>
+                    <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${name}</h3>
+                    ${liveScoreHTML}
+                    <div class="flex justify-between items-center text-[10px] text-gray-400">
+                        <span class="font-semibold">Overs: ${oversLimit} | Teams: ${teamCount}</span>
+                        <span class="font-mono text-orange-400 font-bold">${startDate}</span>
+                    </div>
+                    <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-850 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow-lg">
+                        <span>View Broadcast</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    function renderManagedLeagues() {
+        const container = document.getElementById("managed-leagues-container");
+        const emptyState = document.getElementById("empty-managed-state");
+        if (!container) return;
+        container.innerHTML = "";
+
+        let count = 0;
+        Object.keys(allLeagues).forEach(key => {
+            const league = allLeagues[key];
+            if (league && typeof league === 'object' && league.metadata && (league.metadata.ownerId === currentUser.uid || league.metadata.creatorUid === currentUser.uid)) {
+                count++;
+                
+                let optionsHTML = "";
+                if (league.fixtures) {
+                    league.fixtures.forEach((fix, index) => {
+                        if (fix.status !== "COMPLETED") {
+                            optionsHTML += `<option value="${index}">Round ${fix.round}: ${fix.homeTeam} vs ${fix.awayTeam}</option>`;
+                        }
+                    });
                 }
-            });
 
-            if (count === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-555 text-center py-4 font-semibold font-sans">No saved leagues found.</p>`;
-            }
-        }
+                const roundsCount = league.fixtures ? Math.max(...league.fixtures.map(f => f.round)) : 1;
+                const autoEndDate = calculateLeagueEndDate(league.metadata.startDate, roundsCount);
 
-        function fetchLeagues() {
-            db.ref('leagues').on('value', snapshot => {
-                allLeagues = snapshot.val() || {};
-                renderLeaguesList();
-                if (currentlySelectedLeagueId && allLeagues[currentlySelectedLeagueId]) {
-                    syncLiveViewerState(allLeagues[currentlySelectedLeagueId]);
-                }
-                if (currentUser) {
-                    renderProfileLeaguesList();
-                }
-                const savedContainer = document.getElementById("saved-leagues-container");
-                if (savedContainer && !savedContainer.classList.contains("hidden")) {
-                    renderSavedLeaguesList();
-                }
-                purgeExpiredArchivedVideos();
-            });
-        }
-
-        function renderLeaguesList() {
-            const grid = document.getElementById("leagues-grid");
-            const emptyState = document.getElementById("empty-leagues-state");
-            if (!grid) return;
-
-            const searchBarInput = document.getElementById("search-bar");
-            const query = searchBarInput ? searchBarInput.value : "";
-
-            grid.innerHTML = "";
-            let items = [];
-
-            Object.keys(allLeagues).forEach(key => {
-                const league = allLeagues[key];
-                if (league && typeof league === 'object' && league.metadata) {
-                    const density = calculateSearchDensity(league.metadata.name, query);
-                    if (density !== -1) {
-                        items.push({ key, league, density });
-                    }
-                }
-            });
-
-            items.sort((a, b) => b.density - a.density);
-
-            if (items.length === 0) {
-                if (emptyState) emptyState.classList.remove("hidden");
-                return;
-            }
-            if (emptyState) emptyState.classList.add("hidden");
-
-            items.forEach(item => {
-                const key = item.key;
-                const league = item.league;
-                const activeLabel = (league.liveMatch && league.liveMatch.active) 
-                    ? `<span class="bg-red-600 text-white px-2 py-0.5 rounded text-[9px] font-black tracking-widest animate-pulse shadow font-bold">LIVE</span>` 
-                    : `<span class="bg-gray-800 text-gray-400 px-2 py-0.5 rounded text-[9px] font-bold">UPCOMING</span>`;
-
-                const oversLimit = league.metadata ? (league.metadata.oversLimit || "N/A") : "N/A";
-                const teamCount = league.teams ? league.teams.length : 0;
-                const startDate = league.metadata ? (league.metadata.startDate || "N/A") : "N/A";
-                const shortName = league.metadata ? (league.metadata.shortName || generateShortName(league.metadata.name)) : "IPC";
-                const name = league.metadata ? (league.metadata.name || "Unnamed League") : "Unnamed League";
-
-                const isSaved = isLeagueSaved(key);
-                const bellClass = isSaved ? "fa-solid fa-bell text-yellow-500 text-sm cursor-pointer ml-2" : "fa-regular fa-bell text-gray-400 hover:text-yellow-500 text-sm cursor-pointer ml-2";
-
-                let liveScoreHTML = "";
-                if (league.liveMatch && league.liveMatch.active) {
-                    const lm = league.liveMatch;
-                    liveScoreHTML = `
-                        <div class="bg-black p-2.5 rounded-xl border border-red-500/20 my-2 shadow-inner font-sans">
-                            <div class="flex justify-between items-center text-[10px] text-gray-400 font-semibold font-sans">
-                                <span>🏏 ${lm.battingTeam}</span>
-                                <span>vs ${lm.bowlingTeam}</span>
-                            </div>
-                            <div class="flex justify-between items-center mt-1">
-                                <span class="text-xs font-black text-white">${lm.runs} - ${lm.wickets} <span class="text-[9px] text-gray-400">(${lm.overs})</span></span>
-                                <span class="text-[9px] text-red-500 font-bold animate-pulse font-sans">LIVE NOW</span>
-                            </div>
+                container.innerHTML += `
+                    <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3 shadow-lg font-sans" id="managed-league-card-${key}">
+                        <div class="flex justify-between items-start gap-1">
+                            <h3 class="font-extrabold text-sm line-clamp-1">${league.metadata.name}</h3>
+                            <span class="text-orange-500 font-bold text-[10px] uppercase bg-orange-600/10 px-1.5 py-0.5 rounded border border-orange-500/10">
+                                ${league.metadata.shortName || generateShortName(league.metadata.name)}
+                            </span>
                         </div>
-                    `;
-                }
+                        
+                        <div class="flex justify-between items-center text-[10px] text-gray-400 border-b border-gray-800 pb-2">
+                            <span class="font-semibold font-sans">Rounds: ${roundsCount}</span>
+                            <span class="text-orange-400 font-bold font-mono">Last Match: ${autoEndDate}</span>
+                        </div>
 
-                grid.innerHTML += `
-                    <div class="bg-gray-900 border border-gray-800 hover:border-orange-500/50 rounded-2xl p-4 space-y-3 transition shadow-xl font-sans">
-                        <div class="flex items-center justify-between">
-                            ${activeLabel}
-                            <div class="flex items-center space-x-2">
-                                <span class="bg-orange-600/10 text-orange-500 text-xs font-bold px-2 py-0.5 rounded border border-orange-500/10">
-                                    ${shortName}
-                                </span>
-                                <button onclick="event.stopPropagation(); toggleSaveLeague('${key}')" class="focus:outline-none">
-                                    <i class="${bellClass}"></i>
+                        <div class="space-y-1.5">
+                            <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest font-semibold font-sans">Select Match</label>
+                            <select id="match-select-${key}" onchange="initManagedLeaguesTickers()" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold font-sans">
+                                ${optionsHTML || `<option disabled>All matches completed</option>`}
+                            </select>
+                        </div>
+
+                        <div class="space-y-2 pt-1 font-sans">
+                            <div id="countdown-banner-${key}" class="hidden text-center py-2 bg-black border border-red-500/20 rounded-xl shadow-inner font-bold">
+                                <p class="text-[9px] text-red-500 font-black uppercase tracking-widest">Awaiting scheduled start time</p>
+                                <p id="countdown-timer-${key}" class="text-xs font-mono font-bold text-white mt-0.5">--:--:--</p>
+                            </div>
+                            <div class="flex items-center space-x-1.5 pt-1.5 font-sans">
+                                <button onclick="switchTab('home')" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 font-bold text-[11px] rounded-xl uppercase text-white transition flex-shrink-0">
+                                    <i class="fa-solid fa-arrow-left"></i>
+                                </button>
+                                <button onclick="openMatchTimeEditorModal('${key}')" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 font-bold text-[11px] rounded-xl uppercase text-white transition flex items-center justify-center space-x-1">
+                                    <i class="fa-solid fa-clock"></i>
+                                    <span>Times</span>
+                                </button>
+                                <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="flex-[2] py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase text-white transition shadow-md truncate">
+                                    Open Console
                                 </button>
                             </div>
                         </div>
-                        <h3 class="text-base font-black tracking-tight line-clamp-1 text-white">${name}</h3>
-                        ${liveScoreHTML}
-                        <div class="flex justify-between items-center text-[10px] text-gray-400">
-                            <span class="font-semibold">Overs: ${oversLimit} | Teams: ${teamCount}</span>
-                            <span class="font-mono text-orange-400 font-bold">${startDate}</span>
-                        </div>
-                        <button onclick="launchLiveSpectator('${key}')" class="w-full py-2 bg-gray-850 hover:bg-orange-600 hover:text-white transition font-bold rounded-xl text-[11px] flex items-center justify-center space-x-1.5 text-white shadow-lg">
-                            <span>View Broadcast</span>
-                            <i class="fa-solid fa-arrow-right text-xs"></i>
-                        </button>
                     </div>
                 `;
-            });
+            }
+        });
+
+        if (count === 0) {
+            if (emptyState) emptyState.classList.remove("hidden");
+        } else {
+            if (emptyState) emptyState.classList.add("hidden");
+            initManagedLeaguesTickers();
         }
+    }
 
-        function renderManagedLeagues() {
-            const container = document.getElementById("managed-leagues-container");
-            const emptyState = document.getElementById("empty-managed-state");
-            if (!container) return;
-            container.innerHTML = "";
-
-            let count = 0;
+    function initManagedLeaguesTickers() {
+        if (managedCountdownsTimer) clearInterval(managedCountdownsTimer);
+        
+        const tick = () => {
             Object.keys(allLeagues).forEach(key => {
                 const league = allLeagues[key];
-                if (league && typeof league === 'object' && league.metadata && (league.metadata.ownerId === currentUser.uid || league.metadata.creatorUid === currentUser.uid)) {
-                    count++;
+                if (league && league.metadata && (league.metadata.ownerId === currentUser.uid || league.metadata.creatorUid === currentUser.uid)) {
+                    const selectEl = document.getElementById(`match-select-${key}`);
+                    if (!selectEl) return;
                     
-                    let optionsHTML = "";
-                    if (league.fixtures) {
-                        league.fixtures.forEach((fix, index) => {
-                            if (fix.status !== "COMPLETED") {
-                                optionsHTML += `<option value="${index}">Round ${fix.round}: ${fix.homeTeam} vs ${fix.awayTeam}</option>`;
-                            }
-                        });
+                    const selectedIdx = parseInt(selectEl.value);
+                    if (isNaN(selectedIdx)) return;
+
+                    const match = league.fixtures[selectedIdx];
+                    if (!match) return;
+
+                    const targetTime = getMatchScheduledTimestamp(league, selectedIdx);
+                    const now = Date.now();
+
+                    const banner = document.getElementById(`countdown-banner-${key}`);
+                    const timer = document.getElementById(`countdown-timer-${key}`);
+                    const button = document.getElementById(`btn-score-console-${key}`);
+
+                    if (!banner || !timer || !button) return;
+
+                    const isMatchCurrentlyActive = league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedIdx;
+
+                    if (isMatchCurrentlyActive) {
+                        banner.classList.add("hidden");
+                        button.removeAttribute("disabled");
+                        button.className = "flex-[2] py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase text-white animate-pulse shadow-md transition";
+                        button.textContent = "RESUME";
+                    } else if (now < targetTime) {
+                        banner.classList.remove("hidden");
+                        button.setAttribute("disabled", "true");
+                        button.className = "flex-[2] py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase cursor-not-allowed transition";
+                        button.textContent = "Locked";
+
+                        const diff = targetTime - now;
+                        const days = Math.floor(diff / (24 * 3600 * 1000));
+                        const hours = Math.floor((diff % (24 * 3600 * 1000)) / (3600 * 1000));
+                        const mins = Math.floor((diff % (3600 * 1000)) / (60 * 1000));
+                        const secs = Math.floor((diff % (60 * 1000)) / 1000);
+
+                        timer.textContent = `${days > 0 ? `${days}d ` : ""}${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+                    } else {
+                        banner.classList.add("hidden");
+                        button.removeAttribute("disabled");
+                        button.className = "flex-[2] py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase text-white transition shadow-md";
+                        button.textContent = "Console";
                     }
-
-                    const roundsCount = league.fixtures ? Math.max(...league.fixtures.map(f => f.round)) : 1;
-                    const autoEndDate = calculateLeagueEndDate(league.metadata.startDate, roundsCount);
-
-                    container.innerHTML += `
-                        <div class="bg-gray-900 border border-gray-800 p-4 rounded-2xl space-y-3 shadow-lg font-sans" id="managed-league-card-${key}">
-                            <div class="flex justify-between items-start gap-1">
-                                <h3 class="font-extrabold text-sm line-clamp-1">${league.metadata.name}</h3>
-                                <span class="text-orange-500 font-bold text-[10px] uppercase bg-orange-600/10 px-1.5 py-0.5 rounded border border-orange-500/10">
-                                    ${league.metadata.shortName || generateShortName(league.metadata.name)}
-                                </span>
-                            </div>
-                            
-                            <div class="flex justify-between items-center text-[10px] text-gray-400 border-b border-gray-800 pb-2">
-                                <span class="font-semibold font-sans">Rounds: ${roundsCount}</span>
-                                <span class="text-orange-400 font-bold font-mono">Last Match: ${autoEndDate}</span>
-                            </div>
-
-                            <div class="space-y-1.5">
-                                <label class="block text-[9px] text-gray-400 font-bold uppercase tracking-widest font-semibold font-sans">Select Match</label>
-                                <select id="match-select-${key}" onchange="initManagedLeaguesTickers()" class="w-full bg-black border border-gray-800 rounded-lg p-2 text-xs text-white font-bold font-sans">
-                                    ${optionsHTML || `<option disabled>All matches completed</option>`}
-                                </select>
-                            </div>
-
-                            <div class="space-y-2 pt-1 font-sans">
-                                <div id="countdown-banner-${key}" class="hidden text-center py-2 bg-black border border-red-500/20 rounded-xl shadow-inner font-bold">
-                                    <p class="text-[9px] text-red-500 font-black uppercase tracking-widest">Awaiting scheduled start time</p>
-                                    <p id="countdown-timer-${key}" class="text-xs font-mono font-bold text-white mt-0.5">--:--:--</p>
-                                </div>
-                                <div class="flex items-center space-x-1.5 pt-1.5 font-sans">
-                                    <button onclick="switchTab('home')" class="px-3 py-2 bg-gray-800 hover:bg-gray-700 font-bold text-[11px] rounded-xl uppercase text-white transition flex-shrink-0">
-                                        <i class="fa-solid fa-arrow-left"></i>
-                                    </button>
-                                    <button onclick="openMatchTimeEditorModal('${key}')" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 font-bold text-[11px] rounded-xl uppercase text-white transition flex items-center justify-center space-x-1">
-                                        <i class="fa-solid fa-clock"></i>
-                                        <span>Times</span>
-                                    </button>
-                                    <button id="btn-score-console-${key}" onclick="initiateMatchScoring('${key}')" class="flex-[2] py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase text-white transition shadow-md truncate">
-                                        Open Console
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
                 }
             });
+        };
 
-            if (count === 0) {
-                if (emptyState) emptyState.classList.remove("hidden");
-            } else {
-                if (emptyState) emptyState.classList.add("hidden");
-                initManagedLeaguesTickers();
-            }
-        }
+        tick();
+        managedCountdownsTimer = setInterval(tick, 1000);
+    }
 
-        function initManagedLeaguesTickers() {
-            if (managedCountdownsTimer) clearInterval(managedCountdownsTimer);
-            
-            const tick = () => {
-                Object.keys(allLeagues).forEach(key => {
-                    const league = allLeagues[key];
-                    if (league && league.metadata && (league.metadata.ownerId === currentUser.uid || league.metadata.creatorUid === currentUser.uid)) {
-                        const selectEl = document.getElementById(`match-select-${key}`);
-                        if (!selectEl) return;
-                        
-                        const selectedIdx = parseInt(selectEl.value);
-                        if (isNaN(selectedIdx)) return;
+    function initiateMatchScoring(leagueId) {
+        const matchIndex = document.getElementById(`match-select-${leagueId}`).value;
+        if (matchIndex === "" || matchIndex === null) return;
 
-                        const match = league.fixtures[selectedIdx];
-                        if (!match) return;
+        const league = allLeagues[leagueId];
 
-                        const targetTime = getMatchScheduledTimestamp(league, selectedIdx);
-                        const now = Date.now();
+        selectedScorerLeagueId =  leagueId;
+        selectedScorerMatchIndex = parseInt(matchIndex);
+        const match = league.fixtures[selectedScorerMatchIndex];
 
-                        const banner = document.getElementById(`countdown-banner-${key}`);
-                        const timer = document.getElementById(`countdown-timer-${key}`);
-                        const button = document.getElementById(`btn-score-console-${key}`);
+        document.getElementById("scorer-match-teams").textContent = `${match.homeTeam} vs ${match.awayTeam}`;
+        document.getElementById("scorer-console-view").classList.remove("hidden");
+        document.getElementById("managed-leagues-container").classList.add("hidden");
 
-                        if (!banner || !timer || !button) return;
-
-                        const isMatchCurrentlyActive = league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedIdx;
-
-                        if (isMatchCurrentlyActive) {
-                            banner.classList.add("hidden");
-                            button.removeAttribute("disabled");
-                            button.className = "flex-[2] py-2 bg-green-600 hover:bg-green-700 font-bold text-[11px] rounded-xl uppercase text-white animate-pulse shadow-md transition";
-                            button.textContent = "RESUME";
-                        } else if (now < targetTime) {
-                            banner.classList.remove("hidden");
-                            button.setAttribute("disabled", "true");
-                            button.className = "flex-[2] py-2 bg-gray-800 text-gray-500 font-bold text-[11px] rounded-xl uppercase cursor-not-allowed transition";
-                            button.textContent = "Locked";
-
-                            const diff = targetTime - now;
-                            const days = Math.floor(diff / (24 * 3600 * 1000));
-                            const hours = Math.floor((diff % (24 * 3600 * 1000)) / (3600 * 1000));
-                            const mins = Math.floor((diff % (3600 * 1000)) / (60 * 1000));
-                            const secs = Math.floor((diff % (60 * 1000)) / 1000);
-
-                            timer.textContent = `${days > 0 ? `${days}d ` : ""}${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
-                        } else {
-                            banner.classList.add("hidden");
-                            button.removeAttribute("disabled");
-                            button.className = "flex-[2] py-2 bg-orange-600 hover:bg-orange-700 font-bold text-[11px] rounded-xl uppercase text-white transition shadow-md";
-                            button.textContent = "Console";
-                        }
-                    }
-                });
-            };
-
-            tick();
-            managedCountdownsTimer = setInterval(tick, 1000);
-        }
-
-        function initiateMatchScoring(leagueId) {
-            const matchIndex = document.getElementById(`match-select-${leagueId}`).value;
-            if (matchIndex === "" || matchIndex === null) return;
-
-            const league = allLeagues[leagueId];
-
-            selectedScorerLeagueId =  leagueId;
-            selectedScorerMatchIndex = parseInt(matchIndex);
-            const match = league.fixtures[selectedScorerMatchIndex];
-
-            document.getElementById("scorer-match-teams").textContent = `${match.homeTeam} vs ${match.awayTeam}`;
-            document.getElementById("scorer-console-view").classList.remove("hidden");
-            document.getElementById("managed-leagues-container").classList.add("hidden");
-
-            if (league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedScorerMatchIndex) {
-                const lm = league.liveMatch;
-                if (!lm.striker || !lm.nonStriker || !lm.currentBowler) {
-                    setupLineupOptions(lm.battingTeam, lm.bowlingTeam);
-                    document.getElementById("scorer-toss-panel").classList.add("hidden");
-                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
-                    document.getElementById("scorer-controls").classList.add("hidden");
-                    document.getElementById("super-over-trigger-container").classList.add("hidden");
-                } else {
-                    document.getElementById("scorer-toss-panel").classList.add("hidden");
-                    document.getElementById("scorer-lineup-panel").classList.add("hidden");
-                    document.getElementById("scorer-controls").classList.remove("hidden");
-                    attachLiveScorerMetricsListener();
-                }
-            } else {
-                const tossSelect = document.getElementById("toss-winner-select");
-                tossSelect.innerHTML = `
-                    <option value="${match.homeTeam}">${match.homeTeam}</option>
-                    <option value="${match.awayTeam}">${match.awayTeam}</option>
-                `;
-
-                document.getElementById("scorer-toss-panel").classList.remove("hidden");
-                document.getElementById("scorer-lineup-panel").classList.add("hidden");
+        if (league.liveMatch && league.liveMatch.active && league.liveMatch.matchIndex === selectedScorerMatchIndex) {
+            const lm = league.liveMatch;
+            if (!lm.striker || !lm.nonStriker || !lm.currentBowler) {
+                setupLineupOptions(lm.battingTeam, lm.bowlingTeam);
+                document.getElementById("scorer-toss-panel").classList.add("hidden");
+                document.getElementById("scorer-lineup-panel").classList.remove("hidden");
                 document.getElementById("scorer-controls").classList.add("hidden");
                 document.getElementById("super-over-trigger-container").classList.add("hidden");
-                document.getElementById("super-over-badge").classList.add("hidden");
-            }
-        }
-
-        function exitScorerConsole() {
-            stopDirectScorerCam();
-            
-            if (selectedScorerLeagueId) {
-                db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).off('value');
-            }
-
-            document.getElementById("scorer-console-view").classList.add("hidden");
-            document.getElementById("managed-leagues-container").classList.remove("hidden");
-            
-            selectedScorerLeagueId = null;
-            selectedScorerMatchIndex = null;
-            renderManagedLeagues();
-        }
-
-        function executeCoinFlip() {
-            const coin = document.getElementById("toss-coin");
-            const side = Math.random() < 0.5 ? "heads" : "tails";
-            coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none animate-none";
-            
-            if (side === "heads") {
-                coin.classList.add("animate-flip-heads");
             } else {
-                coin.classList.add("animate-flip-tails");
+                document.getElementById("scorer-toss-panel").classList.add("hidden");
+                document.getElementById("scorer-lineup-panel").classList.add("hidden");
+                document.getElementById("scorer-controls").classList.remove("hidden");
+                attachLiveScorerMetricsListener();
             }
+        } else {
+            const tossSelect = document.getElementById("toss-winner-select");
+            tossSelect.innerHTML = `
+                <option value="${match.homeTeam}">${match.homeTeam}</option>
+                <option value="${match.awayTeam}">${match.awayTeam}</option>
+            `;
 
-            setTimeout(() => {
-                const winner = document.getElementById("toss-winner-select").value;
-                const decision = document.getElementById("toss-decision-select").value;
-                
-                const league = allLeagues[selectedScorerLeagueId];
-                const match = league.fixtures[selectedScorerMatchIndex];
-                
-                const teamA = winner;
-                const teamB = (winner === match.homeTeam) ? match.awayTeam : match.homeTeam;
-                
-                const battingFirst = (decision === 'bat') ? teamA : teamB;
-                const bowlingFirst = (decision === 'bat') ? teamB : teamA;
+            document.getElementById("scorer-toss-panel").classList.remove("hidden");
+            document.getElementById("scorer-lineup-panel").classList.add("hidden");
+            document.getElementById("scorer-controls").classList.add("hidden");
+            document.getElementById("super-over-trigger-container").classList.add("hidden");
+            document.getElementById("super-over-badge").classList.add("hidden");
+        }
+    }
 
-                const liveMatchData = {
-                    active: true,
-                    matchIndex: selectedScorerMatchIndex,
-                    teams: { home: match.homeTeam, away: match.awayTeam },
-                    battingTeam: battingFirst,
-                    bowlingTeam: bowlingFirst,
-                    runs: 0,
-                    wickets: 0,
-                    overs: 0.0,
-                    extras: 0,
-                    oversLimit: league.metadata.oversLimit,
-                    striker: "",
-                    nonStriker: "",
-                    currentBowler: "",
-                    overLog: [],
-                    isSuperOver: false,
-                    freeHit: false, 
-                    inning: 1,
-                    needsInning2Lineup: false,
-                    needsSuperOverLineup: false,
-                    needsCompletionSave: false,
-                    viewerCount: 1,
-                    tossResult: `${winner} won toss and elected to ${decision} first.`,
-                    lastEvent: { text: "TOSS DONE", type: "default", timestamp: Date.now() }
-                };
-
-                db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).set(liveMatchData)
-                    .then(() => {
-                        db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}/status`).set("LIVE");
-                        setupLineupOptions(battingFirst, bowlingFirst);
-                        document.getElementById("scorer-toss-panel").classList.add("hidden");
-                        document.getElementById("scorer-lineup-panel").classList.remove("hidden");
-                    });
-
-            }, 350);
+    function exitScorerConsole() {
+        stopDirectScorerCam();
+        
+        if (selectedScorerLeagueId) {
+            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).off('value');
         }
 
-        function setupLineupOptions(battingTeam, bowlingTeam) {
+        document.getElementById("scorer-console-view").classList.add("hidden");
+        document.getElementById("managed-leagues-container").classList.remove("hidden");
+        
+        selectedScorerLeagueId = null;
+        selectedScorerMatchIndex = null;
+        renderManagedLeagues();
+    }
+
+    function executeCoinFlip() {
+        const coin = document.getElementById("toss-coin");
+        const side = Math.random() < 0.5 ? "heads" : "tails";
+        coin.className = "w-16 h-16 bg-yellow-500 border-4 border-yellow-300 rounded-full flex items-center justify-center font-black text-gray-900 text-sm shadow-xl select-none animate-none";
+        
+        if (side === "heads") {
+            coin.classList.add("animate-flip-heads");
+        } else {
+            coin.classList.add("animate-flip-tails");
+        }
+
+        setTimeout(() => {
+            const winner = document.getElementById("toss-winner-select").value;
+            const decision = document.getElementById("toss-decision-select").value;
+            
             const league = allLeagues[selectedScorerLeagueId];
-            const bTeamObj = league.teams.find(t => t.name === battingTeam);
-            const bowlTeamObj = league.teams.find(t => t.name === bowlingTeam);
+            const match = league.fixtures[selectedScorerMatchIndex];
+            
+            const teamA = winner;
+            const teamB = (winner === match.homeTeam) ? match.awayTeam : match.homeTeam;
+            
+            const battingFirst = (decision === 'bat') ? teamA : teamB;
+            const bowlingFirst = (decision === 'bat') ? teamB : teamA;
 
-            const sStriker = document.getElementById("select-striker");
-            const sNonStriker = document.getElementById("select-non-striker");
-            const sBowler = document.getElementById("select-bowler");
+            const liveMatchData = {
+                active: true,
+                matchIndex: selectedScorerMatchIndex,
+                teams: { home: match.homeTeam, away: match.awayTeam },
+                battingTeam: battingFirst,
+                bowlingTeam: bowlingFirst,
+                runs: 0,
+                wickets: 0,
+                overs: 0.0,
+                extras: 0,
+                oversLimit: league.metadata.oversLimit,
+                striker: "",
+                nonStriker: "",
+                currentBowler: "",
+                overLog: [],
+                isSuperOver: false,
+                freeHit: false, 
+                inning: 1,
+                needsInning2Lineup: false,
+                needsSuperOverLineup: false,
+                needsCompletionSave: false,
+                viewerCount: 1,
+                tossResult: `${winner} won toss and elected to ${decision} first.`,
+                lastEvent: { text: "TOSS DONE", type: "default", timestamp: Date.now() }
+            };
 
-            sStriker.innerHTML = "";
-            sNonStriker.innerHTML = "";
-            sBowler.innerHTML = "";
+            db.ref(`leagues/${selectedScorerLeagueId}/liveMatch`).set(liveMatchData)
+                .then(() => {
+                    db.ref(`leagues/${selectedScorerLeagueId}/fixtures/${selectedScorerMatchIndex}/status`).set("LIVE");
+                    setupLineupOptions(battingFirst, bowlingFirst);
+                    document.getElementById("scorer-toss-panel").classList.add("hidden");
+                    document.getElementById("scorer-lineup-panel").classList.remove("hidden");
+                });
 
-            bTeamObj.roster.forEach(player => {
-                const pName = typeof player === 'string' ? player : player.name;
-                sStriker.innerHTML += `<option value="${pName}">${pName}</option>`;
-                sNonStriker.innerHTML += `<option value="${pName}">${pName}</option>`;
+        }, 350);
+    }
+
+    function setupLineupOptions(battingTeam, bowlingTeam) {
+        const league = allLeagues[selectedScorerLeagueId];
+        const bTeamObj = league.teams.find(t => t.name === battingTeam);
+        const bowlTeamObj = league.teams.find(t => t.name === bowlingTeam);
+
+        const sStriker = document.getElementById("select-striker");
+        const sNonStriker = document.getElementById("select-non-striker");
+        const sBowler = document.getElementById("select-bowler");
+
+        sStriker.innerHTML = "";
+        sNonStriker.innerHTML = "";
+        sBowler.innerHTML = "";
+
+        bTeamObj.roster.forEach(player => {
+            const pName = typeof player === 'string' ? player : player.name;
+            sStriker.innerHTML += `<option value="${pName}">${pName}</option>`;
+            sNonStriker.innerHTML += `<option value="${pName}">${pName}</option>`;
         });
 
         bowlTeamObj.roster.forEach(player => {
@@ -6120,3 +6105,5 @@ Write ONLY 2-3 short polite sentences explaining the issue and requesting fast s
             });
     }
 </script>
+</body>
+</html>
